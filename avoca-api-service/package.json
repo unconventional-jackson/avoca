@@ -1,0 +1,17 @@
+{
+  "scripts": {
+    "generate": "openapi-generator-cli generate -i housecall.v1.yaml -g typescript-axios -o src",
+    "build": "tsc",
+    "bump": "npm run generate && npm run build && npm version patch --no-git-tag-version && npm i && npm publish"
+  },
+  "devDependencies": {
+    "@types/node": "^20.9.3",
+    "@openapitools/openapi-generator-cli": "^2.9.0",
+    "typescript": "*"
+  },
+  "name": "@unconventional-jackson/avoca-api",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "version": "0.0.12",
+  "private": false
+}
