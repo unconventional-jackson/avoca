@@ -195,12 +195,6 @@ export interface AuthUser {
      */
     'userId'?: string;
     /**
-     * The user\'s name
-     * @type {string}
-     * @memberof AuthUser
-     */
-    'userName'?: string | null;
-    /**
      * The user\'s email address
      * @type {string}
      * @memberof AuthUser
@@ -217,19 +211,19 @@ export interface AuthUser {
      * @type {string}
      * @memberof AuthUser
      */
-    'accessToken'?: string;
+    'accessToken'?: string | null;
     /**
      * JWT refresh token for user session renewal
      * @type {string}
      * @memberof AuthUser
      */
-    'refreshToken'?: string;
+    'refreshToken'?: string | null;
     /**
      * Indicates if the email is verified
      * @type {boolean}
      * @memberof AuthUser
      */
-    'authEmailVerified'?: boolean;
+    'authEmailVerified'?: boolean | null;
     /**
      * Timestamp of the last TOTP verification
      * @type {string}

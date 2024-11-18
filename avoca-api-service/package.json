@@ -12,6 +12,6 @@
   "name": "@unconventional-jackson/avoca-api",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "version": "0.0.12",
+  "version": "0.0.1",
   "private": false
 }

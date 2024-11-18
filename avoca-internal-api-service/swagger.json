@@ -557,11 +557,6 @@
             "type": "string",
             "description": "The unique ID of the user"
           },
-          "userName": {
-            "type": "string",
-            "nullable": true,
-            "description": "The user's name"
-          },
           "email": {
             "type": "string",
             "format": "email",
@@ -575,15 +570,18 @@
           },
           "accessToken": {
             "type": "string",
-            "description": "JWT access token for user authentication"
+            "description": "JWT access token for user authentication",
+            "nullable": true
           },
           "refreshToken": {
             "type": "string",
-            "description": "JWT refresh token for user session renewal"
+            "description": "JWT refresh token for user session renewal",
+            "nullable": true
           },
           "authEmailVerified": {
             "type": "boolean",
-            "description": "Indicates if the email is verified"
+            "description": "Indicates if the email is verified",
+            "nullable": true
           },
           "authTotpVerifiedAt": {
             "type": "string",
