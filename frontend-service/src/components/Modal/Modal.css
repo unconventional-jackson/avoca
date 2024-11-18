@@ -1,0 +1,112 @@
+.Modal-header-container {
+  flex-direction: row;
+  justify-content: center;
+  position: relative;
+}
+
+.Modal-header {
+  text-align: center;
+  margin-bottom: 16px;
+  flex: 1;
+}
+
+.Modal-close-button {
+  background-color: transparent;
+  border: none;
+  align-self: flex-end;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.Modal-input-container {
+  flex-direction: column;
+  display: flex;
+  flex: 1;
+  margin-left: 8px;
+  margin-right: 8px;
+}
+
+.Modal-input-label {
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.Modal-input {
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  background-color: #f3f4f6;
+  border-radius: 4px;
+  padding: 8px;
+  line-height: 1.5em;
+  height: 2em;
+  text-align: left;
+  vertical-align: middle;
+  /* border-color: #718093; */
+  /* border-width: 1px; */
+  border: none;
+  color: black;
+  /**
+	https://stackoverflow.com/a/9382316
+	*/
+  resize: none;
+}
+
+.Modal-input-button {
+  /* width: 100%; */
+  background-color: #9c27b0;
+  color: white;
+  border: none;
+}
+
+.Modal-action-container {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.Modal-action-primary {
+  /* width: 100%; */
+  background-color: #5c6bc0;
+  color: white;
+  border: none;
+  min-width: 120px;
+  margin-left: 8px;
+}
+
+.Modal-action-primary:disabled,
+.Modal-action-secondary:disabled {
+  /* width: 100%; */
+  color: white;
+  background-color: #718093;
+}
+
+.Modal-action-secondary {
+  /* width: 100%; */
+  background-color: #f3f4f6;
+  color: #718093;
+  border: none;
+  min-width: 120px;
+  margin-right: 8px;
+}
+
+.Modal-text {
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  line-height: 1.5em;
+  text-align: left;
+  color: #718093;
+}
+
+.Modal-prompt {
+  text-align: center;
+}
+
+.Modal-prompt-detail {
+  text-align: center;
+  font-weight: 700;
+}
