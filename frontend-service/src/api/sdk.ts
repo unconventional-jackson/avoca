@@ -8,7 +8,7 @@ if (!Config.API_URL) {
   throw new Error('Missing required environment variable: API_URL');
 }
 
-import { DefaultApi, Configuration, AuthUser } from '@unconventional-code/avoca-api';
+import { DefaultApi, Configuration, AuthUser } from '@unconventional-jackson/avoca-internal-api';
 
 const configuration = new Configuration({
   basePath: Config.API_URL,

@@ -2,10 +2,9 @@ import '../Auth.css';
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { useAuth } from '../../../contexts/useAuth';
-import { Grid } from '@mui/material';
-import { CustomInput } from '../../../components/Custom/Input';
-import { CustomButton } from '../../../components/Button/Button';
+import { useAuth } from '../../contexts/AuthContext';
+import { Grid, TextField } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 
 export function VerifyEmailScreen() {
   const navigate = useNavigate();
@@ -62,7 +61,8 @@ export function VerifyEmailScreen() {
     <Grid container spacing={2}>
       <Grid item xs={12}>
         <div className="form-label">Email</div>
-        <CustomInput
+        <TextField
+          label="Email"
           placeholder="Enter your email"
           value={email}
           type="email"
@@ -72,7 +72,7 @@ export function VerifyEmailScreen() {
 
       <Grid item xs={12}>
         <div className="form-label">Verification Code</div>
-        <CustomInput
+        <TextField
           placeholder="Enter the verification code"
           value={code}
           onChange={handleChangeCode}
@@ -80,8 +80,8 @@ export function VerifyEmailScreen() {
       </Grid>
 
       <Grid item xs={12}>
-        <CustomButton
-          type="primary"
+        <LoadingButton
+          variant="contained"
           onClick={handleVerifyEmail}
           loading={loading}
           style={{
@@ -89,12 +89,12 @@ export function VerifyEmailScreen() {
           }}
         >
           Verify Email
-        </CustomButton>
+        </LoadingButton>
       </Grid>
 
       <Grid item xs={12}>
-        <CustomButton
-          type="default"
+        <LoadingButton
+          variant="outlined"
           onClick={handleResendVerification}
           loading={loading}
           style={{
@@ -102,7 +102,7 @@ export function VerifyEmailScreen() {
           }}
         >
           Resend Verification Email
-        </CustomButton>
+        </LoadingButton>
       </Grid>
     </Grid>
   );

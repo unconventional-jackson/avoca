@@ -2,15 +2,11 @@ import '../Auth.css';
 import { useCallback, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { Logger } from '../../../utils/logger';
-import { useAuth } from '../../../contexts/useAuth';
+import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'react-toastify';
-import { parseAxiosError } from '../../../utils/errors';
-import { Grid } from '@mui/material';
-import { CustomButton } from '../../../components/Button/Button';
-import { CustomInput } from '../../../components/Custom/Input';
-
-const log = new Logger('ForgotPasswordScreen');
+import { parseAxiosError } from '../../utils/errors';
+import { Grid, TextField } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 
 export function ForgotPasswordScreen() {
   const navigate = useNavigate();
@@ -30,7 +26,6 @@ export function ForgotPasswordScreen() {
         })
         .catch((error) => {
           toast.error(`Failed to request password reset: ${parseAxiosError(error)}`);
-          log.error(error, { detail: 'Failed to request password reset' });
         });
     },
     [email, navigate, requestPasswordReset]
@@ -44,8 +39,8 @@ export function ForgotPasswordScreen() {
         <h4 className="Auth-subtitle">Forgot your password?</h4>
       </Grid>
       <Grid item xs={12}>
-        <div className="form-label">Email</div>
-        <CustomInput
+        <TextField
+          label="Email"
           placeholder="Enter your email"
           value={email}
           type="email"
@@ -54,8 +49,8 @@ export function ForgotPasswordScreen() {
       </Grid>
 
       <Grid item xs={12}>
-        <CustomButton
-          type="primary"
+        <LoadingButton
+          variant="contained"
           onClick={handleForgotPassword}
           disabled={disabled}
           style={{
@@ -63,7 +58,7 @@ export function ForgotPasswordScreen() {
           }}
         >
           Request Password Reset
-        </CustomButton>
+        </LoadingButton>
       </Grid>
 
       <Grid item xs={12}>

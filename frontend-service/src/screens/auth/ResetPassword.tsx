@@ -2,15 +2,13 @@ import '../Auth.css';
 import { useCallback, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { Logger } from '../../../utils/logger';
-import { useAuth } from '../../../contexts/useAuth';
+import { useAuth } from '../../contexts/AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { CustomInput } from '../../../components/Custom/Input';
-import { CustomButton } from '../../../components/Button/Button';
-import { Grid } from '@mui/material';
-
-const log = new Logger('ResetPasswordScreen');
+import { Grid, TextField } from '@mui/material';
+import { parseAxiosError } from '../../utils/errors';
+import { toast } from 'react-toastify';
+import { LoadingButton } from '@mui/lab';
 
 // Defined outside of the component to avoid re-creating the object on every render
 const requirements = {
@@ -23,7 +21,7 @@ const requirements = {
 
 export function ResetPasswordScreen() {
   const navigate = useNavigate();
-  const { confirmPasswordReset, userType } = useAuth();
+  const { confirmPasswordReset } = useAuth();
 
   const [email, setEmail] = useState<string>('');
   const handleChangeEmail = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,14 +50,14 @@ export function ResetPasswordScreen() {
       try {
         setLoading(true);
         await confirmPasswordReset(email.toLowerCase(), code, password);
-        navigate(`/app/${userType}`);
+        navigate(`/app`);
       } catch (error) {
-        log.error(error, { detail: 'Failed to complete password reset' });
+        toast.error(`Failed to complete password reset: ${parseAxiosError(error)}`);
       } finally {
         setLoading(false);
       }
     },
-    [confirmPasswordReset, email, userType, code, password, navigate]
+    [confirmPasswordReset, email, code, password, navigate]
   );
 
   const emailValid = useMemo(() => /^.+@.+\..+$/.test(email), [email]);
@@ -82,8 +80,8 @@ export function ResetPasswordScreen() {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        <div className="form-label">Email</div>
-        <CustomInput
+        <TextField
+          label="Email"
           placeholder="Enter your email"
           value={email}
           type="email"
@@ -91,16 +89,16 @@ export function ResetPasswordScreen() {
         />
       </Grid>
       <Grid item xs={12}>
-        <div className="form-label">Code</div>
-        <CustomInput
+        <TextField
+          label="Code"
           placeholder="Enter the code you received in your email"
           value={code}
           onChange={handleChangeCode}
         />
       </Grid>
       <Grid item xs={12}>
-        <div className="form-label">Password</div>
-        <CustomInput
+        <TextField
+          label="New Password"
           placeholder="Enter your new password"
           value={password}
           type="password"
@@ -122,8 +120,8 @@ export function ResetPasswordScreen() {
           : null}
       </Grid>
       <Grid item xs={12}>
-        <div className="form-label">Confirm Password</div>
-        <CustomInput
+        <TextField
+          label="Confirm Password"
           placeholder="Confirm your new password"
           value={confirmPassword}
           type="password"
@@ -131,8 +129,8 @@ export function ResetPasswordScreen() {
         />
       </Grid>
       <Grid item xs={12}>
-        <CustomButton
-          type="primary"
+        <LoadingButton
+          variant="contained"
           onClick={handleResetPassword}
           disabled={disabled}
           loading={loading}
@@ -141,7 +139,7 @@ export function ResetPasswordScreen() {
           }}
         >
           Reset Password
-        </CustomButton>
+        </LoadingButton>
       </Grid>
       <Grid item xs={12}>
         <Link to="/sign-in">

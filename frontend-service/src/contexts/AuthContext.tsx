@@ -10,15 +10,11 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 import { useSdk } from '../api/sdk';
 import { useLocalStorage } from '../hooks/useLocalStorage';
-import { AuthUser, UserType } from '@unconventional-code/avoca-takehome-api';
+import { AuthUser } from '@unconventional-jackson/avoca-internal-api';
 
 interface AuthContextProps {
   authUser: AuthUser | null;
   initialized: boolean;
-  userType: UserType;
-  setUserType: (userType: UserType) => void;
-  authenticate: (email: string) => Promise<void>;
-  authenticateVerify: (email: string, token: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -36,10 +32,6 @@ interface AuthContextProps {
 export const AuthContext = createContext<AuthContextProps>({
   authUser: null,
   initialized: false,
-  userType: UserType.User,
-  setUserType: () => {},
-  authenticate: async () => Promise.resolve(),
-  authenticateVerify: async () => Promise.resolve(),
   signIn: async () => Promise.resolve(),
   signUp: async () => Promise.resolve(),
   signOut: async () => Promise.resolve(),
@@ -59,7 +51,6 @@ export function AuthProvider({ children }: PropsWithChildren<unknown>) {
   // Set an initializing state whilst Cognito / Amplify connects
   const [authUser, setAuthUser] = useLocalStorage<AuthUser | null>('user', null);
   const [initialized, setInitialized] = useState(false);
-  const [userType, setUserType] = useState<UserType>(UserType.User);
 
   useEffect(() => {
     if (!initialized) {
@@ -72,7 +63,6 @@ export function AuthProvider({ children }: PropsWithChildren<unknown>) {
     await apiSdk.signUp({
       email,
       password,
-      userType,
     });
   }, []);
 
@@ -80,7 +70,6 @@ export function AuthProvider({ children }: PropsWithChildren<unknown>) {
     const response = await apiSdk.signIn({
       email,
       password,
-      userType,
     });
     if (response.data.user) {
       setAuthUser(response.data.user);
@@ -91,11 +80,10 @@ export function AuthProvider({ children }: PropsWithChildren<unknown>) {
     await apiSdk.resetPassword({
       newPassword,
       token,
-      userType,
     });
   }, []);
   const resendVerification = useCallback(async (email: string) => {
-    await apiSdk.resendVerification({ email, userType });
+    await apiSdk.resendVerification({ email });
   }, []);
 
   const verifyEmail = useCallback(async (email: string, code: string) => {
@@ -103,7 +91,6 @@ export function AuthProvider({ children }: PropsWithChildren<unknown>) {
     const response = await apiSdk.verifyEmail({
       email,
       token: code,
-      userType,
     });
     if (response.data.user) {
       setAuthUser(response.data.user);
@@ -111,14 +98,14 @@ export function AuthProvider({ children }: PropsWithChildren<unknown>) {
   }, []);
 
   const totpSetup = useCallback(async (email: string) => {
-    const response = await apiSdk.totpSetup({ email, userType });
+    const response = await apiSdk.totpSetup({ email });
 
     // should contain `otpauth_url`
     return response.data;
   }, []);
 
   const totpVerify = useCallback(async (email: string, totpCode: string) => {
-    const response = await apiSdk.totpVerify({ email, token: totpCode, userType });
+    const response = await apiSdk.totpVerify({ email, token: totpCode });
     if (response.data.user) {
       setAuthUser(response.data.user);
     }
@@ -134,7 +121,6 @@ export function AuthProvider({ children }: PropsWithChildren<unknown>) {
   const requestPasswordReset = useCallback(async (email: string) => {
     await apiSdk.forgotPassword({
       email,
-      userType,
     });
   }, []);
 
@@ -145,7 +131,6 @@ export function AuthProvider({ children }: PropsWithChildren<unknown>) {
       await apiSdk.resetPassword({
         newPassword: password,
         token: code, // using code as the token
-        userType,
       });
     },
     []
@@ -162,25 +147,7 @@ export function AuthProvider({ children }: PropsWithChildren<unknown>) {
       email: authUser?.email,
       currentPassword: oldPassword,
       newPassword,
-      userType,
     });
-  }, []);
-
-  /**
-   * For users only: authenticate with email
-   */
-  const authenticate = useCallback(async (email: string) => {
-    await apiSdk.authenticate({ email, userType });
-  }, []);
-
-  /**
-   * For users only: verify authentication with code
-   */
-  const authenticateVerify = useCallback(async (email: string, token: string) => {
-    const response = await apiSdk.authenticateVerify({ email, token, userType });
-    if (response.data.user) {
-      setAuthUser(response.data.user);
-    }
   }, []);
 
   return (
@@ -188,10 +155,6 @@ export function AuthProvider({ children }: PropsWithChildren<unknown>) {
       value={{
         authUser,
         initialized,
-        userType,
-        setUserType,
-        authenticate,
-        authenticateVerify,
         signIn,
         signUp,
         signOut,

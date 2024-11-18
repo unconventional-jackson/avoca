@@ -3,19 +3,15 @@ import '../Auth.css';
 import { useCallback, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { Logger } from '../../../utils/logger';
 import { toast } from 'react-toastify';
-import { useAuth } from '../../../contexts/useAuth';
-import { Grid } from '@mui/material';
-import { CustomButton } from '../../../components/Button/Button';
-import { CustomInput } from '../../../components/Custom/Input';
-import { parseAxiosError } from '../../../utils/errors';
-
-const log = new Logger('SignInScreen');
+import { useAuth } from '../../contexts/AuthContext';
+import { Grid, TextField } from '@mui/material';
+import { parseAxiosError } from '../../utils/errors';
+import { LoadingButton } from '@mui/lab';
 
 export function SignInScreen() {
   const navigate = useNavigate();
-  const { signIn, userType } = useAuth();
+  const { signIn } = useAuth();
 
   const [email, setEmail] = useState<string>('');
   const handleChangeEmail = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,15 +30,14 @@ export function SignInScreen() {
       try {
         setLoading(true);
         await signIn(email.toLowerCase(), password);
-        log.info('Sign in successful', { email });
-        navigate(`/app/${userType}`);
+        navigate(`/app`);
       } catch (error) {
         toast.error(`Failed to sign in: ${parseAxiosError(error)}`);
       } finally {
         setLoading(false);
       }
     },
-    [email, password, userType, signIn, navigate]
+    [email, password, signIn, navigate]
   );
 
   const disabled = !email || !password;
@@ -50,8 +45,8 @@ export function SignInScreen() {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        <div className="form-label">Email</div>
-        <CustomInput
+        <TextField
+          label="Email"
           placeholder="Enter your email"
           value={email}
           type="email"
@@ -61,7 +56,7 @@ export function SignInScreen() {
       </Grid>
       <Grid item xs={12}>
         <div className="form-label">Password</div>
-        <CustomInput
+        <TextField
           placeholder="Enter your password"
           value={password}
           type="password"
@@ -75,8 +70,8 @@ export function SignInScreen() {
         </Link>
       </Grid>
       <Grid item xs={12}>
-        <CustomButton
-          type="primary"
+        <LoadingButton
+          variant="contained"
           onClick={handleSignIn}
           disabled={disabled}
           loading={loading}
@@ -86,7 +81,7 @@ export function SignInScreen() {
           tabIndex={4}
         >
           Login
-        </CustomButton>
+        </LoadingButton>
       </Grid>
       <Grid item xs={12}>
         <Link to="/sign-up" tabIndex={6}>

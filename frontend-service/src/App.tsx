@@ -15,7 +15,6 @@ import { VerifyEmailScreen } from './screens/auth/VerifyEmail';
 import { ForgotPasswordScreen } from './screens/auth/ForgotPassword';
 import { SignInScreen } from './screens/auth/SignIn';
 import { ResetPasswordScreen } from './screens/auth/ResetPassword';
-import { Config } from './config';
 
 import { ChangePasswordScreen } from './screens/auth/ChangePassword';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
@@ -24,14 +23,17 @@ import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client
 import { asyncStoragePersistor, queryClient } from './api/client';
 import { TotpSetupScreen } from './screens/auth/TotpSetup';
 import { TotpVerifyScreen } from './screens/auth/TotpVerify';
-import SwaggerJson from '@unconventional-code/avoca-takehome-api/swagger.json';
+import SwaggerJson from '@unconventional-jackson/avoca-internal-api/swagger.json';
 import { PageLayout } from './components/PageLayout/PageLayout';
 import { MainContent } from './components/MainContent/MainContent';
 import { DebugContextProvider } from './contexts/DebugContext';
 import { AuthContainer } from './screens/auth/AuthContainer/AuthContainer';
-import { NavigationLayout } from './navigation/NavigationLayout';
+import { PhoneCallsProvider } from './contexts/PhoneCallsContext';
+import { Config } from './config';
+import { CustomersPage } from './screens/CustomersPage';
+import { JobsPage } from './screens/JobsPage';
+import { CallsPage } from './screens/CallsPage';
 
-console.log({ Config });
 export function App() {
   return (
     <PersistQueryClientProvider
@@ -44,36 +46,32 @@ export function App() {
         <BrowserRouter>
           <DebugContextProvider>
             <AuthProvider>
-              <Routes>
-                <Route path="/" element={<Root />} />
+              <PhoneCallsProvider url={Config.WS_URL}>
+                <Routes>
+                  <Route path="/" element={<Root />} />
 
-                <Route>
-                  <Route
-                    element={
-                      <AuthContainer>
-                        <Outlet />
-                      </AuthContainer>
-                    }
-                  >
-                    <Route path="sign-in" element={<SignInScreen />} />
-                    <Route path="sign-up" element={<SignUpScreen />} />
-                    <Route path="verify-email" element={<VerifyEmailScreen />} />
-                    <Route path="totp-setup" element={<TotpSetupScreen />} />
-                    <Route path="totp-verify" element={<TotpVerifyScreen />} />
-                    <Route path="forgot-password" element={<ForgotPasswordScreen />} />
-                    <Route path="password-reset" element={<ResetPasswordScreen />} />
-                    <Route path="change-password" element={<ChangePasswordScreen />} />
+                  <Route>
+                    <Route
+                      element={
+                        <AuthContainer>
+                          <Outlet />
+                        </AuthContainer>
+                      }
+                    >
+                      <Route path="sign-in" element={<SignInScreen />} />
+                      <Route path="sign-up" element={<SignUpScreen />} />
+                      <Route path="verify-email" element={<VerifyEmailScreen />} />
+                      <Route path="totp-setup" element={<TotpSetupScreen />} />
+                      <Route path="totp-verify" element={<TotpVerifyScreen />} />
+                      <Route path="forgot-password" element={<ForgotPasswordScreen />} />
+                      <Route path="password-reset" element={<ResetPasswordScreen />} />
+                      <Route path="change-password" element={<ChangePasswordScreen />} />
+                    </Route>
                   </Route>
-                </Route>
-                <Route path="app" element={<RestrictedNavigation />}>
-                  <Route
-                    path="admin"
-                    element={
-                      <NavigationLayout>
-                        <Outlet />
-                      </NavigationLayout>
-                    }
-                  >
+                  <Route path="app" element={<RestrictedNavigation />}>
+                    <Route index path="calls" element={<CallsPage />} />
+                    <Route path="customers" element={<CustomersPage />} />
+                    <Route path="jobs" element={<JobsPage />} />
                     <Route
                       path="documentation"
                       element={
@@ -85,21 +83,21 @@ export function App() {
                       }
                     />
                   </Route>
-                </Route>
-              </Routes>
+                </Routes>
 
-              <ToastContainer
-                position="top-center"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="light"
-              />
+                <ToastContainer
+                  position="top-center"
+                  autoClose={5000}
+                  hideProgressBar={false}
+                  newestOnTop={false}
+                  closeOnClick
+                  rtl={false}
+                  pauseOnFocusLoss
+                  draggable
+                  pauseOnHover
+                  theme="light"
+                />
+              </PhoneCallsProvider>
             </AuthProvider>
           </DebugContextProvider>
         </BrowserRouter>

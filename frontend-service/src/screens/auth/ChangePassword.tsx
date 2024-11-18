@@ -2,16 +2,12 @@ import '../Auth.css';
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Logger } from '../../../utils/logger';
-import { useAuth } from '../../../contexts/useAuth';
+import { useAuth } from '../../contexts/AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
-import { CustomInput } from '../../../components/Custom/Input';
-import { CustomButton } from '../../../components/Button/Button';
-import { Grid } from '@mui/material';
-
-const log = new Logger('NewPasswordScreen');
+import { Grid, TextField } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 
 // Defined outside of the component to avoid re-creating the object on every render
 const requirements = {
@@ -24,7 +20,7 @@ const requirements = {
 
 export function ChangePasswordScreen() {
   const navigate = useNavigate();
-  const { changePassword, userType } = useAuth();
+  const { changePassword } = useAuth();
 
   const [oldPassword, setOldPassword] = useState<string>('');
   const handleChangeOldPassword = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,13 +44,12 @@ export function ChangePasswordScreen() {
       try {
         setLoading(true);
         await changePassword(oldPassword, password);
-        navigate(`/app/${userType}`);
+        navigate(`/app`);
       } catch (error) {
-        log.error(error, { detail: 'Failed to complete password reset' });
         toast.error('Failed to complete password reset');
       }
     },
-    [changePassword, password, userType, navigate]
+    [changePassword, password, navigate]
   );
 
   const disabled = !password || !confirmPassword || password !== confirmPassword;
@@ -62,8 +57,8 @@ export function ChangePasswordScreen() {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        <div className="form-label">Current Password</div>
-        <CustomInput
+        <TextField
+          label="Current Password"
           placeholder="Enter your current password"
           value={oldPassword}
           type="password"
@@ -71,8 +66,8 @@ export function ChangePasswordScreen() {
         />
       </Grid>
       <Grid item xs={12}>
-        <div className="form-label">New Password</div>
-        <CustomInput
+        <TextField
+          label="New Password"
           placeholder="Enter your new password"
           value={password}
           type="password"
@@ -94,8 +89,8 @@ export function ChangePasswordScreen() {
           : null}
       </Grid>
       <Grid item xs={12}>
-        <div className="form-label">Confirm Password</div>
-        <CustomInput
+        <TextField
+          label="Confirm Password"
           placeholder="Confirm your new password"
           value={confirmPassword}
           type="password"
@@ -103,8 +98,8 @@ export function ChangePasswordScreen() {
         />
       </Grid>
       <Grid item xs={12}>
-        <CustomButton
-          type="primary"
+        <LoadingButton
+          variant="contained"
           onClick={handleNewPassword}
           disabled={disabled}
           loading={loading}
@@ -113,7 +108,7 @@ export function ChangePasswordScreen() {
           }}
         >
           Set New Password
-        </CustomButton>
+        </LoadingButton>
       </Grid>
     </Grid>
   );

@@ -6,15 +6,11 @@ import { useCallback, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-import { Config } from '../../../config';
-import { Logger } from '../../../utils/logger';
-import { useAuth } from '../../../contexts/useAuth';
-import { Grid } from '@mui/material';
-import { CustomButton } from '../../../components/Button/Button';
-import { CustomInput } from '../../../components/Custom/Input';
-import { parseAxiosError } from '../../../utils/errors';
-
-const log = new Logger('SignUpScreen');
+import { Config } from '../../config';
+import { useAuth } from '../../contexts/AuthContext';
+import { Grid, TextField } from '@mui/material';
+import { parseAxiosError } from '../../utils/errors';
+import { LoadingButton } from '@mui/lab';
 
 // Defined outside of the component to avoid re-creating the object on every render
 const requirements = {
@@ -55,7 +51,6 @@ export function SignUpScreen() {
         navigate('/verify-email');
       } catch (error) {
         toast.error(`Failed to create account: ${parseAxiosError(error)}`);
-        log.error(error, { detail: 'Failed to complete sign up' });
       } finally {
         setLoading(false);
       }
@@ -89,8 +84,8 @@ export function SignUpScreen() {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        <div className="form-label">Email</div>
-        <CustomInput
+        <TextField
+          label="Email"
           placeholder="Enter your email"
           value={email}
           type="email"
@@ -108,8 +103,8 @@ export function SignUpScreen() {
       </Grid>
 
       <Grid item xs={12}>
-        <div className="form-label">Password</div>
-        <CustomInput
+        <TextField
+          label="Password"
           placeholder="Enter your password"
           value={password}
           type="password"
@@ -131,8 +126,8 @@ export function SignUpScreen() {
           : null}
       </Grid>
       <Grid item xs={12}>
-        <div className="form-label">Confirm Password</div>
-        <CustomInput
+        <TextField
+          label="Confirm Password"
           placeholder="Confirm your password"
           type="password"
           value={confirmPassword}
@@ -149,8 +144,8 @@ export function SignUpScreen() {
         ) : null}
       </Grid>
       <Grid item xs={12}>
-        <CustomButton
-          type="primary"
+        <LoadingButton
+          variant="contained"
           onClick={handleSignUp}
           disabled={disabled}
           loading={loading}
@@ -159,7 +154,7 @@ export function SignUpScreen() {
           }}
         >
           Create Account
-        </CustomButton>
+        </LoadingButton>
       </Grid>
       <Grid item xs={12}>
         <Link to="/sign-in">
