@@ -1,0 +1,35 @@
+{
+  "devDependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.568.0",
+    "@sequelize/core": "^7.0.0-alpha.41",
+    "@sequelize/mssql": "^7.0.0-alpha.41",
+    "@unconventional-code/eslint-config": "^0.0.11",
+    "@unconventional-code/observability-sdk": "^0.0.25",
+    "@unconventional-code/prettier-config": "^0.0.3",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "sequelize": "^6.37.4",
+    "sequelize-cli": "^6.6.2",
+    "uuid": "^9.0.1"
+  },
+  "engines": {
+    "node": ">=20.*"
+  },
+  "eslintConfig": {
+    "extends": "@unconventional-code/eslint-config"
+  },
+  "name": "@unconventional-jackson/avoca-database-service",
+  "prettier": "@unconventional-code/prettier-config",
+  "scripts": {
+    "lint:check:eslint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint:check:prettier": "prettier --check ./**/*.{ts,js,tsx,jsx,graphql,yaml,yml} --no-error-on-unmatched-pattern",
+    "lint:check:tsc": "tsc --noEmit",
+    "lint:fix:prettier": "prettier --write . --no-error-on-unmatched-pattern",
+    "migration:up:local": "ENV=local sequelize-cli db:migrate --migrations-path migrations --config config.js --env local",
+    "migration:down:local": "ENV=local sequelize-cli db:migrate:undo --migrations-path migrations --config config.js --env local",
+    "migration:up:dev": "ENV=dev sequelize-cli db:migrate --migrations-path migrations --config config.js --env dev",
+    "migration:down:dev": "ENV=dev sequelize-cli db:migrate:undo --migrations-path migrations --config config.js --env dev",
+    "migration:up:prod": "ENV=prod sequelize-cli db:migrate --migrations-path migrations --config config.js --env prod",
+    "migration:down:prod": "ENV=prod sequelize-cli db:migrate:undo --migrations-path migrations --config config.js --env prod"
+  },
+  "version": "1.0.0"
+}
