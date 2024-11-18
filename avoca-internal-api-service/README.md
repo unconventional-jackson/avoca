@@ -1,1 +1,1 @@
-# MGC Self Exclusion API
+# Avoca Internal API
