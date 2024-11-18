@@ -1,0 +1,50 @@
+{
+  "name": "@unconventional-jackson/avoca-calls-service",
+  "version": "1.0.0",
+  "description": "Avoca Calls Service - generates stochastic phone call transcripts in real-time for simulating the Customer Support experience",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "tsc",
+    "lint:check:eslint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint:check:prettier": "prettier --check . --no-error-on-unmatched-pattern",
+    "lint:check:tsc": "tsc --noEmit",
+    "lint:fix:eslint": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
+    "lint:fix:prettier": "prettier --write . --no-error-on-unmatched-pattern",
+    "start:local": "ENV=local CLIENT=avoca SERVICE=avoca-api-service ts-node-dev src/index.ts",
+    "start:dev": "ENV=dev CLIENT=avoca SERVICE=avoca-api-service node .",
+    "start:prod": "ENV=prod CLIENT=avoca SERVICE=avoca-api-service node .",
+    "test:unit": "jest --detectOpenHandles --verbose",
+    "test:unit:coverage": "jest --detectOpenHandles --verbose --coverage",
+    "test:unit:watch": "jest --detectOpenHandles --verbose --watch"
+  },
+  "author": "Unconventional Code",
+  "dependencies": {
+    "@faker-js/faker": "^9.2.0",
+    "@unconventional-code/observability-sdk": "^0.0.32",
+    "@unconventional-jackson/avoca-internal-api": "^0.0.3",
+    "axios": "^1.6.2",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.1",
+    "@types/ws": "^8.5.13",
+    "@typescript-eslint/eslint-plugin": "^6.20.0",
+    "@typescript-eslint/parser": "^6.20.0",
+    "@unconventional-code/eslint-config": "^0.0.10",
+    "@unconventional-code/prettier-config": "^0.0.3",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "prettier": "^3.2.4",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "type-fest": "^4.10.2",
+    "typescript": "^5.3.3"
+  },
+  "eslintConfig": {
+    "extends": "@unconventional-code/eslint-config",
+    "ignorePatterns": [
+      "generated",
+      "dist"
+    ]
+  },
+  "prettier": "@unconventional-code/prettier-config"
+}

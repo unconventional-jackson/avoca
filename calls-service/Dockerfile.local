@@ -1,0 +1,14 @@
+FROM --platform=linux/amd64 node:22-alpine as builder
+
+WORKDIR /app
+COPY package.json .
+COPY package-lock.json .
+RUN npm install
+
+COPY . .
+
+RUN npm run build
+
+EXPOSE 4000
+
+CMD ["npm", "run", "start:local"]
