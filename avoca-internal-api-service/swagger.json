@@ -1,0 +1,719 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Avoca Internal API",
+    "description": "Internal API for interacting with our Avoca customer support systems.",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+
+  "paths": {
+    "/auth/signup": {
+      "post": {
+        "summary": "Sign up a new user",
+        "description": "Creates a new user account and sends an email verification code.",
+        "operationId": "signUp",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthSignUpRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created. Verify your email.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "User created. Verify your email."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "Bad request - missing or invalid data"
+          },
+          "500": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/auth/signin": {
+      "post": {
+        "summary": "Sign in a user",
+        "description": "Authenticates a user and provides access and refresh tokens if successful.",
+        "operationId": "signIn",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthSignInRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sign-in successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Sign-in successful"
+                    },
+                    "user": { "$ref": "#/components/schemas/AuthUser" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "Bad request - missing or invalid data"
+          },
+          "401": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "Unauthorized - invalid credentials or unverified email"
+          },
+          "404": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "User not found"
+          },
+          "500": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/auth/verify-email": {
+      "post": {
+        "summary": "Verify user email",
+        "description": "Verifies a user's email address with a TOTP verification code, updating the email verification status.",
+        "operationId": "verifyEmail",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthVerifyEmailRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email verified successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Email verified successfully."
+                    },
+                    "user": { "$ref": "#/components/schemas/AuthUser" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "Bad request - missing or invalid data"
+          },
+          "404": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "User not found"
+          },
+          "500": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/auth/forgot-password": {
+      "post": {
+        "summary": "Request password reset token",
+        "description": "Sends a password reset token to the user's email if the email is registered.",
+        "operationId": "forgotPassword",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthForgotPasswordRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset token sent",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Password reset token sent"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "Bad request - missing email"
+          },
+          "404": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "User not found"
+          },
+          "500": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/auth/reset-password": {
+      "post": {
+        "summary": "Reset user password",
+        "description": "Resets a user's password using a provided token and new password.",
+        "operationId": "resetPassword",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthResetPasswordBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Password updated"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "Bad request - missing or invalid fields"
+          },
+          "404": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "User not found"
+          },
+          "500": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/auth/change-password": {
+      "post": {
+        "summary": "Change user password",
+        "description": "Changes a user's password by verifying the current password.",
+        "operationId": "changePassword",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthChangePasswordRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Password updated"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "Bad request - missing or invalid fields"
+          },
+          "500": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/auth/totp/setup": {
+      "post": {
+        "summary": "Setup TOTP for user",
+        "description": "Generates a TOTP secret and returns the otpauth URL for configuring TOTP on a user account.",
+        "operationId": "totpSetup",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthTOTPSetupRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "TOTP setup URL generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "otpauth_url": {
+                      "type": "string",
+                      "description": "URL for configuring TOTP in a compatible app"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "User not found"
+          },
+          "500": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/auth/totp/verify": {
+      "post": {
+        "summary": "Verify TOTP for user",
+        "description": "Verifies a TOTP token for a user. If the token is valid, enables TOTP for the user and issues new access and refresh tokens.",
+        "operationId": "totpVerify",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthTOTPVerifyRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "TOTP verified successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "TOTP verified successfully"
+                    },
+                    "user": { "$ref": "#/components/schemas/AuthUser" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "Invalid TOTP token or missing data"
+          },
+          "404": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "User not found or TOTP not set up"
+          },
+          "500": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/auth/resend-verification": {
+      "post": {
+        "summary": "Resend email verification code",
+        "description": "Resends a TOTP email verification code to the specified user email, if the user exists and has not verified their email.",
+        "operationId": "resendVerification",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthResendVerificationRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Verification email resent successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Verification email resent. Verify your email."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "Bad request - email is missing or email is already verified"
+          },
+          "404": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "User not found"
+          },
+          "500": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/auth/refresh-token": {
+      "post": {
+        "summary": "Verify a user authentication request",
+        "description": "Verifies a TOTP token for a standard user. If the token is valid, enables TOTP for the user and issues new access and refresh tokens.",
+        "operationId": "refreshToken",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthRefreshTokenRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Access token refreshed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "accessToken": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "Invalid refresh token or missing data"
+          },
+          "401": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "User not authorized or refresh token expired"
+          },
+          "500": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "Internal server error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "responses": {
+      "ErrorResponse": {
+        "description": "Error response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Detailed error message"
+                }
+              },
+              "required": ["error"],
+              "additionalProperties": false,
+              "example": {
+                "error": "Detailed error message",
+                "message": "Error message"
+              }
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "AuthRefreshTokenRequestBody": {
+        "type": "object",
+        "description": "Request body for refreshing a token, to be used by all users",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "description": "The refresh token"
+          }
+        },
+        "required": ["refreshToken", "userType"]
+      },
+      "AuthSignUpRequestBody": {
+        "type": "object",
+        "description": "Request body for signing up a user, only to be used by admin users or operator users",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "The user's email address"
+          },
+          "password": {
+            "type": "string",
+            "description": "The user's password"
+          }
+        },
+        "required": ["email", "password", "userType"]
+      },
+      "AuthSignInRequestBody": {
+        "type": "object",
+        "description": "Request body for signing in a user, only to be used by admin users or operator users",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "The user's email address"
+          },
+          "password": {
+            "type": "string",
+            "description": "The user's password"
+          }
+        },
+        "required": ["email", "password", "userType"]
+      },
+      "AuthUser": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "The unique ID of the user"
+          },
+          "userName": {
+            "type": "string",
+            "nullable": true,
+            "description": "The user's name"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "The user's email address"
+          },
+          "lastActiveAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "The last time the user was active"
+          },
+          "accessToken": {
+            "type": "string",
+            "description": "JWT access token for user authentication"
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "JWT refresh token for user session renewal"
+          },
+          "authEmailVerified": {
+            "type": "boolean",
+            "description": "Indicates if the email is verified"
+          },
+          "authTotpVerifiedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Timestamp of the last TOTP verification"
+          },
+          "authTotpEnabled": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "Indicates if TOTP is enabled for the user"
+          }
+        }
+      },
+      "AuthVerifyEmailRequestBody": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "The admin or operator user's email address"
+          },
+          "token": {
+            "type": "string",
+            "description": "TOTP verification code sent to the user's email"
+          }
+        },
+        "required": ["email", "token", "userType"]
+      },
+      "AuthResendVerificationRequestBody": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "The email address of the user requesting the verification code."
+          }
+        },
+        "required": ["email", "userType"]
+      },
+      "AuthForgotPasswordRequestBody": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "The email address of the user requesting the password reset token."
+          }
+        },
+        "required": ["email", "userType"]
+      },
+      "AuthResetPasswordBody": {
+        "type": "object",
+        "properties": {
+          "newPassword": {
+            "type": "string",
+            "description": "The user's new password"
+          },
+          "token": {
+            "type": "string",
+            "description": "The reset password token sent to the user's email"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "The email address of the user (optional if userId is provided in the session)"
+          }
+        },
+        "required": ["newPassword", "token", "userType"]
+      },
+      "AuthChangePasswordRequestBody": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "The email address of the user"
+          },
+          "currentPassword": {
+            "type": "string",
+            "description": "The user's current password"
+          },
+          "newPassword": {
+            "type": "string",
+            "description": "The user's new password"
+          }
+        },
+        "required": ["email", "currentPassword", "newPassword", "userType"]
+      },
+      "AuthTOTPSetupRequestBody": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of the user for whom TOTP is being set up"
+          }
+        },
+        "required": ["email", "userType"]
+      },
+      "AuthTOTPVerifyRequestBody": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of the user verifying TOTP"
+          },
+          "token": {
+            "type": "string",
+            "description": "The TOTP token to verify"
+          }
+        },
+        "required": ["email", "token", "userType"]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "A brief error message"
+          },
+          "message": {
+            "type": "string",
+            "description": "A detailed error message"
+          }
+        },
+        "required": ["error"],
+        "additionalProperties": false
+      }
+    }
+  }
+}

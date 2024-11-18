@@ -1,0 +1,1 @@
+# MGC Self Exclusion API
