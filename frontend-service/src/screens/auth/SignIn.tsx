@@ -1,4 +1,4 @@
-import '../Auth.css';
+import './Auth.css';
 
 import { useCallback, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -52,16 +52,18 @@ export function SignInScreen() {
           type="email"
           onChange={handleChangeEmail}
           tabIndex={2}
+          fullWidth
         />
       </Grid>
       <Grid item xs={12}>
-        <div className="form-label">Password</div>
         <TextField
+          label="Password"
           placeholder="Enter your password"
           value={password}
           type="password"
           onChange={handleChangePassword}
           tabIndex={3}
+          fullWidth
         />
         <Link to="/forgot-password">
           <div className="Auth-link-left" tabIndex={5}>

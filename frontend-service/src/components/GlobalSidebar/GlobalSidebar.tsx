@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileAlt, faInbox, faSignOut, faUser } from '@fortawesome/free-solid-svg-icons';
 import { useCallback, useMemo } from 'react';
 import { Tooltip } from '@mui/material';
-import AvocaLogoUrl from '../../assets/avoca_logo.jpg';
+import AvocaLogoUrl from '../../assets/avoca_logo.svg';
 import { useQueryClient } from '@tanstack/react-query';
 
 export function GlobalSidebar() {

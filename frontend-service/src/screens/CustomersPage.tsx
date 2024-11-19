@@ -7,13 +7,12 @@ import {
   GridRowParams,
   GridFilterModel,
   GridActionsCellItem,
-  GridDeleteIcon,
   GridMenuIcon,
   GridActionsCellItemProps,
 } from '@mui/x-data-grid';
 import { toast } from 'react-toastify';
 import { useQuery } from '@tanstack/react-query';
-import { useSdk } from '../api/sdk';
+import { useCustomersSdk } from '../api/sdk';
 import { useNavigate } from 'react-router-dom';
 import { PageLayout } from '../components/PageLayout/PageLayout';
 import { MainContent } from '../components/MainContent/MainContent';
@@ -21,35 +20,39 @@ import { NavbarContainer } from '../components/NavbarContainer/NavbarContainer';
 import { parseAxiosError } from '../utils/errors';
 import { CreateCustomerModal } from './CreateCustomerModal';
 import { Button, Grid, TextField } from '@mui/material';
-import { DeleteCustomerModal } from './DeleteCustomerModal';
+import { LocationOn } from '@mui/icons-material';
 
-type DeleteCustomerActionProps = GridActionsCellItemProps & {
+type ViewCustomerAdressesActionProps = GridActionsCellItemProps & {
   customerId: string;
   refetch: () => Promise<unknown>;
 };
-function DeleteCustomerAction({ customerId, refetch, ...props }: DeleteCustomerActionProps) {
-  const [isDeleteCustomerModalOpen, setIsDeleteCustomerModalOpen] = useState(false);
-  const handleOpenDeleteCustomerModal = useCallback(() => {
-    setIsDeleteCustomerModalOpen(true);
+function ViewCustomerAdressesAction({
+  customerId,
+  refetch,
+  ...props
+}: ViewCustomerAdressesActionProps) {
+  const [isViewCustomerAdressesModalOpen, setIsViewCustomerAdressesModalOpen] = useState(false);
+  const handleOpenViewCustomerAdressesModal = useCallback(() => {
+    setIsViewCustomerAdressesModalOpen(true);
   }, [customerId]);
-  const handleCloseDeleteCustomerModal = useCallback(() => {
-    setIsDeleteCustomerModalOpen(false);
+  const handleCloseViewCustomerAdressesModal = useCallback(() => {
+    setIsViewCustomerAdressesModalOpen(false);
   }, []);
 
   return (
     <Fragment>
       <GridActionsCellItem
         {...props}
-        icon={<GridDeleteIcon />}
-        onClick={handleOpenDeleteCustomerModal}
+        icon={<LocationOn />}
+        onClick={handleOpenViewCustomerAdressesModal}
         label="Delete"
       />
-      <DeleteCustomerModal
+      {/* <DeleteCustomerModal
         open={isDeleteCustomerModalOpen}
         onClose={handleCloseDeleteCustomerModal}
         customerId={customerId}
         refetch={refetch}
-      />
+      /> */}
     </Fragment>
   );
 }
@@ -75,7 +78,7 @@ function ViewCustomerJobsAction({ customerId, ...props }: ViewCustomerJobsAction
 }
 
 export function CustomersPage() {
-  const apiSdk = useSdk();
+  const customersSdk = useCustomersSdk();
   const navigate = useNavigate();
 
   /**
@@ -83,23 +86,23 @@ export function CustomersPage() {
    */
   const columns: GridColDef[] = useMemo(
     () => [
-      { field: 'firstName', headerName: 'First Name' },
-      { field: 'lastName', headerName: 'Last Name' },
+      { field: 'first_name', headerName: 'First Name' },
+      { field: 'last_lame', headerName: 'Last Name' },
       { field: 'email', headerName: 'Email' },
       { field: 'company', headerName: 'Company' },
-      { field: 'mobileNumber', headerName: 'Mobile Number' },
-      { field: 'homeNumber', headerName: 'Home Number' },
-      { field: 'workNumber', headerName: 'Work Number' },
-      { field: 'notificationsEnabled', headerName: 'Notifications?' },
+      { field: 'mobile_number', headerName: 'Mobile Number' },
+      { field: 'home_number', headerName: 'Home Number' },
+      { field: 'work_number', headerName: 'Work Number' },
+      { field: 'notifications_enabled', headerName: 'Notifications?' },
       { field: 'tags', headerName: 'Tags' },
-      { field: 'leadSource', headerName: 'Lead Source' },
+      { field: 'lead_source', headerName: 'Lead Source' },
       {
         field: 'actions',
         type: 'actions',
         getActions: (params: GridRowParams) => [
-          <DeleteCustomerAction
+          <ViewCustomerAdressesAction
             customerId={params.row.customerId}
-            label="Delete"
+            label="Addresses"
             refetch={refetch}
             showInMenu
           />,
@@ -148,10 +151,11 @@ export function CustomersPage() {
     ],
     queryFn: async () => {
       try {
-        const response = await apiSdk.getCustomers(
-          paginationModel.pageSize,
-          paginationModel.page * paginationModel.pageSize,
-          filterModel
+        const q = '';
+        const response = await customersSdk.getV1Customers(
+          q,
+          paginationModel.page,
+          paginationModel.pageSize
         );
 
         return response.data;
@@ -165,8 +169,8 @@ export function CustomersPage() {
   /**
    * MUI
    */
-  const rows = useMemo<GridRowsProp>(() => data?.results ?? [], [data]);
-  const rowCount = useMemo<number>(() => data?.total ?? 0, [data]);
+  const rows = useMemo<GridRowsProp>(() => data?.customers ?? [], [data]);
+  const rowCount = useMemo<number>(() => data?.total_items ?? 0, [data]);
 
   /**
    * MUI

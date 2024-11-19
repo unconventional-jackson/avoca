@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback, Fragment } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import {
   DataGrid,
   GridPaginationModel,
@@ -7,13 +7,12 @@ import {
   GridRowParams,
   GridFilterModel,
   GridActionsCellItem,
-  GridDeleteIcon,
   GridMenuIcon,
   GridActionsCellItemProps,
 } from '@mui/x-data-grid';
 import { toast } from 'react-toastify';
 import { useQuery } from '@tanstack/react-query';
-import { useSdk } from '../api/sdk';
+import { useCustomersSdk } from '../api/sdk';
 import { useNavigate } from 'react-router-dom';
 import { PageLayout } from '../components/PageLayout/PageLayout';
 import { MainContent } from '../components/MainContent/MainContent';
@@ -21,38 +20,6 @@ import { NavbarContainer } from '../components/NavbarContainer/NavbarContainer';
 import { parseAxiosError } from '../utils/errors';
 import { CreateCustomerModal } from './CreateCustomerModal';
 import { Button, Grid, TextField } from '@mui/material';
-import { DeleteCustomerModal } from './DeleteCustomerModal';
-
-type DeleteCustomerActionProps = GridActionsCellItemProps & {
-  customerId: string;
-  refetch: () => Promise<unknown>;
-};
-function DeleteCustomerAction({ customerId, refetch, ...props }: DeleteCustomerActionProps) {
-  const [isDeleteCustomerModalOpen, setIsDeleteCustomerModalOpen] = useState(false);
-  const handleOpenDeleteCustomerModal = useCallback(() => {
-    setIsDeleteCustomerModalOpen(true);
-  }, [customerId]);
-  const handleCloseDeleteCustomerModal = useCallback(() => {
-    setIsDeleteCustomerModalOpen(false);
-  }, []);
-
-  return (
-    <Fragment>
-      <GridActionsCellItem
-        {...props}
-        icon={<GridDeleteIcon />}
-        onClick={handleOpenDeleteCustomerModal}
-        label="Delete"
-      />
-      <DeleteCustomerModal
-        open={isDeleteCustomerModalOpen}
-        onClose={handleCloseDeleteCustomerModal}
-        customerId={customerId}
-        refetch={refetch}
-      />
-    </Fragment>
-  );
-}
 
 type ViewCustomerJobsActionProps = GridActionsCellItemProps & {
   customerId: string;
@@ -75,7 +42,7 @@ function ViewCustomerJobsAction({ customerId, ...props }: ViewCustomerJobsAction
 }
 
 export function CallsPage() {
-  const apiSdk = useSdk();
+  const apiSdk = useCustomersSdk();
   const navigate = useNavigate();
 
   /**
@@ -97,12 +64,6 @@ export function CallsPage() {
         field: 'actions',
         type: 'actions',
         getActions: (params: GridRowParams) => [
-          <DeleteCustomerAction
-            customerId={params.row.customerId}
-            label="Delete"
-            refetch={refetch}
-            showInMenu
-          />,
           <ViewCustomerJobsAction
             customerId={params.row.customerId}
             label="View Jobs"
@@ -148,7 +109,7 @@ export function CallsPage() {
     ],
     queryFn: async () => {
       try {
-        const response = await apiSdk.getCustomers(
+        const response = await apiSdk.getV1Customers(
           paginationModel.pageSize,
           paginationModel.page * paginationModel.pageSize,
           filterModel

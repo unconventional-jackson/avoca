@@ -1,9 +1,8 @@
-import '../Auth.css';
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../contexts/AuthContext';
-import { Grid, TextField } from '@mui/material';
+import { Grid, TextField, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
 export function TotpVerifyScreen() {
@@ -38,7 +37,7 @@ export function TotpVerifyScreen() {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        <div className="form-label">Enter the code from your authenticator app</div>
+        <Typography variant="body2">Enter the code from your authenticator app</Typography>
         <TextField
           label="TOTP Code"
           placeholder="Enter the TOTP code"

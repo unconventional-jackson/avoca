@@ -1,4 +1,4 @@
-import '../Auth.css';
+import './Auth.css';
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 

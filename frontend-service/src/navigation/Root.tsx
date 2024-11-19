@@ -1,12 +1,11 @@
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../contexts/useAuth';
+import { useAuth } from '../contexts/AuthContext';
 
 export function Root() {
   const { authUser } = useAuth();
-  console.log({ authUser });
-  if (authUser?.userId) {
+  if (authUser?.employee_id) {
     return <Navigate to="/app" />;
   }
 
-  return <Navigate to="/authenticate" />;
+  return <Navigate to="/sign-in" />;
 }

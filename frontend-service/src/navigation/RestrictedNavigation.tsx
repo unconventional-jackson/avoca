@@ -7,15 +7,15 @@ export function RestrictedNavigation() {
   const { authUser, initialized } = useAuth();
 
   if (!!authUser) {
-    if (!authUser?.authEmailVerified) {
+    if (!authUser?.auth_email_verified) {
       return <Navigate to="/verify-email" />;
     }
 
-    if (!authUser?.authTotpEnabled) {
+    if (!authUser?.auth_totp_enabled) {
       return <Navigate to="/totp-setup" />;
     }
 
-    if (!authUser?.authTotpVerifiedAt) {
+    if (!authUser?.auth_totp_verified_at) {
       return <Navigate to="/totp-verify" />;
     }
 
@@ -34,5 +34,5 @@ export function RestrictedNavigation() {
     return null;
   }
 
-  return <Navigate to="/authenticate" />;
+  return <Navigate to="/sign-in" />;
 }

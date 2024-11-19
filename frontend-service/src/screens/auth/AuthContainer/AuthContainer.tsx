@@ -2,7 +2,7 @@ import './AuthContainer.css';
 
 import { PropsWithChildren } from 'react';
 import { Grid } from '@mui/material';
-import AvocaLogoUrl from '../../../assets/avoca_logo.jpg';
+import AvocaLogoUrl from '../../../assets/avoca_logo.svg';
 
 export function AuthContainer({ children }: PropsWithChildren) {
   return (

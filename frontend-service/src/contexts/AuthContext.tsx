@@ -8,7 +8,7 @@ import {
 } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
-import { useSdk } from '../api/sdk';
+import { useAuthSdk } from '../api/sdk';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { AuthUser } from '@unconventional-jackson/avoca-internal-api';
 
@@ -46,7 +46,7 @@ export const AuthContext = createContext<AuthContextProps>({
 });
 
 export function AuthProvider({ children }: PropsWithChildren<unknown>) {
-  const apiSdk = useSdk();
+  const apiSdk = useAuthSdk();
   const queryClient = useQueryClient();
   // Set an initializing state whilst Cognito / Amplify connects
   const [authUser, setAuthUser] = useLocalStorage<AuthUser | null>('user', null);
@@ -71,14 +71,14 @@ export function AuthProvider({ children }: PropsWithChildren<unknown>) {
       email,
       password,
     });
-    if (response.data.user) {
-      setAuthUser(response.data.user);
+    if (response.data.employee) {
+      setAuthUser(response.data.employee);
     }
   }, []);
 
   const completeNewPassword = useCallback(async (newPassword: string, token: string) => {
     await apiSdk.resetPassword({
-      newPassword,
+      new_password: newPassword,
       token,
     });
   }, []);
@@ -92,8 +92,8 @@ export function AuthProvider({ children }: PropsWithChildren<unknown>) {
       email,
       token: code,
     });
-    if (response.data.user) {
-      setAuthUser(response.data.user);
+    if (response.data.employee) {
+      setAuthUser(response.data.employee);
     }
   }, []);
 
@@ -106,8 +106,8 @@ export function AuthProvider({ children }: PropsWithChildren<unknown>) {
 
   const totpVerify = useCallback(async (email: string, totpCode: string) => {
     const response = await apiSdk.totpVerify({ email, token: totpCode });
-    if (response.data.user) {
-      setAuthUser(response.data.user);
+    if (response.data.employee) {
+      setAuthUser(response.data.employee);
     }
   }, []);
 
@@ -129,7 +129,7 @@ export function AuthProvider({ children }: PropsWithChildren<unknown>) {
     async (email: string, code: string, password: string) => {
       // Make a POST request to the reset password API
       await apiSdk.resetPassword({
-        newPassword: password,
+        new_password: password,
         token: code, // using code as the token
       });
     },
@@ -145,8 +145,8 @@ export function AuthProvider({ children }: PropsWithChildren<unknown>) {
     }
     await apiSdk.changePassword({
       email: authUser?.email,
-      currentPassword: oldPassword,
-      newPassword,
+      current_password: oldPassword,
+      new_password: newPassword,
     });
   }, []);
 

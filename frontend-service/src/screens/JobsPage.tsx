@@ -9,7 +9,7 @@ import {
 } from '@mui/x-data-grid';
 import { toast } from 'react-toastify';
 import { useQuery } from '@tanstack/react-query';
-import { useSdk } from '../api/sdk';
+import { useJobsSdk } from '../api/sdk';
 import { useNavigate } from 'react-router-dom';
 import { PageLayout } from '../components/PageLayout/PageLayout';
 import { MainContent } from '../components/MainContent/MainContent';
@@ -19,7 +19,7 @@ import { CreateCustomerModal } from './CreateCustomerModal';
 import { Button } from '@mui/material';
 
 export function JobsPage() {
-  const apiSdk = useSdk();
+  const jobsSdk = useJobsSdk();
   const navigate = useNavigate();
 
   /**
@@ -97,10 +97,34 @@ export function JobsPage() {
     ],
     queryFn: async () => {
       try {
-        const response = await apiSdk.getCustomers(
-          paginationModel.pageSize,
-          paginationModel.page * paginationModel.pageSize,
-          filterModel
+        const scheduledStartMin = undefined;
+        const scheduledStartMax = undefined;
+        const scheduledEndMin = undefined;
+        const scheduledEndMax = undefined;
+        const employeeIds = undefined;
+        const customerId = undefined;
+        const page = String(paginationModel.page);
+        const franchiseeIds = undefined;
+        const workStatus = undefined;
+        const pageSize = paginationModel.pageSize;
+        const sortDirection = undefined;
+        const locationIds = undefined;
+        const expand = undefined;
+
+        const response = await jobsSdk.getJobs(
+          scheduledStartMin,
+          scheduledStartMax,
+          scheduledEndMin,
+          scheduledEndMax,
+          employeeIds,
+          customerId,
+          page,
+          franchiseeIds,
+          workStatus,
+          pageSize,
+          sortDirection,
+          locationIds,
+          expand
         );
 
         return response.data;
@@ -114,8 +138,8 @@ export function JobsPage() {
   /**
    * MUI
    */
-  const rows = useMemo<GridRowsProp>(() => data?.results ?? [], [data]);
-  const rowCount = useMemo<number>(() => data?.total ?? 0, [data]);
+  const rows = useMemo<GridRowsProp>(() => data?.jobs ?? [], [data]);
+  const rowCount = useMemo<number>(() => data?.total_items ?? 0, [data]);
 
   /**
    * MUI

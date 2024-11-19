@@ -5,7 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { parseAxiosError } from '../utils/errors';
 import { Dialog, DialogActions, DialogContent, Grid, TextField } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { useSdk } from '../api/sdk';
+import { useCustomersSdk } from '../api/sdk';
 
 interface CreateCustomerModalProps {
   open: boolean;
@@ -16,7 +16,7 @@ interface CreateCustomerModalProps {
 export function CreateCustomerModal({ open, onClose, refetch }: CreateCustomerModalProps) {
   const { clientId } = useParams();
   const queryClient = useQueryClient();
-  const apiSdk = useSdk();
+  const customersSdk = useCustomersSdk();
 
   /**
    * Manage the teamName
@@ -150,30 +150,28 @@ export function CreateCustomerModal({ open, onClose, refetch }: CreateCustomerMo
     if (isDataValid) {
       try {
         setLoading(true);
-        await apiSdk.CreateCustomer({
-          input: {
-            first_name: firstName,
-            last_name: lastName,
-            email: email,
-            company: company,
-            notifications_enabled: notificationsEnabled,
-            mobile_number: mobileNumber,
-            home_number: homeNumber,
-            work_number: workNumber,
-            tags: tags,
-            lead_source: leadSource,
-            addresses: [
-              {
-                id: '',
-                street: '',
-                street_line_2: '',
-                city: '',
-                state: '',
-                zip: '',
-                country: '',
-              },
-            ],
-          },
+        await customersSdk.postCustomers({
+          first_name: firstName,
+          last_name: lastName,
+          email: email,
+          company: company,
+          notifications_enabled: notificationsEnabled,
+          mobile_number: mobileNumber,
+          home_number: homeNumber,
+          work_number: workNumber,
+          tags: tags ? [tags] : [],
+          lead_source: leadSource,
+          // addresses: [
+          //   {
+          //     id: '',
+          //     street: '',
+          //     street_line_2: '',
+          //     city: '',
+          //     state: '',
+          //     zip: '',
+          //     country: '',
+          //   },
+          // ],
         });
         await refetch();
         handleClose();
@@ -183,7 +181,7 @@ export function CreateCustomerModal({ open, onClose, refetch }: CreateCustomerMo
         setLoading(false);
       }
     }
-  }, [apiSdk, clientId, isDataValid, refetch, queryClient, handleClose]);
+  }, [customersSdk, clientId, isDataValid, refetch, queryClient, handleClose]);
 
   return (
     <Dialog open={open} onClose={handleClose}>
