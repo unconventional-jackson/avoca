@@ -97,7 +97,7 @@ export function useJobsSdk() {
   }, []);
 }
 
-export function useAuthSdk() {
+export function useInternalSdk() {
   return useMemo(() => {
     const api = new DefaultApi(internalConfiguration);
     return makeApi(api);

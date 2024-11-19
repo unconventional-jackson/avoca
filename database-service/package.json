@@ -2,11 +2,12 @@
   "devDependencies": {
     "@aws-sdk/client-secrets-manager": "^3.568.0",
     "@sequelize/core": "^7.0.0-alpha.41",
-    "@sequelize/mssql": "^7.0.0-alpha.41",
+    "@sequelize/postgres": "^7.0.0-alpha.41",
     "@unconventional-code/eslint-config": "^0.0.11",
     "@unconventional-code/observability-sdk": "^0.0.25",
     "@unconventional-code/prettier-config": "^0.0.3",
     "eslint-import-resolver-typescript": "^3.6.1",
+    "pg": "^8.13.1",
     "sequelize": "^6.37.4",
     "sequelize-cli": "^6.6.2",
     "uuid": "^9.0.1"

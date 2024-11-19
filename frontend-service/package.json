@@ -37,7 +37,7 @@
     "@tanstack/react-query-persist-client": "^5.28.6",
     "@tanstack/react-table": "^8.15.0",
     "@unconventional-jackson/avoca-external-api": "^0.0.1",
-    "@unconventional-jackson/avoca-internal-api": "^0.0.4",
+    "@unconventional-jackson/avoca-internal-api": "^0.0.11",
     "axios": "^1.7.2",
     "lodash.debounce": "^4.0.8",
     "luxon": "^3.5.0",

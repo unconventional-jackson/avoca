@@ -21,7 +21,7 @@
   "dependencies": {
     "@faker-js/faker": "^9.2.0",
     "@unconventional-code/observability-sdk": "^0.0.32",
-    "@unconventional-jackson/avoca-internal-api": "^0.0.3",
+    "@unconventional-jackson/avoca-internal-api": "^0.0.10",
     "axios": "^1.6.2",
     "ws": "^8.18.0"
   },

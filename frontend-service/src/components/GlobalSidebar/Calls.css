@@ -1,0 +1,74 @@
+.app {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+.call-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.call-item {
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.call-item.inactive {
+  background-color: #f0f0f0;
+  color: #888;
+}
+
+.call-item.active {
+  background-color: #ffe0e0;
+  border-color: #ff0000;
+  color: #000;
+}
+
+.call-header {
+  flex: 1;
+}
+
+.phone-number {
+  font-weight: bold;
+}
+
+.start-time {
+  font-size: 0.9em;
+  color: #666;
+}
+
+.call-status {
+  display: flex;
+  align-items: center;
+}
+
+.timer {
+  font-size: 1.2em;
+  margin-right: 10px;
+}
+
+.recording-icon {
+  width: 10px;
+  height: 10px;
+  background-color: red;
+  border-radius: 50%;
+  animation: breathing 1.5s infinite;
+}
+
+@keyframes breathing {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.6;
+  }
+}

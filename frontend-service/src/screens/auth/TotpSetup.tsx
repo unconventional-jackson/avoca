@@ -63,16 +63,27 @@ export function TotpSetupScreen() {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        <h2>Set up Two-Factor Authentication (2FA)</h2>
-        {otpauthUrl ? (
-          <>
-            <p>Scan the QR code below with your Google Authenticator app:</p>
-            <QRCode data={otpauthUrl} altText="TOTP QR Code" />
-          </>
-        ) : (
-          <p>Loading QR code...</p>
-        )}
+        <Typography variant="h6">Set up Two-Factor Authentication (2FA)</Typography>
       </Grid>
+      {otpauthUrl ? (
+        <Grid
+          item
+          xs={12}
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '16px',
+          }}
+        >
+          <Typography variant="body2">
+            Scan the QR code below with your Google Authenticator app:
+          </Typography>
+          <QRCode data={otpauthUrl} altText="TOTP QR Code" />
+        </Grid>
+      ) : (
+        <p>Loading QR code...</p>
+      )}
 
       <Grid item xs={12}>
         <Typography variant="body2">Enter the code from your authenticator app</Typography>
@@ -81,6 +92,7 @@ export function TotpSetupScreen() {
           placeholder="Enter the TOTP code"
           value={totpCode}
           onChange={(e) => setTotpCode(e.target.value)}
+          fullWidth
         />
       </Grid>
 

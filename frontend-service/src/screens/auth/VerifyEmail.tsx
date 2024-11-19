@@ -60,22 +60,23 @@ export function VerifyEmailScreen() {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        <div className="form-label">Email</div>
         <TextField
           label="Email"
           placeholder="Enter your email"
           value={email}
           type="email"
           onChange={handleChangeEmail}
+          fullWidth
         />
       </Grid>
 
       <Grid item xs={12}>
-        <div className="form-label">Verification Code</div>
         <TextField
+          label="Verification Code"
           placeholder="Enter the verification code"
           value={code}
           onChange={handleChangeCode}
+          fullWidth
         />
       </Grid>
 

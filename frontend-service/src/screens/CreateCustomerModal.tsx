@@ -63,7 +63,9 @@ export function CreateCustomerModal({ open, onClose, refetch }: CreateCustomerMo
    */
   const [mobileNumber, setMobileNumber] = useState('');
   const handleChangeMobileNumber = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setMobileNumber(e.target.value);
+    setMobileNumber(
+      e.target.value.replace(/\D/g, '').replace(/^(\d{3})(\d{3})(\d{4})$/, '($1) $2-$3')
+    );
   }, []);
 
   /**
@@ -71,7 +73,9 @@ export function CreateCustomerModal({ open, onClose, refetch }: CreateCustomerMo
    */
   const [homeNumber, setHomeNumber] = useState('');
   const handleChangeHomeNumber = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setHomeNumber(e.target.value);
+    setHomeNumber(
+      e.target.value.replace(/\D/g, '').replace(/^(\d{3})(\d{3})(\d{4})$/, '($1) $2-$3')
+    );
   }, []);
 
   /**
@@ -79,7 +83,9 @@ export function CreateCustomerModal({ open, onClose, refetch }: CreateCustomerMo
    */
   const [workNumber, setWorkNumber] = useState('');
   const handleChangeWorkNumber = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setWorkNumber(e.target.value);
+    setWorkNumber(
+      e.target.value.replace(/\D/g, '').replace(/^(\d{3})(\d{3})(\d{4})$/, '($1) $2-$3')
+    );
   }, []);
 
   /**
@@ -151,16 +157,16 @@ export function CreateCustomerModal({ open, onClose, refetch }: CreateCustomerMo
       try {
         setLoading(true);
         await customersSdk.postCustomers({
-          first_name: firstName,
-          last_name: lastName,
-          email: email,
-          company: company,
-          notifications_enabled: notificationsEnabled,
-          mobile_number: mobileNumber,
-          home_number: homeNumber,
-          work_number: workNumber,
+          first_name: firstName || undefined,
+          last_name: lastName || undefined,
+          email: email || undefined,
+          company: company || undefined,
+          notifications_enabled: notificationsEnabled || undefined,
+          mobile_number: mobileNumber.replace(/\D/g, '') || undefined,
+          home_number: homeNumber.replace(/\D/g, '') || undefined,
+          work_number: workNumber.replace(/\D/g, '') || undefined,
           tags: tags ? [tags] : [],
-          lead_source: leadSource,
+          lead_source: leadSource || undefined,
           // addresses: [
           //   {
           //     id: '',
@@ -173,6 +179,7 @@ export function CreateCustomerModal({ open, onClose, refetch }: CreateCustomerMo
           //   },
           // ],
         });
+        toast.success('Customer created successfully');
         await refetch();
         handleClose();
       } catch (error) {

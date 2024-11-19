@@ -20,18 +20,20 @@ services:
     depends_on:
       - avoca-database-service
 
-  avoca-frontend-service:
-    build:
-      context: ./frontend-service
-      dockerfile: Dockerfile.local
-    ports:
-      - "5173:5173"
-    volumes:
-      - ./frontend-service:/app # Mount for hot-reloading
-      - /app/node_modules # Exclude node_modules from mounting
-    environment:
-      NODE_ENV: ${NODE_ENV:-development}
-      ENV: local
+  # avoca-frontend-service:
+  #   build:
+  #     context: ./frontend-service
+  #     dockerfile: Dockerfile.local
+  #   ports:
+  #     - "5173:5173"
+  #   volumes:
+  #     - ./frontend-service/src:/app/src # Mount for hot-reloading
+  #     # - /app/node_modules # Exclude node_modules from mounting
+  #     # - /app/node_modules # Exclude node_modules from mounting
+  #     # - frontend_service_node_modules:/app/node_modules
+  #   environment:
+  #     NODE_ENV: ${NODE_ENV:-development}
+  #     ENV: local
 
   avoca-database-service:
     image: postgres:15 # Use the latest stable version or your preferred version
@@ -59,11 +61,15 @@ services:
       POSTGRES_USER: local_user
       POSTGRES_PASSWORD: "YourStrong!Passw0rd"
       POSTGRES_DB: local_database
-      POSTGRES_PORT: 1433
+      POSTGRES_PORT: 5432
     depends_on:
       avoca-database-service:
         condition: service_healthy
     command:
       ["sh", "-c", "npm run migration:up:local && echo 'Migrations complete'"]
+
 volumes:
-  mssql-data:
+  postgres-data:
+    driver: local
+  # frontend_service_node_modules:
+  # api_service_node_modules:

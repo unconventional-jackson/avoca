@@ -90,6 +90,7 @@ export function SignUpScreen() {
           value={email}
           type="email"
           onChange={handleChangeEmail}
+          fullWidth
         />
         {emailExists ? (
           <div className="Auth-password-requirement-container">
@@ -109,6 +110,7 @@ export function SignUpScreen() {
           value={password}
           type="password"
           onChange={handleChangePassword}
+          fullWidth
         />
         {password
           ? Object.entries(requirements).map(([requirement, regex], index) => {
@@ -132,6 +134,7 @@ export function SignUpScreen() {
           type="password"
           value={confirmPassword}
           onChange={handleChangeConfirmPassword}
+          fullWidth
         />
         {confirmPassword ? (
           <div className="Auth-password-requirement-container">

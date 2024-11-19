@@ -1,37 +1,29 @@
 import './GlobalSidebar.css';
-import { Link, useLocation } from 'react-router-dom';
+import './Calls.css';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileAlt, faInbox, faSignOut, faUser } from '@fortawesome/free-solid-svg-icons';
-import { useCallback, useMemo } from 'react';
-import { Tooltip } from '@mui/material';
+import { faSignOut } from '@fortawesome/free-solid-svg-icons';
+import { useCallback } from 'react';
+import {
+  Box,
+  Divider,
+  ListItemIcon,
+  ListItemText,
+  MenuItem,
+  MenuList,
+  Tooltip,
+} from '@mui/material';
 import AvocaLogoUrl from '../../assets/avoca_logo.svg';
 import { useQueryClient } from '@tanstack/react-query';
+import { Person, Menu } from '@mui/icons-material';
+import { usePhoneCalls } from '../../contexts/PhoneCallsContext';
 
 export function GlobalSidebar() {
   const { signOut } = useAuth();
   const queryClient = useQueryClient();
-
-  const location = useLocation();
-
-  const matchedPath = useMemo(() => {
-    const nonUuidPathComponents = location.pathname
-      .split('/')
-      .filter((c) => !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(c));
-
-    const matchablePathComponents = nonUuidPathComponents.filter((c) =>
-      ['map', 'forms', 'events', 'images', 'users', 'teams', 'roles', 'audit'].includes(c)
-    );
-
-    const finalPathComponent = matchablePathComponents.pop();
-
-    return finalPathComponent;
-  }, [location.pathname]);
-
-  const formsPathSelected = useMemo(() => matchedPath === 'forms', [matchedPath]);
-  const usersPathSelected = useMemo(() => matchedPath === 'users', [matchedPath]);
-  const notificationsPathSelected = useMemo(() => matchedPath === 'notifications', [matchedPath]);
+  const { phoneCalls } = usePhoneCalls();
 
   const handleSignOut = useCallback(async () => {
     try {
@@ -43,68 +35,65 @@ export function GlobalSidebar() {
     }
   }, [queryClient, signOut]);
 
-  /**
-   * Determine the current user's name
-   */
-  const userName = useMemo(() => {
-    return 'Unknown User';
-  }, []);
-
-  const handleSelectUserProfile = () => {
-    return;
-  };
-
   return (
     <div className="sidebar">
       <div className="sidebar-top-section">
-        <div className="sidebar-icon-container">
+        <Box padding={2}>
           <img src={AvocaLogoUrl} className="sidebar-logo" alt="app icon" />
-        </div>
-        <div className="sidebar-top-section">
-          <Link
-            to={`/app/forms`}
-            className={`sidebar-navigation-link ${formsPathSelected ? 'active' : ''}`}
-          >
-            <FontAwesomeIcon icon={faFileAlt} className="sidebar-navigation-link-icon" />
-            <span>Forms</span>
+        </Box>
+        <MenuList>
+          <Link to="/app/customers">
+            <MenuItem>
+              <ListItemIcon>
+                <Person fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Customers</ListItemText>
+            </MenuItem>
           </Link>
-          <Link
-            to={`/app/users`}
-            className={`sidebar-navigation-link ${usersPathSelected ? 'active' : ''}`}
-          >
-            <FontAwesomeIcon icon={faUser} className="sidebar-navigation-link-icon" />
-            <span>Operators</span>
+          <Link to="/app/jobs">
+            <MenuItem>
+              <ListItemIcon>
+                <Menu fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Jobs</ListItemText>
+            </MenuItem>
           </Link>
-          {/* <Link
-        to={`/app/teams`}
-        className={`sidebar-navigation-link ${teamsPathSelected ? 'active' : ''}`}
-      >
-        <FontAwesomeIcon icon={faUserGroup} className="sidebar-navigation-link-icon" />
-        <span>Teams</span>
-      </Link> */}
-          {/* <Link
-        to={`/app/roles`}
-        className={`sidebar-navigation-link ${rolesPathSelected ? 'active' : ''}`}
-      >
-        <FontAwesomeIcon icon={faIdBadge} className="sidebar-navigation-link-icon" />
-        <span>Roles</span>
-      </Link> */}
-          <Link
-            to={`/app/documentation`}
-            className={`sidebar-navigation-link ${notificationsPathSelected ? 'active' : ''}`}
-          >
-            <FontAwesomeIcon icon={faInbox} className="sidebar-navigation-link-icon" />
-            <span>API Docs</span>
+          <Link to="/app/documentation">
+            <MenuItem>
+              <ListItemIcon>
+                <Menu fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>API Docs</ListItemText>
+            </MenuItem>
           </Link>
-        </div>
+        </MenuList>
+        <Divider />
+        <Box padding={2}>
+          <ul className="call-list">
+            {phoneCalls.map((call) => (
+              <li key={call.phone_call_id} className={`call-item ${call.status}`}>
+                <div className="call-header">
+                  <span className="phone-number">{call.phone_number}</span>
+                  <span className="start-time">
+                    {call.start_date_time && new Date(call.start_date_time).toLocaleTimeString()}
+                  </span>
+                </div>
+                {!call.end_date_time ? (
+                  <div className="call-status">
+                    <span className="timer">{call.elapsed}s</span>
+                    <span className="recording-icon"></span>
+                  </div>
+                ) : (
+                  <div className="call-status">
+                    {new Date(call.end_date_time).toLocaleTimeString()}
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        </Box>
       </div>
       <div className="sidebar-bottom-section">
-        <Tooltip title="Profile">
-          <div className="sidebar-navigation-link" onClick={handleSelectUserProfile}>
-            <FontAwesomeIcon icon={faUser} className="sidebar-navigation-link-icon" />
-            <span>{userName}</span>
-          </div>
-        </Tooltip>
         <Tooltip title="Sign out">
           <div className="sidebar-navigation-link" onClick={handleSignOut}>
             <FontAwesomeIcon icon={faSignOut} className="sidebar-navigation-link-icon" />

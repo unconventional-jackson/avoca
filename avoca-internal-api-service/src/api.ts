@@ -259,21 +259,58 @@ export interface AuthVerifyEmailRequestBody {
 /**
  * 
  * @export
+ * @interface CreatePhoneCallRequest
+ */
+export interface CreatePhoneCallRequest {
+    /**
+     * The start of the phone call
+     * @type {string}
+     * @memberof CreatePhoneCallRequest
+     */
+    'start_date_time': string;
+    /**
+     * The end of the phone call
+     * @type {string}
+     * @memberof CreatePhoneCallRequest
+     */
+    'end_date_time'?: string;
+    /**
+     * The transcript
+     * @type {string}
+     * @memberof CreatePhoneCallRequest
+     */
+    'transcript'?: string;
+    /**
+     * The customer that this phone call is associated with
+     * @type {string}
+     * @memberof CreatePhoneCallRequest
+     */
+    'customer_id'?: string;
+    /**
+     * The phone number that the call came from
+     * @type {string}
+     * @memberof CreatePhoneCallRequest
+     */
+    'phone_number': string;
+    /**
+     * The job that this phone call is associated with
+     * @type {string}
+     * @memberof CreatePhoneCallRequest
+     */
+    'job_id'?: string;
+}
+/**
+ * 
+ * @export
  * @interface ErrorResponse
  */
 export interface ErrorResponse {
     /**
-     * A brief error message
+     * 
      * @type {string}
      * @memberof ErrorResponse
      */
-    'error': string;
-    /**
-     * A detailed error message
-     * @type {string}
-     * @memberof ErrorResponse
-     */
-    'message'?: string;
+    'error'?: string;
 }
 /**
  * 
@@ -287,6 +324,98 @@ export interface ForgotPassword200Response {
      * @memberof ForgotPassword200Response
      */
     'message'?: string;
+}
+/**
+ * 
+ * @export
+ * @interface GetPhoneCallsResponse
+ */
+export interface GetPhoneCallsResponse {
+    /**
+     * 
+     * @type {number}
+     * @memberof GetPhoneCallsResponse
+     */
+    'page'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof GetPhoneCallsResponse
+     */
+    'page_size'?: number;
+    /**
+     * 
+     * @type {Array<PhoneCall>}
+     * @memberof GetPhoneCallsResponse
+     */
+    'phone_calls'?: Array<PhoneCall>;
+    /**
+     * 
+     * @type {number}
+     * @memberof GetPhoneCallsResponse
+     */
+    'total_items'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof GetPhoneCallsResponse
+     */
+    'total_pages'?: number;
+}
+/**
+ * 
+ * @export
+ * @interface PhoneCall
+ */
+export interface PhoneCall {
+    /**
+     * The unique identifier for the phone call; this is our own construct
+     * @type {string}
+     * @memberof PhoneCall
+     */
+    'phone_call_id'?: string;
+    /**
+     * The start of the phone call
+     * @type {string}
+     * @memberof PhoneCall
+     */
+    'start_date_time'?: string;
+    /**
+     * The end of the phone call
+     * @type {string}
+     * @memberof PhoneCall
+     */
+    'end_date_time'?: string;
+    /**
+     * The transcript
+     * @type {string}
+     * @memberof PhoneCall
+     */
+    'transcript'?: string;
+    /**
+     * The customer that this phone call is associated with
+     * @type {string}
+     * @memberof PhoneCall
+     */
+    'customer_id'?: string;
+    /**
+     * The phone number that the call came from
+     * @type {string}
+     * @memberof PhoneCall
+     */
+    'phone_number'?: string;
+    /**
+     * The job that this phone call is associated with
+     * @type {string}
+     * @memberof PhoneCall
+     */
+    'job_id'?: string;
+    /**
+     * The employee that accepted the phone call
+     * @type {string}
+     * @memberof PhoneCall
+     */
+    'employee_id'?: string;
 }
 /**
  * 
@@ -407,6 +536,43 @@ export interface TotpVerify200Response {
 /**
  * 
  * @export
+ * @interface UpdatePhoneCallRequestBody
+ */
+export interface UpdatePhoneCallRequestBody {
+    /**
+     * The end of the phone call
+     * @type {string}
+     * @memberof UpdatePhoneCallRequestBody
+     */
+    'end_date_time'?: string;
+    /**
+     * The transcript
+     * @type {string}
+     * @memberof UpdatePhoneCallRequestBody
+     */
+    'transcript'?: string;
+    /**
+     * The employee that accepted the phone call
+     * @type {string}
+     * @memberof UpdatePhoneCallRequestBody
+     */
+    'employee_id'?: string;
+    /**
+     * The job that this phone call is associated with
+     * @type {string}
+     * @memberof UpdatePhoneCallRequestBody
+     */
+    'job_id'?: string;
+    /**
+     * The customer that this phone call is associated with
+     * @type {string}
+     * @memberof UpdatePhoneCallRequestBody
+     */
+    'customer_id'?: string;
+}
+/**
+ * 
+ * @export
  * @interface VerifyEmail200Response
  */
 export interface VerifyEmail200Response {
@@ -430,6 +596,40 @@ export interface VerifyEmail200Response {
  */
 export const DefaultApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
+        /**
+         * Accepts a phone call in the system, assigning it to the employee that accepts it.
+         * @summary Accept a phone call
+         * @param {string} phoneCallId The unique identifier for the phone call
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        acceptPhoneCall: async (phoneCallId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'phoneCallId' is not null or undefined
+            assertParamExists('acceptPhoneCall', 'phoneCallId', phoneCallId)
+            const localVarPath = `/phone-calls/{phone_call_id}/accept`
+                .replace(`{${"phone_call_id"}}`, encodeURIComponent(String(phoneCallId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
         /**
          * Changes a employee\'s password by verifying the current password.
          * @summary Change employee password
@@ -467,6 +667,42 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * Creates a new phone call in the system.
+         * @summary Create a new phone call
+         * @param {CreatePhoneCallRequest} createPhoneCallRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createPhoneCall: async (createPhoneCallRequest: CreatePhoneCallRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createPhoneCallRequest' is not null or undefined
+            assertParamExists('createPhoneCall', 'createPhoneCallRequest', createPhoneCallRequest)
+            const localVarPath = `/phone-calls`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(createPhoneCallRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Sends a password reset token to the employee\'s email if the email is registered.
          * @summary Request password reset token
          * @param {AuthForgotPasswordRequestBody} authForgotPasswordRequestBody 
@@ -496,6 +732,56 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(authForgotPasswordRequestBody, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Retrieves all phone calls in the system.
+         * @summary Get all phone calls
+         * @param {number} [page] The page number to retrieve
+         * @param {number} [pageSize] The number of items per page
+         * @param {GetPhoneCallsSortByEnum} [sortBy] The field to sort by
+         * @param {GetPhoneCallsSortDirectionEnum} [sortDirection] The direction to sort by
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPhoneCalls: async (page?: number, pageSize?: number, sortBy?: GetPhoneCallsSortByEnum, sortDirection?: GetPhoneCallsSortDirectionEnum, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/phone-calls`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (page !== undefined) {
+                localVarQueryParameter['page'] = page;
+            }
+
+            if (pageSize !== undefined) {
+                localVarQueryParameter['page_size'] = pageSize;
+            }
+
+            if (sortBy !== undefined) {
+                localVarQueryParameter['sort_by'] = sortBy;
+            }
+
+            if (sortDirection !== undefined) {
+                localVarQueryParameter['sort_direction'] = sortDirection;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -755,6 +1041,46 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * Updates a phone call in the system.
+         * @summary Update a phone call
+         * @param {string} phoneCallId The unique identifier for the phone call
+         * @param {UpdatePhoneCallRequestBody} updatePhoneCallRequestBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updatePhoneCall: async (phoneCallId: string, updatePhoneCallRequestBody: UpdatePhoneCallRequestBody, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'phoneCallId' is not null or undefined
+            assertParamExists('updatePhoneCall', 'phoneCallId', phoneCallId)
+            // verify required parameter 'updatePhoneCallRequestBody' is not null or undefined
+            assertParamExists('updatePhoneCall', 'updatePhoneCallRequestBody', updatePhoneCallRequestBody)
+            const localVarPath = `/phene-calls/{phone_call_id}`
+                .replace(`{${"phone_call_id"}}`, encodeURIComponent(String(phoneCallId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(updatePhoneCallRequestBody, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Verifies a employee\'s email address with a TOTP verification code, updating the email verification status.
          * @summary Verify employee email
          * @param {AuthVerifyEmailRequestBody} authVerifyEmailRequestBody 
@@ -801,6 +1127,19 @@ export const DefaultApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = DefaultApiAxiosParamCreator(configuration)
     return {
         /**
+         * Accepts a phone call in the system, assigning it to the employee that accepts it.
+         * @summary Accept a phone call
+         * @param {string} phoneCallId The unique identifier for the phone call
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async acceptPhoneCall(phoneCallId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PhoneCall>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.acceptPhoneCall(phoneCallId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.acceptPhoneCall']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
          * Changes a employee\'s password by verifying the current password.
          * @summary Change employee password
          * @param {AuthChangePasswordRequestBody} authChangePasswordRequestBody 
@@ -814,6 +1153,19 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
+         * Creates a new phone call in the system.
+         * @summary Create a new phone call
+         * @param {CreatePhoneCallRequest} createPhoneCallRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createPhoneCall(createPhoneCallRequest: CreatePhoneCallRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PhoneCall>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createPhoneCall(createPhoneCallRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.createPhoneCall']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
          * Sends a password reset token to the employee\'s email if the email is registered.
          * @summary Request password reset token
          * @param {AuthForgotPasswordRequestBody} authForgotPasswordRequestBody 
@@ -824,6 +1176,22 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.forgotPassword(authForgotPasswordRequestBody, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['DefaultApi.forgotPassword']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Retrieves all phone calls in the system.
+         * @summary Get all phone calls
+         * @param {number} [page] The page number to retrieve
+         * @param {number} [pageSize] The number of items per page
+         * @param {GetPhoneCallsSortByEnum} [sortBy] The field to sort by
+         * @param {GetPhoneCallsSortDirectionEnum} [sortDirection] The direction to sort by
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getPhoneCalls(page?: number, pageSize?: number, sortBy?: GetPhoneCallsSortByEnum, sortDirection?: GetPhoneCallsSortDirectionEnum, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetPhoneCallsResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPhoneCalls(page, pageSize, sortBy, sortDirection, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.getPhoneCalls']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -918,6 +1286,20 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
+         * Updates a phone call in the system.
+         * @summary Update a phone call
+         * @param {string} phoneCallId The unique identifier for the phone call
+         * @param {UpdatePhoneCallRequestBody} updatePhoneCallRequestBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updatePhoneCall(phoneCallId: string, updatePhoneCallRequestBody: UpdatePhoneCallRequestBody, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PhoneCall>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePhoneCall(phoneCallId, updatePhoneCallRequestBody, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.updatePhoneCall']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
          * Verifies a employee\'s email address with a TOTP verification code, updating the email verification status.
          * @summary Verify employee email
          * @param {AuthVerifyEmailRequestBody} authVerifyEmailRequestBody 
@@ -941,6 +1323,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
     const localVarFp = DefaultApiFp(configuration)
     return {
         /**
+         * Accepts a phone call in the system, assigning it to the employee that accepts it.
+         * @summary Accept a phone call
+         * @param {string} phoneCallId The unique identifier for the phone call
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        acceptPhoneCall(phoneCallId: string, options?: RawAxiosRequestConfig): AxiosPromise<PhoneCall> {
+            return localVarFp.acceptPhoneCall(phoneCallId, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Changes a employee\'s password by verifying the current password.
          * @summary Change employee password
          * @param {AuthChangePasswordRequestBody} authChangePasswordRequestBody 
@@ -951,6 +1343,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.changePassword(authChangePasswordRequestBody, options).then((request) => request(axios, basePath));
         },
         /**
+         * Creates a new phone call in the system.
+         * @summary Create a new phone call
+         * @param {CreatePhoneCallRequest} createPhoneCallRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createPhoneCall(createPhoneCallRequest: CreatePhoneCallRequest, options?: RawAxiosRequestConfig): AxiosPromise<PhoneCall> {
+            return localVarFp.createPhoneCall(createPhoneCallRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Sends a password reset token to the employee\'s email if the email is registered.
          * @summary Request password reset token
          * @param {AuthForgotPasswordRequestBody} authForgotPasswordRequestBody 
@@ -959,6 +1361,19 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         forgotPassword(authForgotPasswordRequestBody: AuthForgotPasswordRequestBody, options?: RawAxiosRequestConfig): AxiosPromise<ForgotPassword200Response> {
             return localVarFp.forgotPassword(authForgotPasswordRequestBody, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Retrieves all phone calls in the system.
+         * @summary Get all phone calls
+         * @param {number} [page] The page number to retrieve
+         * @param {number} [pageSize] The number of items per page
+         * @param {GetPhoneCallsSortByEnum} [sortBy] The field to sort by
+         * @param {GetPhoneCallsSortDirectionEnum} [sortDirection] The direction to sort by
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPhoneCalls(page?: number, pageSize?: number, sortBy?: GetPhoneCallsSortByEnum, sortDirection?: GetPhoneCallsSortDirectionEnum, options?: RawAxiosRequestConfig): AxiosPromise<GetPhoneCallsResponse> {
+            return localVarFp.getPhoneCalls(page, pageSize, sortBy, sortDirection, options).then((request) => request(axios, basePath));
         },
         /**
          * Verifies a TOTP token for a standard employee. If the token is valid, enables TOTP for the employee and issues new access and refresh tokens.
@@ -1031,6 +1446,17 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.totpVerify(authTOTPVerifyRequestBody, options).then((request) => request(axios, basePath));
         },
         /**
+         * Updates a phone call in the system.
+         * @summary Update a phone call
+         * @param {string} phoneCallId The unique identifier for the phone call
+         * @param {UpdatePhoneCallRequestBody} updatePhoneCallRequestBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updatePhoneCall(phoneCallId: string, updatePhoneCallRequestBody: UpdatePhoneCallRequestBody, options?: RawAxiosRequestConfig): AxiosPromise<PhoneCall> {
+            return localVarFp.updatePhoneCall(phoneCallId, updatePhoneCallRequestBody, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Verifies a employee\'s email address with a TOTP verification code, updating the email verification status.
          * @summary Verify employee email
          * @param {AuthVerifyEmailRequestBody} authVerifyEmailRequestBody 
@@ -1051,6 +1477,18 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
  */
 export class DefaultApi extends BaseAPI {
     /**
+     * Accepts a phone call in the system, assigning it to the employee that accepts it.
+     * @summary Accept a phone call
+     * @param {string} phoneCallId The unique identifier for the phone call
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public acceptPhoneCall(phoneCallId: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).acceptPhoneCall(phoneCallId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * Changes a employee\'s password by verifying the current password.
      * @summary Change employee password
      * @param {AuthChangePasswordRequestBody} authChangePasswordRequestBody 
@@ -1063,6 +1501,18 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
+     * Creates a new phone call in the system.
+     * @summary Create a new phone call
+     * @param {CreatePhoneCallRequest} createPhoneCallRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public createPhoneCall(createPhoneCallRequest: CreatePhoneCallRequest, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).createPhoneCall(createPhoneCallRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * Sends a password reset token to the employee\'s email if the email is registered.
      * @summary Request password reset token
      * @param {AuthForgotPasswordRequestBody} authForgotPasswordRequestBody 
@@ -1072,6 +1522,21 @@ export class DefaultApi extends BaseAPI {
      */
     public forgotPassword(authForgotPasswordRequestBody: AuthForgotPasswordRequestBody, options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).forgotPassword(authForgotPasswordRequestBody, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Retrieves all phone calls in the system.
+     * @summary Get all phone calls
+     * @param {number} [page] The page number to retrieve
+     * @param {number} [pageSize] The number of items per page
+     * @param {GetPhoneCallsSortByEnum} [sortBy] The field to sort by
+     * @param {GetPhoneCallsSortDirectionEnum} [sortDirection] The direction to sort by
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getPhoneCalls(page?: number, pageSize?: number, sortBy?: GetPhoneCallsSortByEnum, sortDirection?: GetPhoneCallsSortDirectionEnum, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getPhoneCalls(page, pageSize, sortBy, sortDirection, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1159,6 +1624,19 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
+     * Updates a phone call in the system.
+     * @summary Update a phone call
+     * @param {string} phoneCallId The unique identifier for the phone call
+     * @param {UpdatePhoneCallRequestBody} updatePhoneCallRequestBody 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public updatePhoneCall(phoneCallId: string, updatePhoneCallRequestBody: UpdatePhoneCallRequestBody, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).updatePhoneCall(phoneCallId, updatePhoneCallRequestBody, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * Verifies a employee\'s email address with a TOTP verification code, updating the email verification status.
      * @summary Verify employee email
      * @param {AuthVerifyEmailRequestBody} authVerifyEmailRequestBody 
@@ -1171,5 +1649,23 @@ export class DefaultApi extends BaseAPI {
     }
 }
 
+/**
+ * @export
+ */
+export const GetPhoneCallsSortByEnum = {
+    StartDateTime: 'start_date_time',
+    EndDateTime: 'end_date_time',
+    CreatedAt: 'created_at',
+    UpdatedAt: 'updated_at'
+} as const;
+export type GetPhoneCallsSortByEnum = typeof GetPhoneCallsSortByEnum[keyof typeof GetPhoneCallsSortByEnum];
+/**
+ * @export
+ */
+export const GetPhoneCallsSortDirectionEnum = {
+    Asc: 'asc',
+    Desc: 'desc'
+} as const;
+export type GetPhoneCallsSortDirectionEnum = typeof GetPhoneCallsSortDirectionEnum[keyof typeof GetPhoneCallsSortDirectionEnum];
 
 

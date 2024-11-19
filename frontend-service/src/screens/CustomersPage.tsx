@@ -16,41 +16,35 @@ import { useCustomersSdk } from '../api/sdk';
 import { useNavigate } from 'react-router-dom';
 import { PageLayout } from '../components/PageLayout/PageLayout';
 import { MainContent } from '../components/MainContent/MainContent';
-import { NavbarContainer } from '../components/NavbarContainer/NavbarContainer';
 import { parseAxiosError } from '../utils/errors';
 import { CreateCustomerModal } from './CreateCustomerModal';
-import { Button, Grid, TextField } from '@mui/material';
-import { LocationOn } from '@mui/icons-material';
+import { AppBar, Box, Button, Grid, TextField, Toolbar, Typography } from '@mui/material';
+import { LocationOn, PersonAdd } from '@mui/icons-material';
 
-type ViewCustomerAdressesActionProps = GridActionsCellItemProps & {
-  customerId: string;
+type ViewCustomerAddressesActionProps = GridActionsCellItemProps & {
+  id: string;
   refetch: () => Promise<unknown>;
 };
-function ViewCustomerAdressesAction({
-  customerId,
-  refetch,
-  ...props
-}: ViewCustomerAdressesActionProps) {
-  const [isViewCustomerAdressesModalOpen, setIsViewCustomerAdressesModalOpen] = useState(false);
-  const handleOpenViewCustomerAdressesModal = useCallback(() => {
-    setIsViewCustomerAdressesModalOpen(true);
-  }, [customerId]);
-  const handleCloseViewCustomerAdressesModal = useCallback(() => {
-    setIsViewCustomerAdressesModalOpen(false);
+function ViewCustomerAddressesAction({ id, refetch, ...props }: ViewCustomerAddressesActionProps) {
+  const [isViewCustomerAddressesModalOpen, setIsViewCustomerAddressesModalOpen] = useState(false);
+  const handleOpenViewCustomerAddressesModal = useCallback(() => {
+    setIsViewCustomerAddressesModalOpen(true);
+  }, [id]);
+  const handleCloseViewCustomerAddressesModal = useCallback(() => {
+    setIsViewCustomerAddressesModalOpen(false);
   }, []);
 
   return (
     <Fragment>
       <GridActionsCellItem
         {...props}
-        icon={<LocationOn />}
-        onClick={handleOpenViewCustomerAdressesModal}
-        label="Delete"
+        onClick={handleOpenViewCustomerAddressesModal}
+        label="Addresses"
       />
       {/* <DeleteCustomerModal
         open={isDeleteCustomerModalOpen}
         onClose={handleCloseDeleteCustomerModal}
-        customerId={customerId}
+        id={id}
         refetch={refetch}
       /> */}
     </Fragment>
@@ -58,14 +52,14 @@ function ViewCustomerAdressesAction({
 }
 
 type ViewCustomerJobsActionProps = GridActionsCellItemProps & {
-  customerId: string;
+  id: string;
 };
 
-function ViewCustomerJobsAction({ customerId, ...props }: ViewCustomerJobsActionProps) {
+function ViewCustomerJobsAction({ id, ...props }: ViewCustomerJobsActionProps) {
   const navigate = useNavigate();
   const handleViewCustomerJobs = useCallback(() => {
-    navigate(`/app/customers/${customerId}/jobs`);
-  }, [customerId, navigate]);
+    navigate(`/app/customers/${id}/jobs`);
+  }, [id, navigate]);
 
   return (
     <GridActionsCellItem
@@ -100,16 +94,18 @@ export function CustomersPage() {
         field: 'actions',
         type: 'actions',
         getActions: (params: GridRowParams) => [
-          <ViewCustomerAdressesAction
-            customerId={params.row.customerId}
+          <ViewCustomerAddressesAction
+            id={params.row.id}
             label="Addresses"
             refetch={refetch}
-            showInMenu
+            showInMenu={false}
+            icon={<LocationOn />}
           />,
           <ViewCustomerJobsAction
-            customerId={params.row.customerId}
+            id={params.row.id}
             label="View Jobs"
-            showInMenu
+            showInMenu={false}
+            icon={<GridMenuIcon />}
           />,
         ],
       },
@@ -141,22 +137,31 @@ export function CustomersPage() {
     setPaginationModel(model);
   }, []);
 
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const handleChangeSearchTerm = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  }, []);
+
+  const q = useMemo(() => {
+    if (searchTerm) {
+      return searchTerm;
+    }
+    return undefined;
+  }, [searchTerm]);
+  const page = useMemo(() => paginationModel.page, [paginationModel]);
+  const pageSize = useMemo(() => paginationModel.pageSize, [paginationModel]);
   const { data, isLoading, refetch } = useQuery({
     queryKey: [
       'getCustomers',
       {
-        paginationModel,
-        filterModel,
+        q,
+        page,
+        pageSize,
       },
     ],
     queryFn: async () => {
       try {
-        const q = '';
-        const response = await customersSdk.getV1Customers(
-          q,
-          paginationModel.page,
-          paginationModel.pageSize
-        );
+        const response = await customersSdk.getV1Customers(q, page, pageSize);
 
         return response.data;
       } catch (error) {
@@ -164,6 +169,7 @@ export function CustomersPage() {
         toast.error(`Failed to fetch customers: ${parseAxiosError(error)}`);
       }
     },
+    // enabled: !!validFilters,
   });
 
   /**
@@ -177,7 +183,7 @@ export function CustomersPage() {
    */
   const handleRowClick = useCallback(
     (params: GridRowParams) => {
-      navigate(`/app/customers/${params.row.customerId}`);
+      navigate(`/app/customers/${params.row.id}`);
     },
     [navigate]
   );
@@ -195,21 +201,35 @@ export function CustomersPage() {
 
   return (
     <PageLayout>
-      <NavbarContainer>
-        <div className="forms-navbar-title-container">
-          <p className="title">Customers</p>
-        </div>
-        <div className="forms-navbar-content">
-          <Button onClick={handleOpenCreateCustomerModal}>Create New Customer</Button>
-        </div>
-      </NavbarContainer>
+      <Box sx={{}}>
+        <AppBar position="static">
+          <Toolbar>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              Customers
+            </Typography>
+            <Button
+              onClick={handleOpenCreateCustomerModal}
+              color="inherit"
+              startIcon={<PersonAdd />}
+            >
+              Create New Customer
+            </Button>
+          </Toolbar>
+        </AppBar>
+      </Box>
       <MainContent>
         <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <TextField label="Search" variant="outlined" fullWidth />
+          <Grid item xs={12} m={2} flexShrink={1}>
+            <TextField
+              label="Search"
+              variant="outlined"
+              fullWidth
+              value={searchTerm}
+              onChange={handleChangeSearchTerm}
+            />
           </Grid>
           <Grid item xs={12}>
-            <div style={{ height: 600, width: '100%' }}>
+            <Box style={{ height: 600, width: '100%' }} justifyContent="flex-start">
               <DataGrid
                 rows={rows}
                 columns={columns}
@@ -221,11 +241,10 @@ export function CustomersPage() {
                 filterMode="server"
                 filterModel={filterModel}
                 onFilterModelChange={handleFilterModelChange}
-                getRowId={(row) => row.selfExclusionFormId}
                 onRowClick={handleRowClick}
                 pageSizeOptions={[10, 25, 50, 100]}
               />
-            </div>
+            </Box>
           </Grid>
         </Grid>
       </MainContent>

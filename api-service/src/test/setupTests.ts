@@ -46,10 +46,10 @@ if (!process.env.LOGGING_ENABLED) {
 beforeEach(async () => {
   const config: IConfig = {
     POSTGRES_HOST: 'localhost',
-    POSTGRES_USER: 'sa',
-    POSTGRES_PASSWORD: 'YourStrong!Passw0rd',
-    POSTGRES_DB: 'test',
-    POSTGRES_PORT: 1433,
+    POSTGRES_USER: '',
+    POSTGRES_PASSWORD: '',
+    POSTGRES_DB: 'postgres',
+    POSTGRES_PORT: 5432,
     APPLICATION_PORT: 4000,
     SENDGRID_API_KEY: 'sg.test',
     SENDGRID_SOURCE_EMAIL_ADDRESS: 'test@unconventionalcode.com',

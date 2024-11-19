@@ -8,7 +8,7 @@ import {
 } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
-import { useAuthSdk } from '../api/sdk';
+import { useInternalSdk } from '../api/sdk';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { AuthUser } from '@unconventional-jackson/avoca-internal-api';
 
@@ -46,7 +46,7 @@ export const AuthContext = createContext<AuthContextProps>({
 });
 
 export function AuthProvider({ children }: PropsWithChildren<unknown>) {
-  const apiSdk = useAuthSdk();
+  const apiSdk = useInternalSdk();
   const queryClient = useQueryClient();
   // Set an initializing state whilst Cognito / Amplify connects
   const [authUser, setAuthUser] = useLocalStorage<AuthUser | null>('user', null);

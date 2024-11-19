@@ -21,7 +21,7 @@ type GetCustomersQuery = {
   expand?: Array<GetV1CustomersExpandEnum>;
 };
 
-export async function getCustomerView(
+export async function getCustomersView(
   req: Request<unknown, unknown, unknown, GetCustomersQuery>,
   res: Response<GetV1Customers200Response | ErrorResponse>
 ) {
@@ -31,6 +31,7 @@ export async function getCustomerView(
   });
 
   try {
+    log.info('Fetching customers');
     const { rows, count } = await CustomerModel.findAndCountAll({
       where: {
         ...(req.query.q

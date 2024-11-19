@@ -472,6 +472,234 @@
           }
         }
       }
+    },
+    "/phone-calls": {
+      "get": {
+        "summary": "Get all phone calls",
+        "description": "Retrieves all phone calls in the system.",
+        "operationId": "getPhoneCalls",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "description": "The page number to retrieve",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "page_size",
+            "description": "The number of items per page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort_by",
+            "description": "The field to sort by",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "start_date_time",
+                "end_date_time",
+                "created_at",
+                "updated_at"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort_direction",
+            "description": "The direction to sort by",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["asc", "desc"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Phone calls retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetPhoneCallsResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "Internal server error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new phone call",
+        "description": "Creates a new phone call in the system.",
+        "operationId": "createPhoneCall",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "start_date_time": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The start of the phone call"
+                  },
+                  "end_date_time": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The end of the phone call"
+                  },
+                  "transcript": {
+                    "type": "string",
+                    "description": "The transcript"
+                  },
+                  "customer_id": {
+                    "type": "string",
+                    "description": "The customer that this phone call is associated with"
+                  },
+                  "phone_number": {
+                    "type": "string",
+                    "description": "The phone number that the call came from"
+                  },
+                  "job_id": {
+                    "type": "string",
+                    "description": "The job that this phone call is associated with"
+                  }
+                },
+                "required": ["start_date_time", "phone_number"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Phone call created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhoneCall"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "Bad request - missing or invalid data"
+          },
+          "500": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/phene-calls/{phone_call_id}": {
+      "put": {
+        "summary": "Update a phone call",
+        "description": "Updates a phone call in the system.",
+        "operationId": "updatePhoneCall",
+        "parameters": [
+          {
+            "name": "phone_call_id",
+            "in": "path",
+            "description": "The unique identifier for the phone call",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePhoneCallRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Phone call updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhoneCall"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "Bad request - missing or invalid data"
+          },
+          "404": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "Phone call not found"
+          },
+          "500": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/phone-calls/{phone_call_id}/accept": {
+      "post": {
+        "summary": "Accept a phone call",
+        "description": "Accepts a phone call in the system, assigning it to the employee that accepts it.",
+        "operationId": "acceptPhoneCall",
+        "parameters": [
+          {
+            "name": "phone_call_id",
+            "in": "path",
+            "description": "The unique identifier for the phone call",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Phone call accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhoneCall"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "Bad request - missing or invalid data"
+          },
+          "404": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "Phone call not found"
+          },
+          "500": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "Internal server error"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -697,20 +925,104 @@
         },
         "required": ["email", "token"]
       },
+      "PhoneCall": {
+        "type": "object",
+        "properties": {
+          "phone_call_id": {
+            "description": "The unique identifier for the phone call; this is our own construct",
+            "type": "string"
+          },
+          "start_date_time": {
+            "description": "The start of the phone call",
+            "type": "string",
+            "format": "date-time"
+          },
+          "end_date_time": {
+            "description": "The end of the phone call",
+            "type": "string",
+            "format": "date-time"
+          },
+          "transcript": {
+            "description": "The transcript",
+            "type": "string"
+          },
+          "customer_id": {
+            "description": "The customer that this phone call is associated with",
+            "type": "string"
+          },
+          "phone_number": {
+            "description": "The phone number that the call came from",
+            "type": "string"
+          },
+          "job_id": {
+            "description": "The job that this phone call is associated with",
+            "type": "string"
+          },
+          "employee_id": {
+            "description": "The employee that accepted the phone call",
+            "type": "string"
+          }
+        }
+      },
+      "UpdatePhoneCallRequestBody": {
+        "type": "object",
+        "properties": {
+          "end_date_time": {
+            "description": "The end of the phone call",
+            "type": "string",
+            "format": "date-time"
+          },
+          "transcript": {
+            "description": "The transcript",
+            "type": "string"
+          },
+          "employee_id": {
+            "description": "The employee that accepted the phone call",
+            "type": "string"
+          },
+          "job_id": {
+            "description": "The job that this phone call is associated with",
+            "type": "string"
+          },
+          "customer_id": {
+            "description": "The customer that this phone call is associated with",
+            "type": "string"
+          }
+        }
+      },
+      "GetPhoneCallsResponse": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "example": 1
+          },
+          "page_size": {
+            "type": "integer",
+            "example": 10
+          },
+          "phone_calls": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/PhoneCall" }
+          },
+          "total_items": {
+            "type": "integer",
+            "example": 100
+          },
+          "total_pages": {
+            "type": "integer",
+            "example": 10
+          }
+        }
+      },
       "ErrorResponse": {
         "type": "object",
         "properties": {
           "error": {
             "type": "string",
-            "description": "A brief error message"
-          },
-          "message": {
-            "type": "string",
-            "description": "A detailed error message"
+            "example": "Detailed error message"
           }
-        },
-        "required": ["error"],
-        "additionalProperties": false
+        }
       }
     }
   }

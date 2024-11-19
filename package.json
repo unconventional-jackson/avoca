@@ -1,4 +1,9 @@
 {
   "name": "@unconventional-jackson/avoca",
-  "scripts": {}
+  "scripts": {
+    "down:local": "docker-compose -f docker-compose.local.yml down -v",
+    "start:local": "chmod +x ./scripts/start-local.sh && ./scripts/start-local.sh",
+    "start:dev": "docker-compose -f docker-compose.dev.yml up --build",
+    "start:prod": "docker-compose -f docker-compose.prod.yml up --build"
+  }
 }
