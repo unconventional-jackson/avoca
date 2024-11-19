@@ -3,7 +3,11 @@ import { MsSqlDialect } from '@sequelize/mssql';
 import { NodeLogger } from '@unconventional-code/observability-sdk';
 
 import { IConfig } from '../utils/secrets';
-import { UserModel } from './models/Users';
+import { CustomerAddressModel } from './models/CustomerAddresses';
+import { CustomerModel } from './models/Customers';
+import { EmployeeModel } from './models/Employees';
+import { JobModel } from './models/Jobs';
+import { PhoneCallModel } from './models/PhoneCalls';
 
 let sequelize: Sequelize | null = null;
 
@@ -38,7 +42,7 @@ export async function getDatabase(config: IConfig, testEnvironment = false) {
            */
           underscored: true,
         },
-        models: [UserModel],
+        models: [EmployeeModel, JobModel, CustomerModel, CustomerAddressModel, PhoneCallModel],
       });
 
       log.info('Connecting to the database...');

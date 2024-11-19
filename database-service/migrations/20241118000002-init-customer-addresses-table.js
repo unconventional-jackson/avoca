@@ -3,56 +3,48 @@ module.exports = {
   async up(queryInterface) {
     await queryInterface.sequelize.transaction(async (transaction) => {
       await queryInterface.createTable(
-        'users',
+        'customer_addresses',
         {
-          user_id: {
+          customer_address_id: {
             type: DataTypes.STRING,
             primaryKey: true,
             allowNull: false,
           },
-          email: {
+          street: {
+            type: DataTypes.STRING,
+            allowNull: true,
+          },
+          street_line_2: {
+            type: DataTypes.STRING,
+            allowNull: true,
+          },
+          city: {
+            type: DataTypes.STRING,
+            allowNull: true,
+          },
+          city: {
+            type: DataTypes.STRING,
+            allowNull: true,
+          },
+          state: {
+            type: DataTypes.STRING,
+            allowNull: true,
+          },
+          zip: {
+            type: DataTypes.STRING,
+            allowNull: true,
+          },
+          country: {
+            type: DataTypes.STRING,
+            allowNull: true,
+          },
+          customer_id: {
             type: DataTypes.STRING,
             allowNull: false,
-          },
-          last_active_at: {
-            type: DataTypes.STRING,
-            allowNull: true,
-          },
-          auth_password_hash: {
-            type: DataTypes.STRING,
-            allowNull: true,
-          },
-          auth_email_verified: {
-            type: DataTypes.BOOLEAN,
-            allowNull: true,
-          },
-          auth_email_verification_token: {
-            type: DataTypes.STRING,
-            allowNull: true,
-          },
-          auth_reset_password_token: {
-            type: DataTypes.STRING,
-            allowNull: true,
-          },
-          auth_status: {
-            type: DataTypes.STRING,
-            allowNull: true,
-          },
-          auth_totp_secret: {
-            type: DataTypes.STRING,
-            allowNull: true,
-          },
-          auth_totp_enabled: {
-            type: DataTypes.BOOLEAN,
-            allowNull: true,
-          },
-          auth_totp_verified_at: {
-            type: DataTypes.DATE,
-            allowNull: true,
-          },
-          auth_refresh_token: {
-            type: DataTypes.TEXT,
-            allowNull: true,
+            references: {
+              model: 'customers',
+              key: 'customer_id',
+            },
           },
           created_at: {
             type: DataTypes.DATE,
@@ -74,7 +66,7 @@ module.exports = {
 
   async down(queryInterface) {
     return queryInterface.sequelize.transaction(async (transaction) => {
-      await queryInterface.dropTable('users', { transaction });
+      await queryInterface.dropTable('customer_addresses', { transaction });
     });
   },
 };
