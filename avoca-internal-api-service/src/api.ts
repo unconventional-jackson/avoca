@@ -30,23 +30,23 @@ import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError, operationServerM
  */
 export interface AuthChangePasswordRequestBody {
     /**
-     * The email address of the user
+     * The email address of the employee
      * @type {string}
      * @memberof AuthChangePasswordRequestBody
      */
     'email': string;
     /**
-     * The user\'s current password
+     * The employee\'s current password
      * @type {string}
      * @memberof AuthChangePasswordRequestBody
      */
-    'currentPassword': string;
+    'current_password': string;
     /**
-     * The user\'s new password
+     * The employee\'s new password
      * @type {string}
      * @memberof AuthChangePasswordRequestBody
      */
-    'newPassword': string;
+    'new_password': string;
 }
 /**
  * 
@@ -55,14 +55,14 @@ export interface AuthChangePasswordRequestBody {
  */
 export interface AuthForgotPasswordRequestBody {
     /**
-     * The email address of the user requesting the password reset token.
+     * The email address of the employee requesting the password reset token.
      * @type {string}
      * @memberof AuthForgotPasswordRequestBody
      */
     'email': string;
 }
 /**
- * Request body for refreshing a token, to be used by all users
+ * Request body for refreshing a token, to be used by all employees
  * @export
  * @interface AuthRefreshTokenRequestBody
  */
@@ -72,7 +72,7 @@ export interface AuthRefreshTokenRequestBody {
      * @type {string}
      * @memberof AuthRefreshTokenRequestBody
      */
-    'refreshToken': string;
+    'refresh_token': string;
 }
 /**
  * 
@@ -81,7 +81,7 @@ export interface AuthRefreshTokenRequestBody {
  */
 export interface AuthResendVerificationRequestBody {
     /**
-     * The email address of the user requesting the verification code.
+     * The email address of the employee requesting the verification code.
      * @type {string}
      * @memberof AuthResendVerificationRequestBody
      */
@@ -94,57 +94,57 @@ export interface AuthResendVerificationRequestBody {
  */
 export interface AuthResetPasswordBody {
     /**
-     * The user\'s new password
+     * The employee\'s new password
      * @type {string}
      * @memberof AuthResetPasswordBody
      */
-    'newPassword': string;
+    'new_password': string;
     /**
-     * The reset password token sent to the user\'s email
+     * The reset password token sent to the employee\'s email
      * @type {string}
      * @memberof AuthResetPasswordBody
      */
     'token': string;
     /**
-     * The email address of the user (optional if userId is provided in the session)
+     * The email address of the employee (optional if employee_id is provided in the session)
      * @type {string}
      * @memberof AuthResetPasswordBody
      */
     'email'?: string;
 }
 /**
- * Request body for signing in a user, only to be used by admin users or operator users
+ * Request body for signing in a employee, only to be used by admin employees or operator employees
  * @export
  * @interface AuthSignInRequestBody
  */
 export interface AuthSignInRequestBody {
     /**
-     * The user\'s email address
+     * The employee\'s email address
      * @type {string}
      * @memberof AuthSignInRequestBody
      */
     'email': string;
     /**
-     * The user\'s password
+     * The employee\'s password
      * @type {string}
      * @memberof AuthSignInRequestBody
      */
     'password': string;
 }
 /**
- * Request body for signing up a user, only to be used by admin users or operator users
+ * Request body for signing up a employee, only to be used by admin employees or operator employees
  * @export
  * @interface AuthSignUpRequestBody
  */
 export interface AuthSignUpRequestBody {
     /**
-     * The user\'s email address
+     * The employee\'s email address
      * @type {string}
      * @memberof AuthSignUpRequestBody
      */
     'email': string;
     /**
-     * The user\'s password
+     * The employee\'s password
      * @type {string}
      * @memberof AuthSignUpRequestBody
      */
@@ -157,7 +157,7 @@ export interface AuthSignUpRequestBody {
  */
 export interface AuthTOTPSetupRequestBody {
     /**
-     * Email address of the user for whom TOTP is being set up
+     * Email address of the employee for whom TOTP is being set up
      * @type {string}
      * @memberof AuthTOTPSetupRequestBody
      */
@@ -170,7 +170,7 @@ export interface AuthTOTPSetupRequestBody {
  */
 export interface AuthTOTPVerifyRequestBody {
     /**
-     * Email address of the user verifying TOTP
+     * Email address of the employee verifying TOTP
      * @type {string}
      * @memberof AuthTOTPVerifyRequestBody
      */
@@ -189,53 +189,53 @@ export interface AuthTOTPVerifyRequestBody {
  */
 export interface AuthUser {
     /**
-     * The unique ID of the user
+     * The unique ID of the employee
      * @type {string}
      * @memberof AuthUser
      */
-    'userId'?: string;
+    'employee_id'?: string;
     /**
-     * The user\'s email address
+     * The employee\'s email address
      * @type {string}
      * @memberof AuthUser
      */
     'email'?: string;
     /**
-     * The last time the user was active
+     * The last time the employee was active
      * @type {string}
      * @memberof AuthUser
      */
-    'lastActiveAt'?: string | null;
+    'last_active_at'?: string | null;
     /**
-     * JWT access token for user authentication
+     * JWT access token for employee authentication
      * @type {string}
      * @memberof AuthUser
      */
-    'accessToken'?: string | null;
+    'access_token'?: string | null;
     /**
-     * JWT refresh token for user session renewal
+     * JWT refresh token for employee session renewal
      * @type {string}
      * @memberof AuthUser
      */
-    'refreshToken'?: string | null;
+    'refresh_token'?: string | null;
     /**
      * Indicates if the email is verified
      * @type {boolean}
      * @memberof AuthUser
      */
-    'authEmailVerified'?: boolean | null;
+    'auth_email_verified'?: boolean | null;
     /**
      * Timestamp of the last TOTP verification
      * @type {string}
      * @memberof AuthUser
      */
-    'authTotpVerifiedAt'?: string | null;
+    'auth_totp_verified_at'?: string | null;
     /**
-     * Indicates if TOTP is enabled for the user
+     * Indicates if TOTP is enabled for the employee
      * @type {boolean}
      * @memberof AuthUser
      */
-    'authTotpEnabled'?: boolean | null;
+    'auth_totp_enabled'?: boolean | null;
 }
 /**
  * 
@@ -244,13 +244,13 @@ export interface AuthUser {
  */
 export interface AuthVerifyEmailRequestBody {
     /**
-     * The admin or operator user\'s email address
+     * The admin or operator employee\'s email address
      * @type {string}
      * @memberof AuthVerifyEmailRequestBody
      */
     'email': string;
     /**
-     * TOTP verification code sent to the user\'s email
+     * TOTP verification code sent to the employee\'s email
      * @type {string}
      * @memberof AuthVerifyEmailRequestBody
      */
@@ -299,7 +299,7 @@ export interface RefreshToken200Response {
      * @type {string}
      * @memberof RefreshToken200Response
      */
-    'accessToken'?: string;
+    'access_token'?: string;
 }
 /**
  * 
@@ -344,7 +344,7 @@ export interface SignIn200Response {
      * @type {AuthUser}
      * @memberof SignIn200Response
      */
-    'user'?: AuthUser;
+    'employee'?: AuthUser;
 }
 /**
  * 
@@ -402,7 +402,7 @@ export interface TotpVerify200Response {
      * @type {AuthUser}
      * @memberof TotpVerify200Response
      */
-    'user'?: AuthUser;
+    'employee'?: AuthUser;
 }
 /**
  * 
@@ -421,7 +421,7 @@ export interface VerifyEmail200Response {
      * @type {AuthUser}
      * @memberof VerifyEmail200Response
      */
-    'user'?: AuthUser;
+    'employee'?: AuthUser;
 }
 
 /**
@@ -431,8 +431,8 @@ export interface VerifyEmail200Response {
 export const DefaultApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * Changes a user\'s password by verifying the current password.
-         * @summary Change user password
+         * Changes a employee\'s password by verifying the current password.
+         * @summary Change employee password
          * @param {AuthChangePasswordRequestBody} authChangePasswordRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -467,7 +467,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Sends a password reset token to the user\'s email if the email is registered.
+         * Sends a password reset token to the employee\'s email if the email is registered.
          * @summary Request password reset token
          * @param {AuthForgotPasswordRequestBody} authForgotPasswordRequestBody 
          * @param {*} [options] Override http request option.
@@ -503,8 +503,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Verifies a TOTP token for a standard user. If the token is valid, enables TOTP for the user and issues new access and refresh tokens.
-         * @summary Verify a user authentication request
+         * Verifies a TOTP token for a standard employee. If the token is valid, enables TOTP for the employee and issues new access and refresh tokens.
+         * @summary Verify a employee authentication request
          * @param {AuthRefreshTokenRequestBody} authRefreshTokenRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -539,7 +539,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Resends a TOTP email verification code to the specified user email, if the user exists and has not verified their email.
+         * Resends a TOTP email verification code to the specified employee email, if the employee exists and has not verified their email.
          * @summary Resend email verification code
          * @param {AuthResendVerificationRequestBody} authResendVerificationRequestBody 
          * @param {*} [options] Override http request option.
@@ -575,8 +575,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Resets a user\'s password using a provided token and new password.
-         * @summary Reset user password
+         * Resets a employee\'s password using a provided token and new password.
+         * @summary Reset employee password
          * @param {AuthResetPasswordBody} authResetPasswordBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -611,8 +611,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Authenticates a user and provides access and refresh tokens if successful.
-         * @summary Sign in a user
+         * Authenticates a employee and provides access and refresh tokens if successful.
+         * @summary Sign in a employee
          * @param {AuthSignInRequestBody} authSignInRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -647,8 +647,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Creates a new user account and sends an email verification code.
-         * @summary Sign up a new user
+         * Creates a new employee account and sends an email verification code.
+         * @summary Sign up a new employee
          * @param {AuthSignUpRequestBody} authSignUpRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -683,8 +683,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Generates a TOTP secret and returns the otpauth URL for configuring TOTP on a user account.
-         * @summary Setup TOTP for user
+         * Generates a TOTP secret and returns the otpauth URL for configuring TOTP on a employee account.
+         * @summary Setup TOTP for employee
          * @param {AuthTOTPSetupRequestBody} authTOTPSetupRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -719,8 +719,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Verifies a TOTP token for a user. If the token is valid, enables TOTP for the user and issues new access and refresh tokens.
-         * @summary Verify TOTP for user
+         * Verifies a TOTP token for a employee. If the token is valid, enables TOTP for the employee and issues new access and refresh tokens.
+         * @summary Verify TOTP for employee
          * @param {AuthTOTPVerifyRequestBody} authTOTPVerifyRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -755,8 +755,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Verifies a user\'s email address with a TOTP verification code, updating the email verification status.
-         * @summary Verify user email
+         * Verifies a employee\'s email address with a TOTP verification code, updating the email verification status.
+         * @summary Verify employee email
          * @param {AuthVerifyEmailRequestBody} authVerifyEmailRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -801,8 +801,8 @@ export const DefaultApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = DefaultApiAxiosParamCreator(configuration)
     return {
         /**
-         * Changes a user\'s password by verifying the current password.
-         * @summary Change user password
+         * Changes a employee\'s password by verifying the current password.
+         * @summary Change employee password
          * @param {AuthChangePasswordRequestBody} authChangePasswordRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -814,7 +814,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * Sends a password reset token to the user\'s email if the email is registered.
+         * Sends a password reset token to the employee\'s email if the email is registered.
          * @summary Request password reset token
          * @param {AuthForgotPasswordRequestBody} authForgotPasswordRequestBody 
          * @param {*} [options] Override http request option.
@@ -827,8 +827,8 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * Verifies a TOTP token for a standard user. If the token is valid, enables TOTP for the user and issues new access and refresh tokens.
-         * @summary Verify a user authentication request
+         * Verifies a TOTP token for a standard employee. If the token is valid, enables TOTP for the employee and issues new access and refresh tokens.
+         * @summary Verify a employee authentication request
          * @param {AuthRefreshTokenRequestBody} authRefreshTokenRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -840,7 +840,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * Resends a TOTP email verification code to the specified user email, if the user exists and has not verified their email.
+         * Resends a TOTP email verification code to the specified employee email, if the employee exists and has not verified their email.
          * @summary Resend email verification code
          * @param {AuthResendVerificationRequestBody} authResendVerificationRequestBody 
          * @param {*} [options] Override http request option.
@@ -853,8 +853,8 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * Resets a user\'s password using a provided token and new password.
-         * @summary Reset user password
+         * Resets a employee\'s password using a provided token and new password.
+         * @summary Reset employee password
          * @param {AuthResetPasswordBody} authResetPasswordBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -866,8 +866,8 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * Authenticates a user and provides access and refresh tokens if successful.
-         * @summary Sign in a user
+         * Authenticates a employee and provides access and refresh tokens if successful.
+         * @summary Sign in a employee
          * @param {AuthSignInRequestBody} authSignInRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -879,8 +879,8 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * Creates a new user account and sends an email verification code.
-         * @summary Sign up a new user
+         * Creates a new employee account and sends an email verification code.
+         * @summary Sign up a new employee
          * @param {AuthSignUpRequestBody} authSignUpRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -892,8 +892,8 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * Generates a TOTP secret and returns the otpauth URL for configuring TOTP on a user account.
-         * @summary Setup TOTP for user
+         * Generates a TOTP secret and returns the otpauth URL for configuring TOTP on a employee account.
+         * @summary Setup TOTP for employee
          * @param {AuthTOTPSetupRequestBody} authTOTPSetupRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -905,8 +905,8 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * Verifies a TOTP token for a user. If the token is valid, enables TOTP for the user and issues new access and refresh tokens.
-         * @summary Verify TOTP for user
+         * Verifies a TOTP token for a employee. If the token is valid, enables TOTP for the employee and issues new access and refresh tokens.
+         * @summary Verify TOTP for employee
          * @param {AuthTOTPVerifyRequestBody} authTOTPVerifyRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -918,8 +918,8 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * Verifies a user\'s email address with a TOTP verification code, updating the email verification status.
-         * @summary Verify user email
+         * Verifies a employee\'s email address with a TOTP verification code, updating the email verification status.
+         * @summary Verify employee email
          * @param {AuthVerifyEmailRequestBody} authVerifyEmailRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -941,8 +941,8 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
     const localVarFp = DefaultApiFp(configuration)
     return {
         /**
-         * Changes a user\'s password by verifying the current password.
-         * @summary Change user password
+         * Changes a employee\'s password by verifying the current password.
+         * @summary Change employee password
          * @param {AuthChangePasswordRequestBody} authChangePasswordRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -951,7 +951,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.changePassword(authChangePasswordRequestBody, options).then((request) => request(axios, basePath));
         },
         /**
-         * Sends a password reset token to the user\'s email if the email is registered.
+         * Sends a password reset token to the employee\'s email if the email is registered.
          * @summary Request password reset token
          * @param {AuthForgotPasswordRequestBody} authForgotPasswordRequestBody 
          * @param {*} [options] Override http request option.
@@ -961,8 +961,8 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.forgotPassword(authForgotPasswordRequestBody, options).then((request) => request(axios, basePath));
         },
         /**
-         * Verifies a TOTP token for a standard user. If the token is valid, enables TOTP for the user and issues new access and refresh tokens.
-         * @summary Verify a user authentication request
+         * Verifies a TOTP token for a standard employee. If the token is valid, enables TOTP for the employee and issues new access and refresh tokens.
+         * @summary Verify a employee authentication request
          * @param {AuthRefreshTokenRequestBody} authRefreshTokenRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -971,7 +971,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.refreshToken(authRefreshTokenRequestBody, options).then((request) => request(axios, basePath));
         },
         /**
-         * Resends a TOTP email verification code to the specified user email, if the user exists and has not verified their email.
+         * Resends a TOTP email verification code to the specified employee email, if the employee exists and has not verified their email.
          * @summary Resend email verification code
          * @param {AuthResendVerificationRequestBody} authResendVerificationRequestBody 
          * @param {*} [options] Override http request option.
@@ -981,8 +981,8 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.resendVerification(authResendVerificationRequestBody, options).then((request) => request(axios, basePath));
         },
         /**
-         * Resets a user\'s password using a provided token and new password.
-         * @summary Reset user password
+         * Resets a employee\'s password using a provided token and new password.
+         * @summary Reset employee password
          * @param {AuthResetPasswordBody} authResetPasswordBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -991,8 +991,8 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.resetPassword(authResetPasswordBody, options).then((request) => request(axios, basePath));
         },
         /**
-         * Authenticates a user and provides access and refresh tokens if successful.
-         * @summary Sign in a user
+         * Authenticates a employee and provides access and refresh tokens if successful.
+         * @summary Sign in a employee
          * @param {AuthSignInRequestBody} authSignInRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1001,8 +1001,8 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.signIn(authSignInRequestBody, options).then((request) => request(axios, basePath));
         },
         /**
-         * Creates a new user account and sends an email verification code.
-         * @summary Sign up a new user
+         * Creates a new employee account and sends an email verification code.
+         * @summary Sign up a new employee
          * @param {AuthSignUpRequestBody} authSignUpRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1011,8 +1011,8 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.signUp(authSignUpRequestBody, options).then((request) => request(axios, basePath));
         },
         /**
-         * Generates a TOTP secret and returns the otpauth URL for configuring TOTP on a user account.
-         * @summary Setup TOTP for user
+         * Generates a TOTP secret and returns the otpauth URL for configuring TOTP on a employee account.
+         * @summary Setup TOTP for employee
          * @param {AuthTOTPSetupRequestBody} authTOTPSetupRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1021,8 +1021,8 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.totpSetup(authTOTPSetupRequestBody, options).then((request) => request(axios, basePath));
         },
         /**
-         * Verifies a TOTP token for a user. If the token is valid, enables TOTP for the user and issues new access and refresh tokens.
-         * @summary Verify TOTP for user
+         * Verifies a TOTP token for a employee. If the token is valid, enables TOTP for the employee and issues new access and refresh tokens.
+         * @summary Verify TOTP for employee
          * @param {AuthTOTPVerifyRequestBody} authTOTPVerifyRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1031,8 +1031,8 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.totpVerify(authTOTPVerifyRequestBody, options).then((request) => request(axios, basePath));
         },
         /**
-         * Verifies a user\'s email address with a TOTP verification code, updating the email verification status.
-         * @summary Verify user email
+         * Verifies a employee\'s email address with a TOTP verification code, updating the email verification status.
+         * @summary Verify employee email
          * @param {AuthVerifyEmailRequestBody} authVerifyEmailRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1051,8 +1051,8 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
  */
 export class DefaultApi extends BaseAPI {
     /**
-     * Changes a user\'s password by verifying the current password.
-     * @summary Change user password
+     * Changes a employee\'s password by verifying the current password.
+     * @summary Change employee password
      * @param {AuthChangePasswordRequestBody} authChangePasswordRequestBody 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -1063,7 +1063,7 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
-     * Sends a password reset token to the user\'s email if the email is registered.
+     * Sends a password reset token to the employee\'s email if the email is registered.
      * @summary Request password reset token
      * @param {AuthForgotPasswordRequestBody} authForgotPasswordRequestBody 
      * @param {*} [options] Override http request option.
@@ -1075,8 +1075,8 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
-     * Verifies a TOTP token for a standard user. If the token is valid, enables TOTP for the user and issues new access and refresh tokens.
-     * @summary Verify a user authentication request
+     * Verifies a TOTP token for a standard employee. If the token is valid, enables TOTP for the employee and issues new access and refresh tokens.
+     * @summary Verify a employee authentication request
      * @param {AuthRefreshTokenRequestBody} authRefreshTokenRequestBody 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -1087,7 +1087,7 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
-     * Resends a TOTP email verification code to the specified user email, if the user exists and has not verified their email.
+     * Resends a TOTP email verification code to the specified employee email, if the employee exists and has not verified their email.
      * @summary Resend email verification code
      * @param {AuthResendVerificationRequestBody} authResendVerificationRequestBody 
      * @param {*} [options] Override http request option.
@@ -1099,8 +1099,8 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
-     * Resets a user\'s password using a provided token and new password.
-     * @summary Reset user password
+     * Resets a employee\'s password using a provided token and new password.
+     * @summary Reset employee password
      * @param {AuthResetPasswordBody} authResetPasswordBody 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -1111,8 +1111,8 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
-     * Authenticates a user and provides access and refresh tokens if successful.
-     * @summary Sign in a user
+     * Authenticates a employee and provides access and refresh tokens if successful.
+     * @summary Sign in a employee
      * @param {AuthSignInRequestBody} authSignInRequestBody 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -1123,8 +1123,8 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
-     * Creates a new user account and sends an email verification code.
-     * @summary Sign up a new user
+     * Creates a new employee account and sends an email verification code.
+     * @summary Sign up a new employee
      * @param {AuthSignUpRequestBody} authSignUpRequestBody 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -1135,8 +1135,8 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
-     * Generates a TOTP secret and returns the otpauth URL for configuring TOTP on a user account.
-     * @summary Setup TOTP for user
+     * Generates a TOTP secret and returns the otpauth URL for configuring TOTP on a employee account.
+     * @summary Setup TOTP for employee
      * @param {AuthTOTPSetupRequestBody} authTOTPSetupRequestBody 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -1147,8 +1147,8 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
-     * Verifies a TOTP token for a user. If the token is valid, enables TOTP for the user and issues new access and refresh tokens.
-     * @summary Verify TOTP for user
+     * Verifies a TOTP token for a employee. If the token is valid, enables TOTP for the employee and issues new access and refresh tokens.
+     * @summary Verify TOTP for employee
      * @param {AuthTOTPVerifyRequestBody} authTOTPVerifyRequestBody 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -1159,8 +1159,8 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
-     * Verifies a user\'s email address with a TOTP verification code, updating the email verification status.
-     * @summary Verify user email
+     * Verifies a employee\'s email address with a TOTP verification code, updating the email verification status.
+     * @summary Verify employee email
      * @param {AuthVerifyEmailRequestBody} authVerifyEmailRequestBody 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}

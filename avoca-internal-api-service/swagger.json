@@ -13,8 +13,8 @@
   "paths": {
     "/auth/signup": {
       "post": {
-        "summary": "Sign up a new user",
-        "description": "Creates a new user account and sends an email verification code.",
+        "summary": "Sign up a new employee",
+        "description": "Creates a new employee account and sends an email verification code.",
         "operationId": "signUp",
         "requestBody": {
           "required": true,
@@ -28,7 +28,7 @@
         },
         "responses": {
           "201": {
-            "description": "User created. Verify your email.",
+            "description": "Employee created",
             "content": {
               "application/json": {
                 "schema": {
@@ -36,7 +36,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "User created. Verify your email."
+                      "example": "Employee created. Verify your email."
                     }
                   }
                 }
@@ -56,8 +56,8 @@
     },
     "/auth/signin": {
       "post": {
-        "summary": "Sign in a user",
-        "description": "Authenticates a user and provides access and refresh tokens if successful.",
+        "summary": "Sign in a employee",
+        "description": "Authenticates a employee and provides access and refresh tokens if successful.",
         "operationId": "signIn",
         "requestBody": {
           "required": true,
@@ -81,7 +81,7 @@
                       "type": "string",
                       "example": "Sign-in successful"
                     },
-                    "user": { "$ref": "#/components/schemas/AuthUser" }
+                    "employee": { "$ref": "#/components/schemas/AuthUser" }
                   }
                 }
               }
@@ -97,7 +97,7 @@
           },
           "404": {
             "$ref": "#/components/responses/ErrorResponse",
-            "description": "User not found"
+            "description": "Employee not found"
           },
           "500": {
             "$ref": "#/components/responses/ErrorResponse",
@@ -108,8 +108,8 @@
     },
     "/auth/verify-email": {
       "post": {
-        "summary": "Verify user email",
-        "description": "Verifies a user's email address with a TOTP verification code, updating the email verification status.",
+        "summary": "Verify employee email",
+        "description": "Verifies a employee's email address with a TOTP verification code, updating the email verification status.",
         "operationId": "verifyEmail",
         "requestBody": {
           "required": true,
@@ -133,7 +133,7 @@
                       "type": "string",
                       "example": "Email verified successfully."
                     },
-                    "user": { "$ref": "#/components/schemas/AuthUser" }
+                    "employee": { "$ref": "#/components/schemas/AuthUser" }
                   }
                 }
               }
@@ -145,7 +145,7 @@
           },
           "404": {
             "$ref": "#/components/responses/ErrorResponse",
-            "description": "User not found"
+            "description": "Employee not found"
           },
           "500": {
             "$ref": "#/components/responses/ErrorResponse",
@@ -157,7 +157,7 @@
     "/auth/forgot-password": {
       "post": {
         "summary": "Request password reset token",
-        "description": "Sends a password reset token to the user's email if the email is registered.",
+        "description": "Sends a password reset token to the employee's email if the email is registered.",
         "operationId": "forgotPassword",
         "requestBody": {
           "required": true,
@@ -192,7 +192,7 @@
           },
           "404": {
             "$ref": "#/components/responses/ErrorResponse",
-            "description": "User not found"
+            "description": "Employee not found"
           },
           "500": {
             "$ref": "#/components/responses/ErrorResponse",
@@ -203,8 +203,8 @@
     },
     "/auth/reset-password": {
       "post": {
-        "summary": "Reset user password",
-        "description": "Resets a user's password using a provided token and new password.",
+        "summary": "Reset employee password",
+        "description": "Resets a employee's password using a provided token and new password.",
         "operationId": "resetPassword",
         "requestBody": {
           "required": true,
@@ -239,7 +239,7 @@
           },
           "404": {
             "$ref": "#/components/responses/ErrorResponse",
-            "description": "User not found"
+            "description": "Employee not found"
           },
           "500": {
             "$ref": "#/components/responses/ErrorResponse",
@@ -250,8 +250,8 @@
     },
     "/auth/change-password": {
       "post": {
-        "summary": "Change user password",
-        "description": "Changes a user's password by verifying the current password.",
+        "summary": "Change employee password",
+        "description": "Changes a employee's password by verifying the current password.",
         "operationId": "changePassword",
         "requestBody": {
           "required": true,
@@ -293,8 +293,8 @@
     },
     "/auth/totp/setup": {
       "post": {
-        "summary": "Setup TOTP for user",
-        "description": "Generates a TOTP secret and returns the otpauth URL for configuring TOTP on a user account.",
+        "summary": "Setup TOTP for employee",
+        "description": "Generates a TOTP secret and returns the otpauth URL for configuring TOTP on a employee account.",
         "operationId": "totpSetup",
         "requestBody": {
           "required": true,
@@ -325,7 +325,7 @@
           },
           "404": {
             "$ref": "#/components/responses/ErrorResponse",
-            "description": "User not found"
+            "description": "Employee not found"
           },
           "500": {
             "$ref": "#/components/responses/ErrorResponse",
@@ -336,8 +336,8 @@
     },
     "/auth/totp/verify": {
       "post": {
-        "summary": "Verify TOTP for user",
-        "description": "Verifies a TOTP token for a user. If the token is valid, enables TOTP for the user and issues new access and refresh tokens.",
+        "summary": "Verify TOTP for employee",
+        "description": "Verifies a TOTP token for a employee. If the token is valid, enables TOTP for the employee and issues new access and refresh tokens.",
         "operationId": "totpVerify",
         "requestBody": {
           "required": true,
@@ -361,7 +361,7 @@
                       "type": "string",
                       "example": "TOTP verified successfully"
                     },
-                    "user": { "$ref": "#/components/schemas/AuthUser" }
+                    "employee": { "$ref": "#/components/schemas/AuthUser" }
                   }
                 }
               }
@@ -373,7 +373,7 @@
           },
           "404": {
             "$ref": "#/components/responses/ErrorResponse",
-            "description": "User not found or TOTP not set up"
+            "description": "Employee not found or TOTP not set up"
           },
           "500": {
             "$ref": "#/components/responses/ErrorResponse",
@@ -385,7 +385,7 @@
     "/auth/resend-verification": {
       "post": {
         "summary": "Resend email verification code",
-        "description": "Resends a TOTP email verification code to the specified user email, if the user exists and has not verified their email.",
+        "description": "Resends a TOTP email verification code to the specified employee email, if the employee exists and has not verified their email.",
         "operationId": "resendVerification",
         "requestBody": {
           "required": true,
@@ -420,7 +420,7 @@
           },
           "404": {
             "$ref": "#/components/responses/ErrorResponse",
-            "description": "User not found"
+            "description": "Employee not found"
           },
           "500": {
             "$ref": "#/components/responses/ErrorResponse",
@@ -431,8 +431,8 @@
     },
     "/auth/refresh-token": {
       "post": {
-        "summary": "Verify a user authentication request",
-        "description": "Verifies a TOTP token for a standard user. If the token is valid, enables TOTP for the user and issues new access and refresh tokens.",
+        "summary": "Verify a employee authentication request",
+        "description": "Verifies a TOTP token for a standard employee. If the token is valid, enables TOTP for the employee and issues new access and refresh tokens.",
         "operationId": "refreshToken",
         "requestBody": {
           "required": true,
@@ -452,7 +452,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "accessToken": { "type": "string" }
+                    "access_token": { "type": "string" }
                   }
                 }
               }
@@ -464,7 +464,7 @@
           },
           "401": {
             "$ref": "#/components/responses/ErrorResponse",
-            "description": "User not authorized or refresh token expired"
+            "description": "Employee not authorized or refresh token expired"
           },
           "500": {
             "$ref": "#/components/responses/ErrorResponse",
@@ -509,90 +509,90 @@
     "schemas": {
       "AuthRefreshTokenRequestBody": {
         "type": "object",
-        "description": "Request body for refreshing a token, to be used by all users",
+        "description": "Request body for refreshing a token, to be used by all employees",
         "properties": {
-          "refreshToken": {
+          "refresh_token": {
             "type": "string",
             "description": "The refresh token"
           }
         },
-        "required": ["refreshToken", "userType"]
+        "required": ["refresh_token"]
       },
       "AuthSignUpRequestBody": {
         "type": "object",
-        "description": "Request body for signing up a user, only to be used by admin users or operator users",
+        "description": "Request body for signing up a employee, only to be used by admin employees or operator employees",
         "properties": {
           "email": {
             "type": "string",
             "format": "email",
-            "description": "The user's email address"
+            "description": "The employee's email address"
           },
           "password": {
             "type": "string",
-            "description": "The user's password"
+            "description": "The employee's password"
           }
         },
-        "required": ["email", "password", "userType"]
+        "required": ["email", "password"]
       },
       "AuthSignInRequestBody": {
         "type": "object",
-        "description": "Request body for signing in a user, only to be used by admin users or operator users",
+        "description": "Request body for signing in a employee, only to be used by admin employees or operator employees",
         "properties": {
           "email": {
             "type": "string",
             "format": "email",
-            "description": "The user's email address"
+            "description": "The employee's email address"
           },
           "password": {
             "type": "string",
-            "description": "The user's password"
+            "description": "The employee's password"
           }
         },
-        "required": ["email", "password", "userType"]
+        "required": ["email", "password"]
       },
       "AuthUser": {
         "type": "object",
         "properties": {
-          "userId": {
+          "employee_id": {
             "type": "string",
-            "description": "The unique ID of the user"
+            "description": "The unique ID of the employee"
           },
           "email": {
             "type": "string",
             "format": "email",
-            "description": "The user's email address"
+            "description": "The employee's email address"
           },
-          "lastActiveAt": {
+          "last_active_at": {
             "type": "string",
             "format": "date-time",
             "nullable": true,
-            "description": "The last time the user was active"
+            "description": "The last time the employee was active"
           },
-          "accessToken": {
+          "access_token": {
             "type": "string",
-            "description": "JWT access token for user authentication",
+            "description": "JWT access token for employee authentication",
             "nullable": true
           },
-          "refreshToken": {
+          "refresh_token": {
             "type": "string",
-            "description": "JWT refresh token for user session renewal",
+            "description": "JWT refresh token for employee session renewal",
             "nullable": true
           },
-          "authEmailVerified": {
+          "auth_email_verified": {
             "type": "boolean",
             "description": "Indicates if the email is verified",
             "nullable": true
           },
-          "authTotpVerifiedAt": {
+          "auth_totp_verified_at": {
             "type": "string",
             "format": "date-time",
             "nullable": true,
             "description": "Timestamp of the last TOTP verification"
           },
-          "authTotpEnabled": {
+          "auth_totp_enabled": {
             "type": "boolean",
             "nullable": true,
-            "description": "Indicates if TOTP is enabled for the user"
+            "description": "Indicates if TOTP is enabled for the employee"
           }
         }
       },
@@ -602,14 +602,14 @@
           "email": {
             "type": "string",
             "format": "email",
-            "description": "The admin or operator user's email address"
+            "description": "The admin or operator employee's email address"
           },
           "token": {
             "type": "string",
-            "description": "TOTP verification code sent to the user's email"
+            "description": "TOTP verification code sent to the employee's email"
           }
         },
-        "required": ["email", "token", "userType"]
+        "required": ["email", "token"]
       },
       "AuthResendVerificationRequestBody": {
         "type": "object",
@@ -617,10 +617,10 @@
           "email": {
             "type": "string",
             "format": "email",
-            "description": "The email address of the user requesting the verification code."
+            "description": "The email address of the employee requesting the verification code."
           }
         },
-        "required": ["email", "userType"]
+        "required": ["email"]
       },
       "AuthForgotPasswordRequestBody": {
         "type": "object",
@@ -628,29 +628,29 @@
           "email": {
             "type": "string",
             "format": "email",
-            "description": "The email address of the user requesting the password reset token."
+            "description": "The email address of the employee requesting the password reset token."
           }
         },
-        "required": ["email", "userType"]
+        "required": ["email"]
       },
       "AuthResetPasswordBody": {
         "type": "object",
         "properties": {
-          "newPassword": {
+          "new_password": {
             "type": "string",
-            "description": "The user's new password"
+            "description": "The employee's new password"
           },
           "token": {
             "type": "string",
-            "description": "The reset password token sent to the user's email"
+            "description": "The reset password token sent to the employee's email"
           },
           "email": {
             "type": "string",
             "format": "email",
-            "description": "The email address of the user (optional if userId is provided in the session)"
+            "description": "The email address of the employee (optional if employee_id is provided in the session)"
           }
         },
-        "required": ["newPassword", "token", "userType"]
+        "required": ["new_password", "token"]
       },
       "AuthChangePasswordRequestBody": {
         "type": "object",
@@ -658,18 +658,18 @@
           "email": {
             "type": "string",
             "format": "email",
-            "description": "The email address of the user"
+            "description": "The email address of the employee"
           },
-          "currentPassword": {
+          "current_password": {
             "type": "string",
-            "description": "The user's current password"
+            "description": "The employee's current password"
           },
-          "newPassword": {
+          "new_password": {
             "type": "string",
-            "description": "The user's new password"
+            "description": "The employee's new password"
           }
         },
-        "required": ["email", "currentPassword", "newPassword", "userType"]
+        "required": ["email", "current_password", "new_password"]
       },
       "AuthTOTPSetupRequestBody": {
         "type": "object",
@@ -677,10 +677,10 @@
           "email": {
             "type": "string",
             "format": "email",
-            "description": "Email address of the user for whom TOTP is being set up"
+            "description": "Email address of the employee for whom TOTP is being set up"
           }
         },
-        "required": ["email", "userType"]
+        "required": ["email"]
       },
       "AuthTOTPVerifyRequestBody": {
         "type": "object",
@@ -688,14 +688,14 @@
           "email": {
             "type": "string",
             "format": "email",
-            "description": "Email address of the user verifying TOTP"
+            "description": "Email address of the employee verifying TOTP"
           },
           "token": {
             "type": "string",
             "description": "The TOTP token to verify"
           }
         },
-        "required": ["email", "token", "userType"]
+        "required": ["email", "token"]
       },
       "ErrorResponse": {
         "type": "object",
