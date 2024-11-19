@@ -3,9 +3,9 @@ module.exports = {
   async up(queryInterface) {
     await queryInterface.sequelize.transaction(async (transaction) => {
       await queryInterface.createTable(
-        'customer_addresses',
+        'addresses',
         {
-          customer_address_id: {
+          id: {
             type: DataTypes.STRING,
             primaryKey: true,
             allowNull: false,
@@ -43,7 +43,7 @@ module.exports = {
             allowNull: false,
             references: {
               model: 'customers',
-              key: 'customer_id',
+              key: 'id',
             },
           },
           created_at: {
@@ -66,7 +66,7 @@ module.exports = {
 
   async down(queryInterface) {
     return queryInterface.sequelize.transaction(async (transaction) => {
-      await queryInterface.dropTable('customer_addresses', { transaction });
+      await queryInterface.dropTable('addresses', { transaction });
     });
   },
 };

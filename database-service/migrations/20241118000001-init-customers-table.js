@@ -5,7 +5,7 @@ module.exports = {
       await queryInterface.createTable(
         'customers',
         {
-          customer_id: {
+          id: {
             type: DataTypes.STRING,
             primaryKey: true,
             allowNull: false,

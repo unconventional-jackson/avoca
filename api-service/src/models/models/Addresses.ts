@@ -14,49 +14,21 @@ import {
   PrimaryKey,
   Table,
 } from '@sequelize/core/decorators-legacy';
+import { Address as AvocaAddress } from '@unconventional-jackson/avoca-external-api';
 import { Tagged } from 'type-fest';
 import { v4 as uuidv4 } from 'uuid';
 
-import { Customer, CustomerModel } from './Customers';
-import { Entity } from './types';
+import { CustomerModel, InternalCustomer } from './Customers';
+import { Entity, Nullable } from './types';
 
-export type CustomerAddressId = Tagged<string, 'CustomerAddressId'>;
+export type AddressId = Tagged<string, 'AddressId'>;
 
-export interface CustomerAddress extends Entity {
+export interface InternalAddress extends Entity, Nullable<AvocaAddress> {
   /**
-   * (AVOCA) The unique identifier for the customer address. If provided by the Avoca API, we use that ID; Avoca might refer to it as (id)
+   * (AVOCA) The unique identifier for the customer address
+   * We use type-fest to tag this as an AddressId
    */
-  customer_address_id?: CustomerAddressId;
-
-  /**
-   * (AVOCA) The street address of the customer
-   */
-  street?: string | null;
-
-  /**
-   * (AVOCA) The street address (line 2) of the customer
-   */
-  street_line_2?: string | null;
-
-  /**
-   * (AVOCA) The city of the customer
-   */
-  city?: string | null;
-
-  /**
-   * (AVOCA) The state of the customer
-   */
-  state?: string | null;
-
-  /**
-   * (AVOCA) The zip of the customer
-   */
-  zip?: string | null;
-
-  /**
-   * (AVOCA) The country of the customer
-   */
-  country?: string | null;
+  id: AddressId;
 
   /**
    * (CUSTOM) The customer that this address is associated with (Implied by Avoca)
@@ -66,21 +38,21 @@ export interface CustomerAddress extends Entity {
   /**
    * (CUSTOM) The customer that this address is associated with (Resolved by a joined query)
    */
-  customer?: Customer | null;
+  customer?: InternalCustomer | null;
 }
 
 @Table({
   timestamps: true,
   freezeTableName: true,
-  tableName: 'customer_addresses',
+  tableName: 'addresses',
 })
-export class CustomerAddressModel extends Model<
-  InferAttributes<CustomerAddressModel>,
-  InferCreationAttributes<CustomerAddressModel>
+export class AddressModel extends Model<
+  InferAttributes<AddressModel>,
+  InferCreationAttributes<AddressModel>
 > {
   @PrimaryKey
   @Attribute(DataTypes.STRING)
-  declare customer_address_id: CreationOptional<CustomerAddressId>;
+  declare id: CreationOptional<AddressId>;
 
   @Attribute(DataTypes.STRING)
   declare street: string | null;
@@ -109,9 +81,9 @@ export class CustomerAddressModel extends Model<
   })
   declare customer?: NonAttribute<CustomerModel>;
 
-  toJSON(): CustomerAddress {
-    return super.toJSON();
+  toJSON() {
+    return super.toJSON() as AvocaAddress;
   }
 }
 
-export const getCustomerAddressId = () => uuidv4() as CustomerAddressId;
+export const getAddressId = () => uuidv4() as AddressId;

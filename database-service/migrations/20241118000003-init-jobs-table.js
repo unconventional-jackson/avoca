@@ -5,7 +5,7 @@ module.exports = {
       await queryInterface.createTable(
         'jobs',
         {
-          job_id: {
+          id: {
             type: DataTypes.STRING,
             primaryKey: true,
             allowNull: false,
@@ -27,19 +27,19 @@ module.exports = {
             allowNull: false,
             references: {
               model: 'customers',
-              key: 'customer_id',
+              key: 'id',
             },
           },
           address_id: {
             type: DataTypes.STRING,
             allowNull: false,
             references: {
-              model: 'customer_addresses',
-              key: 'customer_address_id',
+              model: 'addresses',
+              key: 'id',
             },
           },
           notes: {
-            type: DataTypes.TEXT,
+            type: DataTypes.JSON,
             allowNull: true,
           },
           work_status: {

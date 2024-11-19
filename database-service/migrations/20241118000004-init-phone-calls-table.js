@@ -27,7 +27,7 @@ module.exports = {
             allowNull: true,
             references: {
               model: 'customers',
-              key: 'customer_id',
+              key: 'id',
             },
           },
           phone_number: {
@@ -39,7 +39,7 @@ module.exports = {
             allowNull: true,
             references: {
               model: 'jobs',
-              key: 'job_id',
+              key: 'id',
             },
           },
           employee_id: {

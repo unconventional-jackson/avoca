@@ -15,38 +15,24 @@ import {
   PrimaryKey,
   Table,
 } from '@sequelize/core/decorators-legacy';
+import { Job as AvocaJob, Note, Schedule } from '@unconventional-jackson/avoca-external-api';
 import { Tagged } from 'type-fest';
 import { v4 as uuidv4 } from 'uuid';
 
-import { CustomerAddress, CustomerAddressId, CustomerAddressModel } from './CustomerAddresses';
-import { Customer, CustomerId, CustomerModel } from './Customers';
-import { Employee, EmployeeModel } from './Employees';
+import { AddressId, AddressModel } from './Addresses';
+import { CustomerId, CustomerModel } from './Customers';
+import { EmployeeModel } from './Employees';
 import { PhoneCallModel } from './PhoneCalls';
-import { Entity } from './types';
+import { Entity, Nullable } from './types';
 
 export type JobId = Tagged<string, 'JobId'>;
 
-export interface Job extends Entity {
+export interface InternalJob extends Entity, Nullable<AvocaJob> {
   /**
    * The unique identifier for the job
    * (AVOCA) returns this as id
    */
-  job_id?: JobId;
-
-  /**
-   * (AVOCA) The invoice number for the job
-   */
-  invoice_number?: string | null;
-
-  /**
-   * (AVOCA) The name of the job
-   */
-  name?: string | null;
-
-  /**
-   * (AVOCA) The description of the job
-   */
-  description?: string | null;
+  id?: JobId;
 
   /**
    * (AVOCA) The customer associated with the job
@@ -54,85 +40,9 @@ export interface Job extends Entity {
   customer_id?: CustomerId;
 
   /**
-   * (AVOCA) The customer entity associated with the job
-   */
-  customer?: Customer | null;
-
-  /**
    * (AVOCA) The customer's address associated with the job
    */
-  address_id?: CustomerAddressId;
-
-  /**
-   * (AVOCA) The customer's address entity associated with the job
-   */
-  address?: CustomerAddress | null;
-
-  /**
-   * (AVOCA) Notes on the job
-   */
-  notes?: string | null;
-
-  /**
-   * (AVOCA) The status of the job
-   */
-  work_status?:
-    | 'unscheduled'
-    | 'scheduled'
-    | 'in_progress'
-    | 'complete_rated'
-    | 'complete_unrated'
-    | 'user_canceled'
-    | 'pro_canceled'
-    | null;
-
-  /**
-   * (AVOCA) Work status timestamps
-   */
-  work_timestamps?: {
-    started_at?: string | null;
-    completed_at?: string | null;
-    on_my_way_at?: string | null;
-  } | null;
-
-  /**
-   * (AVOCA) The schedule for the job
-   */
-  schedule?: {
-    scheduled_start?: string | null;
-    scheduled_end?: string | null;
-    arrival_window?: string | null;
-  } | null;
-
-  /**
-   * (AVOCA) The total amount for the job
-   */
-  total_amount?: number | null;
-
-  /**
-   * (AVOCA) The outstanding balance for the job
-   */
-  outstanding_balance?: number | null;
-
-  /**
-   * (AVOCA) The assigned employees for the job;
-   */
-  assigned_employees?: Employee[] | null;
-
-  /**
-   * (AVOCA) The tags associated with the job
-   */
-  tags?: string[] | null;
-
-  /**
-   * (AVOCA) The original estimate id for the job
-   */
-  original_estimate_id?: string | null;
-
-  /**
-   * (AVOCA) The original estimate for the job
-   */
-  lead_source?: string | null;
+  address_id?: AddressId;
 }
 
 @Table({
@@ -143,7 +53,7 @@ export interface Job extends Entity {
 export class JobModel extends Model<InferAttributes<JobModel>, InferCreationAttributes<JobModel>> {
   @PrimaryKey
   @Attribute(DataTypes.STRING)
-  declare job_id: CreationOptional<JobId>;
+  declare id: CreationOptional<JobId>;
 
   @Attribute(DataTypes.STRING)
   declare invoice_number: string | null;
@@ -165,15 +75,15 @@ export class JobModel extends Model<InferAttributes<JobModel>, InferCreationAttr
 
   @Attribute(DataTypes.STRING)
   @NotNull
-  declare address_id: CustomerAddressId;
-  @BelongsTo(() => CustomerAddressModel, {
+  declare address_id: AddressId;
+  @BelongsTo(() => AddressModel, {
     foreignKey: 'address_id',
     foreignKeyConstraints: true,
   })
-  declare address: NonAttribute<CustomerAddressModel>;
+  declare address: NonAttribute<AddressModel>;
 
-  @Attribute(DataTypes.TEXT)
-  declare notes: string | null;
+  @Attribute(DataTypes.JSON)
+  declare notes: Note[] | null;
 
   @Attribute(DataTypes.STRING)
   declare work_status:
@@ -194,11 +104,7 @@ export class JobModel extends Model<InferAttributes<JobModel>, InferCreationAttr
   } | null;
 
   @Attribute(DataTypes.JSON)
-  declare schedule: {
-    scheduled_start?: string | null;
-    scheduled_end?: string | null;
-    arrival_window?: string | null;
-  } | null;
+  declare schedule: Schedule | null;
 
   @Attribute(DataTypes.FLOAT)
   declare total_amount: number | null;
@@ -227,8 +133,8 @@ export class JobModel extends Model<InferAttributes<JobModel>, InferCreationAttr
   })
   declare phone_calls: NonAttribute<PhoneCallModel[]>;
 
-  toJSON(): Job {
-    return super.toJSON();
+  toJSON() {
+    return super.toJSON() as AvocaJob;
   }
 }
 

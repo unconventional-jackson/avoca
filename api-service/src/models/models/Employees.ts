@@ -7,14 +7,15 @@ import {
   Model,
 } from '@sequelize/core';
 import { Attribute, NotNull, PrimaryKey, Table } from '@sequelize/core/decorators-legacy';
+import { Employee as AvocaEmployee } from '@unconventional-jackson/avoca-external-api';
 import { Tagged } from 'type-fest';
 import { v4 as uuidv4 } from 'uuid';
 
-import { Entity } from './types';
+import { Entity, Nullable } from './types';
 
 export type EmployeeId = Tagged<string, 'EmployeeId'>;
 
-export interface Employee extends Entity {
+export interface InternalEmployee extends Entity, Nullable<AvocaEmployee> {
   /**
    * (AVOCA) The unique identifier for the employee
    * Note Avoca refers to this as (id)
@@ -66,59 +67,6 @@ export interface Employee extends Entity {
    * (CUSTOM) The employee's refresh token
    */
   auth_refresh_token?: string | null;
-
-  /**
-   * (AVOCA) The URL to the employee's avatar
-   */
-  avatar_url?: string | null;
-
-  /**
-   * (AVOCA) The color hex for the employee
-   */
-  color_hex?: string | null;
-
-  /**
-   * (AVOCA) The first name of the employee
-   */
-  first_name?: string | null;
-
-  /**
-   * (AVOCA) The last name of the employee
-   */
-  last_name?: string | null;
-
-  /**
-   * (AVOCA) The mobile phone number of the employee
-   */
-  mobile_number?: string | null;
-
-  /**
-   * (AVOCA) The role of the employee
-   */
-  role?: string | null;
-
-  /**
-   * (AVOCA) The permissions of the employee
-   */
-  permissions?: {
-    can_add_and_edit_job?: boolean;
-    can_be_booked_online?: boolean;
-    can_call_and_text_with_customers?: boolean;
-    can_chat_with_customers?: boolean;
-    can_delete_and_cancel_job?: boolean;
-    can_edit_message_on_invoice?: boolean;
-    can_see_street_view_data?: boolean;
-    can_share_job?: boolean;
-    can_take_payment_see_prices?: boolean;
-    can_see_customers?: boolean;
-    can_see_full_schedule?: boolean;
-    can_see_future_jobs?: boolean;
-    can_see_marketing_campaigns?: boolean;
-    can_see_reporting?: boolean;
-    can_edit_settings?: boolean;
-    is_point_of_contact?: boolean;
-    is_admin?: boolean;
-  } | null;
 }
 
 @Table({
@@ -201,9 +149,9 @@ export class EmployeeModel extends Model<
     is_admin?: boolean;
   } | null;
 
-  toJSON(): Employee {
-    return super.toJSON();
+  toJSON() {
+    return super.toJSON() as InternalEmployee;
   }
 }
 
-export const getUserId = () => uuidv4() as EmployeeId;
+export const getEmployeeId = () => uuidv4() as EmployeeId;
