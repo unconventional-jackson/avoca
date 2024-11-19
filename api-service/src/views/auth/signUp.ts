@@ -1,14 +1,14 @@
+import { NodeLogger } from '@unconventional-code/observability-sdk';
 import {
   AuthSignUpRequestBody,
   ErrorResponse,
   SignUp201Response,
 } from '@unconventional-jackson/avoca-internal-api';
-import { NodeLogger } from '@unconventional-code/observability-sdk';
 import { hash } from 'bcrypt';
 import { Request, Response } from 'express';
 import * as speakeasy from 'speakeasy';
 
-import { getUserId, UserModel } from '../../models/models/Users';
+import { EmployeeModel, getEmployeeId } from '../../models/models/Employees';
 import { sendSendGridEmail } from '../../services/sendSendGridEmail';
 
 export async function signUpView(
@@ -33,7 +33,7 @@ export async function signUpView(
     }
     const password = req.body.password;
 
-    const maybeUser = await UserModel.findOne({
+    const maybeUser = await EmployeeModel.findOne({
       where: {
         email,
       },
@@ -49,17 +49,16 @@ export async function signUpView(
 
     const authTotpSecret = secret.ascii;
 
-    const user = await UserModel.create({
-      userId: getUserId(),
+    const user = await EmployeeModel.create({
+      employee_id: getEmployeeId(),
       email,
-      authPasswordHash,
-      authEmailVerified: false,
-      authEmailVerificationToken: authTotpSecret,
-      authTotpSecret,
-      authStatus: 'pendingVerification',
+      auth_password_hash: authPasswordHash,
+      auth_email_verified: false,
+      auth_totp_secret: authTotpSecret,
+      auth_status: 'pendingVerification',
     });
 
-    log.info('User created', { userId: user.userId });
+    log.info('User created', { employee_id: user.employee_id });
 
     const verificationCode = speakeasy.totp({
       secret: authTotpSecret,

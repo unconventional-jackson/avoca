@@ -1,9 +1,10 @@
 import { ErrorResponse, VerifyEmail200Response } from '@unconventional-jackson/avoca-internal-api';
 import { Express } from 'express';
+import * as speakeasy from 'speakeasy';
 import request from 'supertest';
 
 import { main } from '../../app';
-import { UserModel } from '../../models/models/Users';
+import { EmployeeModel, getEmployeeId } from '../../models/models/Employees';
 import * as SendGrid from '../../services/sendSendGridEmail';
 
 describe('views/Auth/verifyEmail', () => {
@@ -17,24 +18,27 @@ describe('views/Auth/verifyEmail', () => {
   describe('success cases', () => {
     describe('when the email and token are valid', () => {
       it('should verify the email successfully', async () => {
-        const userModelFindOneSpy = jest.spyOn(UserModel, 'findOne');
+        const userModelFindOneSpy = jest.spyOn(EmployeeModel, 'findOne');
+
+        const email = getEmployeeId();
 
         // Sign up the user first
         await request(app).post('/auth/signup').send({
-          email: 'test@example.com',
+          email,
           password: 'password123',
         });
 
-        // Fetch the created user and update to have a valid verification token
-        await UserModel.update(
-          { authEmailVerificationToken: 'valid_token' },
-          { where: { email: 'test@example.com' } }
-        );
+        const employee = await EmployeeModel.findOne({ where: { email } });
+        const token = speakeasy.totp({
+          secret: employee?.auth_totp_secret ?? '',
+          encoding: 'ascii',
+          digits: 6,
+        });
 
-        // Perform verify email request (without using userId in headers)
+        // Perform verify email request (without using employee_id in headers)
         const response = await request(app).post('/auth/verify-email').send({
-          email: 'test@example.com',
-          token: 'valid_token',
+          email,
+          token,
         });
 
         const body = response.body as VerifyEmail200Response;
@@ -42,13 +46,12 @@ describe('views/Auth/verifyEmail', () => {
         expect(body.message).toBe('Email verified successfully.');
 
         // Verify the user was updated in the database
-        const updatedUser = await UserModel.findOne({ where: { email: 'test@example.com' } });
+        const updatedUser = await EmployeeModel.findOne({ where: { email } });
         expect(userModelFindOneSpy).toHaveBeenCalledWith({
-          where: { email: 'test@example.com' },
+          where: { email },
         });
-        expect(updatedUser?.authEmailVerified).toBe(true);
-        expect(updatedUser?.authEmailVerificationToken).toBeNull();
-        expect(updatedUser?.authStatus).toBe('active');
+        expect(updatedUser?.auth_email_verified).toBe(true);
+        expect(updatedUser?.auth_status).toBe('active');
       });
     });
   });
@@ -94,20 +97,23 @@ describe('views/Auth/verifyEmail', () => {
     describe('when the email is invalid', () => {
       it('throws an error', async () => {
         // Sign up the user first
+        const email = getEmployeeId();
         await request(app).post('/auth/signup').send({
-          email: 'other@example.com',
+          email,
           password: 'password123',
         });
 
-        // Update user to have a valid verification token
-        await UserModel.update(
-          { authEmailVerificationToken: 'valid_token' },
-          { where: { email: 'other@example.com' } }
-        );
+        const employee = await EmployeeModel.findOne({ where: { email } });
+
+        const token = speakeasy.totp({
+          secret: employee?.auth_totp_secret ?? '',
+          encoding: 'ascii',
+          digits: 6,
+        });
 
         const response = await request(app).post('/auth/verify-email').send({
           email: 'test@example.com', // Incorrect email
-          token: 'valid_token',
+          token,
         });
 
         const body = response.body as ErrorResponse;
@@ -124,12 +130,6 @@ describe('views/Auth/verifyEmail', () => {
           email: 'test@example.com',
           password: 'password123',
         });
-
-        // Update user to have a valid verification token
-        await UserModel.update(
-          { authEmailVerificationToken: 'valid_token' },
-          { where: { email: 'test@example.com' } }
-        );
 
         const response = await request(app).post('/auth/verify-email').send({
           email: 'test@example.com',

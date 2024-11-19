@@ -4,7 +4,7 @@ import { Express } from 'express';
 import request from 'supertest';
 
 import { main } from '../../app';
-import { getUserId, UserModel } from '../../models/models/Users';
+import { EmployeeModel, getEmployeeId } from '../../models/models/Employees';
 import * as SendSendGridEmail from '../../services/sendSendGridEmail';
 
 describe('views/Auth/signIn', () => {
@@ -25,8 +25,8 @@ describe('views/Auth/signIn', () => {
         });
 
         // Mark the user's email as verified before signing in
-        await UserModel.update(
-          { authEmailVerified: true },
+        await EmployeeModel.update(
+          { auth_email_verified: true },
           { where: { email: 'test@example.com' } }
         );
 
@@ -84,11 +84,11 @@ describe('views/Auth/signIn', () => {
     describe('when the admin does not have a password hash', () => {
       it('throws an error', async () => {
         // Create a user without a password hash
-        await UserModel.create({
-          userId: getUserId(),
+        await EmployeeModel.create({
+          employee_id: getEmployeeId(),
           email: 'test_no_hash@example.com',
-          authPasswordHash: null,
-          authEmailVerified: true,
+          auth_password_hash: null,
+          auth_email_verified: true,
         });
 
         const response = await request(app).post('/auth/signin').send({
@@ -105,11 +105,11 @@ describe('views/Auth/signIn', () => {
     describe('when the email is not verified', () => {
       it('throws an error', async () => {
         // Create a user with an unverified email
-        await UserModel.create({
-          userId: getUserId(),
+        await EmployeeModel.create({
+          employee_id: getEmployeeId(),
           email: 'test_unverified@example.com',
-          authPasswordHash: 'hashed_password',
-          authEmailVerified: false, // Email is not verified
+          auth_password_hash: 'hashed_password',
+          auth_email_verified: false, // Email is not verified
         });
 
         const response = await request(app).post('/auth/signin').send({
@@ -125,11 +125,11 @@ describe('views/Auth/signIn', () => {
     describe('when the password is invalid', () => {
       it('throws an error', async () => {
         // Create a user with a correct password hash
-        await UserModel.create({
-          userId: getUserId(),
+        await EmployeeModel.create({
+          employee_id: getEmployeeId(),
           email: 'test_wrong_password@example.com',
-          authPasswordHash: await hash('correct_password', 10),
-          authEmailVerified: true,
+          auth_password_hash: await hash('correct_password', 10),
+          auth_email_verified: true,
         });
 
         const response = await request(app).post('/auth/signin').send({

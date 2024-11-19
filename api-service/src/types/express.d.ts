@@ -3,7 +3,7 @@ import 'express';
 declare module 'express' {
   interface Locals {
     correlation?: string;
-    userId?: string;
+    employee_id?: string;
   }
 
   export interface Response {

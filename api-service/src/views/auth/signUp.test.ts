@@ -3,7 +3,7 @@ import { Express } from 'express';
 import request from 'supertest';
 
 import { main } from '../../app';
-import { UserModel } from '../../models/models/Users';
+import { EmployeeModel } from '../../models/models/Employees';
 import * as SendGrid from '../../services/sendSendGridEmail';
 
 describe('views/Auth/signUp', () => {
@@ -14,8 +14,8 @@ describe('views/Auth/signUp', () => {
   describe('success cases', () => {
     describe('when a new user signs up', () => {
       it('should create a new user and send a verification email', async () => {
-        const userModelFindOneSpy = jest.spyOn(UserModel, 'findOne');
-        const userModelCreateSpy = jest.spyOn(UserModel, 'create');
+        const userModelFindOneSpy = jest.spyOn(EmployeeModel, 'findOne');
+        const userModelCreateSpy = jest.spyOn(EmployeeModel, 'create');
 
         const sendSendGridEmailSpy = jest.spyOn(SendGrid, 'sendSendGridEmail').mockResolvedValue();
 

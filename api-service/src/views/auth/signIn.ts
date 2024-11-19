@@ -1,17 +1,17 @@
+import { NodeLogger } from '@unconventional-code/observability-sdk';
 import {
   AuthSignInRequestBody,
   AuthUser,
   ErrorResponse,
   SignIn200Response,
 } from '@unconventional-jackson/avoca-internal-api';
-import { NodeLogger } from '@unconventional-code/observability-sdk';
 import { compare } from 'bcrypt';
 import { Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
 import { DateTime } from 'luxon';
 import ms from 'ms';
 
-import { UserModel } from '../../models/models/Users';
+import { EmployeeModel } from '../../models/models/Employees';
 import { AccessTokenPayload, RefreshTokenPayload } from '../../utils/auth';
 import {
   ACCESS_TOKEN_TIMEOUT,
@@ -42,7 +42,7 @@ export async function signInView(
     }
     const password = req.body.password;
 
-    const user = await UserModel.findOne({
+    const user = await EmployeeModel.findOne({
       where: {
         email,
       },
@@ -54,19 +54,19 @@ export async function signInView(
     }
 
     // Check if the email is verified before proceeding with password validation
-    if (!user.authEmailVerified) {
+    if (!user.auth_email_verified) {
       res.status(401).json({ error: 'Email not verified' });
       return;
     }
 
-    if (!user.authPasswordHash) {
+    if (!user.auth_password_hash) {
       res.status(500).json({ error: 'User does not have a password hash yet' });
       return;
     }
 
     let isValidPassword = false;
     try {
-      isValidPassword = await compare(password, user.authPasswordHash);
+      isValidPassword = await compare(password, user.auth_password_hash);
     } catch (error) {
       log.error(error);
       res.status(401).json({ error: 'Invalid credentials' });
@@ -79,17 +79,19 @@ export async function signInView(
     }
 
     if (
-      user.authTotpVerifiedAt &&
-      DateTime.fromJSDate(user.authTotpVerifiedAt).diffNow().toMillis() > ms(TOTP_VERIFY_TIMEOUT)
+      user.auth_totp_verified_at &&
+      DateTime.fromJSDate(user.auth_totp_verified_at).diffNow().toMillis() > ms(TOTP_VERIFY_TIMEOUT)
     ) {
       const unchallengedAuthUser: AuthUser = {
-        userId: user.userId,
+        employee_id: user.employee_id,
         email: user.email,
-        authEmailVerified: user.authEmailVerified,
-        authTotpVerifiedAt: user.authTotpVerifiedAt?.toISOString() || null,
-        authTotpEnabled: user.authTotpEnabled,
+        auth_email_verified: user.auth_email_verified,
+        auth_totp_verified_at: user.auth_totp_verified_at?.toISOString() || null,
+        auth_totp_enabled: user.auth_totp_enabled,
       };
-      res.status(200).json({ message: 'TOTP verification expired', user: unchallengedAuthUser });
+      res
+        .status(200)
+        .json({ message: 'TOTP verification expired', employee: unchallengedAuthUser });
       return;
     }
 
@@ -98,7 +100,7 @@ export async function signInView(
 
     const accessTokenPayload: AccessTokenPayload = {
       email: user.email,
-      userId: user.userId,
+      employee_id: user.employee_id,
     };
     const accessToken = jwt.sign(accessTokenPayload, config.ACCESS_TOKEN_SECRET, {
       expiresIn: ACCESS_TOKEN_TIMEOUT,
@@ -106,25 +108,25 @@ export async function signInView(
 
     const refreshTokenPayload: RefreshTokenPayload = {
       email: user.email,
-      userId: user.userId,
+      employee_id: user.employee_id,
     };
     const refreshToken = jwt.sign(refreshTokenPayload, config.ACCESS_TOKEN_SECRET, {
       expiresIn: REFRESH_TOKEN_TIMEOUT,
     });
 
     const authUser: AuthUser = {
-      userId: user.userId,
+      employee_id: user.employee_id,
       email: user.email,
-      accessToken,
-      refreshToken,
-      authEmailVerified: user.authEmailVerified,
-      authTotpVerifiedAt: user.authTotpVerifiedAt?.toISOString() || null,
-      authTotpEnabled: user.authTotpEnabled,
+      access_token: accessToken,
+      refresh_token: refreshToken,
+      auth_email_verified: user.auth_email_verified,
+      auth_totp_verified_at: user.auth_totp_verified_at?.toISOString() || null,
+      auth_totp_enabled: user.auth_totp_enabled,
     };
 
     res.status(200).json({
       message: 'Sign-in successful',
-      user: authUser,
+      employee: authUser,
     });
     return;
   } catch (error) {

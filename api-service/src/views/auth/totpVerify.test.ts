@@ -4,7 +4,7 @@ import * as speakeasy from 'speakeasy';
 import request from 'supertest';
 
 import { main } from '../../app';
-import { UserModel } from '../../models/models/Users';
+import { EmployeeModel } from '../../models/models/Employees';
 
 describe('views/Auth/totpVerify', () => {
   let app: Express;
@@ -20,9 +20,9 @@ describe('views/Auth/totpVerify', () => {
           password: 'password123',
         });
 
-        await UserModel.update(
+        await EmployeeModel.update(
           {
-            authTotpSecret: 'SECRET_TOTP_KEY',
+            auth_totp_secret: 'SECRET_TOTP_KEY',
           },
           { where: { email: 'test@example.com' } }
         );
@@ -110,9 +110,9 @@ describe('views/Auth/totpVerify', () => {
           password: 'password123',
         });
 
-        await UserModel.update(
+        await EmployeeModel.update(
           {
-            authTotpSecret: 'SECRET_TOTP_KEY',
+            auth_totp_secret: 'SECRET_TOTP_KEY',
           },
           { where: { email: 'test_invalid_totp@example.com' } }
         );

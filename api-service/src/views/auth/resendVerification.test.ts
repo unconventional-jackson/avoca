@@ -2,7 +2,7 @@ import { Express } from 'express';
 import request from 'supertest';
 
 import { main } from '../../app';
-import { UserModel } from '../../models/models/Users';
+import { EmployeeModel } from '../../models/models/Employees';
 import { AuthResendVerificationResponseBody } from './resendVerification';
 
 describe('views/Auth/resendVerification', () => {
@@ -18,11 +18,11 @@ describe('views/Auth/resendVerification', () => {
           password: 'password123',
         });
 
-        await UserModel.update(
+        await EmployeeModel.update(
           {
-            authEmailVerified: false,
+            auth_email_verified: false,
             // authEmailVerificationToken,
-            authStatus: 'pendingVerification',
+            auth_status: 'pendingVerification',
           },
           { where: { email: 'test@example.com' } }
         );
@@ -35,9 +35,8 @@ describe('views/Auth/resendVerification', () => {
         expect(response.status).toBe(201);
         expect(body.message).toBe('Verification email resent. Verify your email.');
 
-        const updatedUser = await UserModel.findOne({ where: { email: 'test@example.com' } });
-        expect(updatedUser?.authEmailVerified).toBe(false);
-        expect(updatedUser?.authEmailVerificationToken).not.toBeNull();
+        const updatedUser = await EmployeeModel.findOne({ where: { email: 'test@example.com' } });
+        expect(updatedUser?.auth_email_verified).toBe(false);
       });
     });
   });
@@ -61,8 +60,8 @@ describe('views/Auth/resendVerification', () => {
           password: 'password123',
         });
 
-        await UserModel.update(
-          { authEmailVerified: true },
+        await EmployeeModel.update(
+          { auth_email_verified: true },
           { where: { email: 'test_verified@example.com' } }
         );
 

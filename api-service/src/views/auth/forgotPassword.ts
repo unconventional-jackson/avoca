@@ -1,9 +1,9 @@
-import { AuthForgotPasswordRequestBody } from '@unconventional-jackson/avoca-internal-api';
 import { NodeLogger } from '@unconventional-code/observability-sdk';
+import { AuthForgotPasswordRequestBody } from '@unconventional-jackson/avoca-internal-api';
 import { Request, Response } from 'express';
 import * as speakeasy from 'speakeasy';
 
-import { UserModel } from '../../models/models/Users';
+import { EmployeeModel } from '../../models/models/Employees';
 import { sendSendGridEmail } from '../../services/sendSendGridEmail';
 
 export type AuthForgotPasswordResponseBody = {
@@ -27,7 +27,7 @@ export async function forgotPasswordView(
     }
     const email = req.body.email;
 
-    const user = await UserModel.findOne({
+    const user = await EmployeeModel.findOne({
       where: {
         email,
       },
@@ -36,9 +36,14 @@ export async function forgotPasswordView(
       res.status(404).json({ error: 'User not found' });
       return;
     }
+
+    if (!user.auth_totp_secret) {
+      res.status(400).json({ error: 'TOTP not set up' });
+      return;
+    }
     // TODO: Generate a random password reset token
     const resetToken = speakeasy.totp({
-      secret: user.authEmailVerificationToken ?? '',
+      secret: user.auth_totp_secret,
       encoding: 'ascii',
       digits: 6,
     });

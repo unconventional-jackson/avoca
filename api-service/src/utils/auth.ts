@@ -1,9 +1,9 @@
 export interface RefreshTokenPayload {
-  userId: string;
+  employee_id: string;
   email: string;
 }
 
 export interface AccessTokenPayload {
-  userId: string;
+  employee_id: string;
   email: string;
 }

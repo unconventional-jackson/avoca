@@ -7,7 +7,7 @@ import {
 import { Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
 
-import { UserModel } from '../../models/models/Users';
+import { EmployeeModel } from '../../models/models/Employees';
 import { AccessTokenPayload, RefreshTokenPayload } from '../../utils/auth';
 import { ACCESS_TOKEN_TIMEOUT } from '../../utils/constants';
 import { getConfig } from '../../utils/secrets';
@@ -22,11 +22,11 @@ export async function refreshTokenView(
   });
 
   try {
-    const { refreshToken } = req.body;
-    if (!refreshToken) {
-      res.status(400).json({ error: 'Missing refresh token in the body' });
+    if (!req.body.refresh_token) {
+      res.status(400).json({ error: 'Missing refresh_token in the body' });
       return;
     }
+    const refreshToken = req.body.refresh_token;
 
     const config = await getConfig();
 
@@ -36,30 +36,30 @@ export async function refreshTokenView(
     }
 
     const typeSafeDecoded = decoded as RefreshTokenPayload;
-    const userId = typeSafeDecoded.userId;
-    const user = await UserModel.findByPk(userId);
+    const employeeId = typeSafeDecoded.employee_id;
+    const user = await EmployeeModel.findByPk(employeeId);
 
     if (
-      !user?.authRefreshToken ||
-      user?.authRefreshToken !== refreshToken ||
+      !user?.auth_refresh_token ||
+      user?.auth_refresh_token !== refreshToken ||
       !user?.email ||
-      !user?.userId
+      !user?.employee_id
     ) {
       throw new Error('Missing or invalid properties for token');
     }
     log.info('User is refreshing their token', {
-      userId: user.userId,
+      employee_id: user.employee_id,
     });
     const accessTokenPayload: AccessTokenPayload = {
       email: user.email,
-      userId: user.userId,
+      employee_id: user.employee_id,
     };
     const accessToken = jwt.sign(accessTokenPayload, config.ACCESS_TOKEN_SECRET, {
       expiresIn: ACCESS_TOKEN_TIMEOUT,
     });
 
     res.status(200).json({
-      accessToken,
+      access_token: accessToken,
     });
     return;
   } catch (error) {

@@ -7,7 +7,7 @@ import {
 import { Request, Response } from 'express';
 import * as speakeasy from 'speakeasy';
 
-import { UserModel } from '../../models/models/Users';
+import { EmployeeModel } from '../../models/models/Employees';
 import { TOTP_DOMAIN } from '../../utils/constants';
 
 export type AuthTOTPSetupResponseBody = {
@@ -31,26 +31,26 @@ export async function totpSetupView(
     }
     const email = req.body.email;
 
-    const user = await UserModel.findOne({ where: { email } });
+    const user = await EmployeeModel.findOne({ where: { email } });
 
     if (!user) {
       res.status(404).json({ error: 'User not found' });
       return;
     }
-    let authTotpSecret = user.authTotpSecret;
-    if (!authTotpSecret) {
+    let auth_totp_secret = user.auth_totp_secret;
+    if (!auth_totp_secret) {
       log.info('User does not have TOTP secret set up, generating one', {
-        userId: user.userId,
+        employee_id: user.employee_id,
       });
       const secret = speakeasy.generateSecret({ length: 20, name: TOTP_DOMAIN });
-      authTotpSecret = secret.ascii;
-      user.authTotpSecret = authTotpSecret;
+      auth_totp_secret = secret.ascii;
+      user.auth_totp_secret = auth_totp_secret;
       await user.save();
     }
 
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const otpauth_url = speakeasy.otpauthURL({
-      secret: authTotpSecret,
+      secret: auth_totp_secret,
       label: TOTP_DOMAIN,
       issuer: TOTP_DOMAIN,
     });

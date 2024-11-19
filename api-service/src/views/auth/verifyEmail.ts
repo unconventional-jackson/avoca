@@ -8,7 +8,7 @@ import {
 import { Request, Response } from 'express';
 import * as speakeasy from 'speakeasy';
 
-import { UserModel } from '../../models/models/Users';
+import { EmployeeModel } from '../../models/models/Employees';
 
 export async function verifyEmailView(
   req: Request<unknown, unknown, AuthVerifyEmailRequestBody>,
@@ -29,19 +29,19 @@ export async function verifyEmailView(
       res.status(400).json({ message: 'Missing token in the body.' });
       return;
     }
-    const user = await UserModel.findOne({ where: { email } });
-    if (!user) {
+    const employee = await EmployeeModel.findOne({ where: { email } });
+    if (!employee) {
       res.status(404).json({ error: 'User not found' });
       return;
     }
 
-    if (!user.authEmailVerificationToken) {
-      res.status(400).json({ error: 'No verification token found for user' });
+    if (!employee.auth_totp_secret) {
+      res.status(400).json({ error: 'No TOTP secret found for employee' });
       return;
     }
 
     const isValidToken = speakeasy.totp.verify({
-      secret: user.authEmailVerificationToken,
+      secret: employee.auth_totp_secret,
       encoding: 'ascii',
       token,
       digits: 6,
@@ -53,21 +53,20 @@ export async function verifyEmailView(
       return;
     }
 
-    await user.update({
-      authEmailVerified: true,
-      authStatus: 'active',
-      authEmailVerificationToken: null,
+    await employee.update({
+      auth_email_verified: true,
+      auth_status: 'active',
     });
 
     const authUser: AuthUser = {
-      userId: user.userId,
-      email: user.email,
-      authEmailVerified: user.authEmailVerified,
-      authTotpEnabled: user.authTotpEnabled,
-      authTotpVerifiedAt: user?.authTotpVerifiedAt?.toISOString() || null,
+      employee_id: employee.employee_id,
+      email: employee.email,
+      auth_email_verified: employee.auth_email_verified,
+      auth_totp_enabled: employee.auth_totp_enabled,
+      auth_totp_verified_at: employee?.auth_totp_verified_at?.toISOString() || null,
     };
 
-    res.status(200).json({ message: 'Email verified successfully.', user: authUser });
+    res.status(200).json({ message: 'Email verified successfully.', employee: authUser });
     return;
   } catch (error) {
     log.error(error);

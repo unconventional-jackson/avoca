@@ -4,10 +4,11 @@ import {
 } from '@unconventional-jackson/avoca-internal-api';
 import { compare } from 'bcrypt';
 import { Express } from 'express';
+import * as speakeasy from 'speakeasy';
 import request from 'supertest';
 
 import { main } from '../../app';
-import { UserModel } from '../../models/models/Users';
+import { EmployeeModel, getEmployeeId } from '../../models/models/Employees';
 describe('views/Auth/resetPassword', () => {
   let app: Express;
 
@@ -19,22 +20,23 @@ describe('views/Auth/resetPassword', () => {
     describe('when the password reset is successful', () => {
       it('updates the password and returns success', async () => {
         // Sign up a user
+        const email = getEmployeeId();
         await request(app).post('/auth/signup').send({
-          email: 'test@example.com',
+          email,
           password: 'old_password',
         });
 
-        // Set a reset password token
-        const resetToken = 'valid_token';
-        await UserModel.update(
-          { authResetPasswordToken: resetToken },
-          { where: { email: 'test@example.com' } }
-        );
+        const employee = await EmployeeModel.findOne({ where: { email } });
+        const token = speakeasy.totp({
+          secret: employee?.auth_totp_secret ?? '',
+          encoding: 'ascii',
+          digits: 6,
+        });
 
         // Call the reset-password endpoint
         const response = await request(app).post('/auth/reset-password').send({
           newPassword: 'newPassword123',
-          token: resetToken,
+          token,
         });
 
         const body = response.body as ResetPassword200Response;
@@ -42,9 +44,14 @@ describe('views/Auth/resetPassword', () => {
         expect(body.message).toBe('Password updated');
 
         // Verify the password was updated
-        const updatedAdmin = await UserModel.findOne({ where: { email: 'test@example.com' } });
-        if (updatedAdmin?.authPasswordHash) {
-          const isPasswordUpdated = await compare('newPassword123', updatedAdmin.authPasswordHash);
+        const updatedEmployee = await EmployeeModel.findOne({
+          where: { email },
+        });
+        if (updatedEmployee?.auth_password_hash) {
+          const isPasswordUpdated = await compare(
+            'newPassword123',
+            updatedEmployee.auth_password_hash
+          );
           expect(isPasswordUpdated).toBe(true);
         } else {
           throw new Error('Password hash is not set');
@@ -113,16 +120,11 @@ describe('views/Auth/resetPassword', () => {
     describe('when the token is invalid', () => {
       it('throws an error', async () => {
         // Sign up a user and set a valid token
+        const email = getEmployeeId();
         await request(app).post('/auth/signup').send({
-          email: 'test_invalid_token@example.com',
+          email,
           password: 'password123',
         });
-
-        // Set a valid token for the user in the database
-        await UserModel.update(
-          { authResetPasswordToken: 'valid_token' },
-          { where: { email: 'test_invalid_token@example.com' } }
-        );
 
         // Call reset password with an invalid token
         const response = await request(app).post('/auth/reset-password').send({

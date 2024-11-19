@@ -6,7 +6,7 @@ import { Express } from 'express';
 import request from 'supertest';
 
 import { main } from '../../app';
-import { getUserId, UserModel } from '../../models/models/Users';
+import { EmployeeModel, getEmployeeId } from '../../models/models/Employees';
 import { AuthChangePasswordResponseBody } from './changePassword';
 
 describe('views/Auth/changePassword', () => {
@@ -18,46 +18,45 @@ describe('views/Auth/changePassword', () => {
   describe('success cases', () => {
     describe('when the password change is successful', () => {
       it('updates the password and returns success', async () => {
-        // Step 1: Sign up a user
+        // Step 1: Sign up an employee
         await request(app).post('/auth/signup').send({
           email: 'test@example.com',
           password: 'old_password',
         });
 
         // Simulate email verification
-        await UserModel.update(
-          { authEmailVerified: true },
+        await EmployeeModel.update(
+          { auth_email_verified: true },
           { where: { email: 'test@example.com' } }
         );
 
-        // Step 2: Sign in the user (to simulate a session)
+        // Step 2: Sign in the employee (to simulate a session)
         const signInResponse = await request(app).post('/auth/signin').send({
           email: 'test@example.com',
           password: 'old_password',
         });
 
-        const email = (signInResponse.body as SignIn200Response)?.user?.email; // Extract email
+        const email = (signInResponse.body as SignIn200Response)?.employee?.email; // Extract email
         expect(email).toBeDefined(); // Ensure email is defined
         expect(signInResponse.status).toBe(200);
 
         // Step 3: Change the password using the email
-        const response = await request(app)
-          .post('/auth/change-password')
-          .send({
-            currentPassword: 'old_password',
-            newPassword: 'newPassword123',
-          })
-          .set('email', email!); // Use email for subsequent requests
+        const response = await request(app).post('/auth/change-password').send({
+          current_password: 'old_password',
+          new_password: 'newPassword123',
+        });
 
         const body = response.body as AuthChangePasswordResponseBody;
         expect(response.status).toBe(200);
         expect(body.message).toBe('Password updated');
 
         // Step 4: Verify the password was updated
-        const updatedAdmin = await UserModel.findOne({ where: { email: 'test@example.com' } });
+        const updatedEmployee = await EmployeeModel.findOne({
+          where: { email: 'test@example.com' },
+        });
         const isPasswordUpdated =
-          !!updatedAdmin?.authPasswordHash &&
-          compare('newPassword123', updatedAdmin?.authPasswordHash);
+          !!updatedEmployee?.auth_password_hash &&
+          compare('newPassword123', updatedEmployee?.auth_password_hash);
         expect(isPasswordUpdated).toBe(true);
       });
     });
@@ -88,7 +87,7 @@ describe('views/Auth/changePassword', () => {
       });
     });
 
-    describe('when the user is not found', () => {
+    describe('when the employee is not found', () => {
       it('throws an error', async () => {
         const email = 'nonexistent@example.com'; // Use a non-existent email
         const response = await request(app)
@@ -104,14 +103,14 @@ describe('views/Auth/changePassword', () => {
         expect(body.error).toBe('User not found');
       });
     });
-    describe('when the user has no password set', () => {
+    describe('when the employee has no password set', () => {
       it('throws an error', async () => {
-        // Create a user without a password
-        const user = await UserModel.create({
-          userId: getUserId(),
+        // Create a employee without a password
+        const employee = await EmployeeModel.create({
+          employee_id: getEmployeeId(),
           email: 'test_no_password@example.com',
-          authEmailVerified: false,
-          authPasswordHash: null, // No password set
+          auth_email_verified: false,
+          auth_password_hash: null, // No password set
         });
 
         const response = await request(app)
@@ -120,7 +119,7 @@ describe('views/Auth/changePassword', () => {
             currentPassword: 'old_password',
             newPassword: 'newPassword123',
           })
-          .set('email', user.email);
+          .set('email', employee.email);
 
         const body = response.body as ErrorResponse;
         expect(response.status).toBe(400);
@@ -130,7 +129,7 @@ describe('views/Auth/changePassword', () => {
 
     describe('when the current password does not match', () => {
       it('throws an error', async () => {
-        // Step 1: Sign up a user
+        // Step 1: Sign up a employee
         const email = 'test@example.com';
         await request(app).post('/auth/signup').send({
           email,
@@ -138,7 +137,7 @@ describe('views/Auth/changePassword', () => {
         });
 
         // Simulate email verification
-        await UserModel.update({ authEmailVerified: true }, { where: { email } });
+        await EmployeeModel.update({ auth_email_verified: true }, { where: { email } });
 
         // Step 3: Try changing the password with an incorrect current password
         const response = await request(app)

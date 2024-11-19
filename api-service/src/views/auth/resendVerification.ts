@@ -1,9 +1,9 @@
-import { AuthResendVerificationRequestBody } from '@unconventional-jackson/avoca-internal-api';
 import { NodeLogger } from '@unconventional-code/observability-sdk';
+import { AuthResendVerificationRequestBody } from '@unconventional-jackson/avoca-internal-api';
 import { Request, Response } from 'express';
 import * as speakeasy from 'speakeasy';
 
-import { UserModel } from '../../models/models/Users';
+import { EmployeeModel } from '../../models/models/Employees';
 import { sendSendGridEmail } from '../../services/sendSendGridEmail';
 
 export type AuthResendVerificationResponseBody = {
@@ -27,7 +27,7 @@ export async function resendVerificationView(
     }
     const email = req.body.email;
 
-    const user = await UserModel.findOne({
+    const user = await EmployeeModel.findOne({
       where: {
         email,
       },
@@ -38,13 +38,18 @@ export async function resendVerificationView(
       return;
     }
 
-    if (user.authEmailVerified) {
+    if (user.auth_email_verified) {
       res.status(400).json({ error: 'Email already registered' });
       return;
     }
 
+    if (!user?.auth_totp_secret) {
+      res.status(400).json({ error: 'TOTP not set up' });
+      return;
+    }
+
     const verificationCode = speakeasy.totp({
-      secret: user.authEmailVerificationToken ?? '',
+      secret: user.auth_totp_secret,
       encoding: 'ascii',
       digits: 6,
     });

@@ -2,7 +2,7 @@ import { Express } from 'express';
 import request from 'supertest';
 
 import { main } from '../../app';
-import { UserId, UserModel } from '../../models/models/Users';
+import { EmployeeId, EmployeeModel } from '../../models/models/Employees';
 import { AuthTOTPSetupResponseBody } from './totpSetup';
 
 describe('views/Auth/totpSetup', () => {
@@ -19,14 +19,14 @@ describe('views/Auth/totpSetup', () => {
           password: 'password123',
         });
 
-        // Extract userId from the signup response
-        const user = await UserModel.findOne({ where: { email: 'test@example.com' } });
-        const userId = user?.userId as UserId;
+        // Extract employee_id from the signup response
+        const user = await EmployeeModel.findOne({ where: { email: 'test@example.com' } });
+        const employee_id = user?.employee_id as EmployeeId;
 
-        // Call the TOTP setup endpoint, setting the userId in the headers
+        // Call the TOTP setup endpoint, setting the employee_id in the headers
         const response = await request(app)
           .post('/auth/totp/setup')
-          .set('userId', userId) // Set the userId header to simulate an authenticated user
+          .set('employee_id', employee_id) // Set the employee_id header to simulate an authenticated user
           .send();
 
         const body = response.body as AuthTOTPSetupResponseBody;
@@ -34,8 +34,8 @@ describe('views/Auth/totpSetup', () => {
         expect(body.otpauth_url).toContain('otpauth://totp/');
 
         // Verify that the user has the TOTP secret stored
-        const updatedUser = await UserModel.findOne({ where: { email: 'test@example.com' } });
-        expect(updatedUser?.authTotpSecret).not.toBeNull();
+        const updatedUser = await EmployeeModel.findOne({ where: { email: 'test@example.com' } });
+        expect(updatedUser?.auth_totp_secret).not.toBeNull();
       });
     });
   });

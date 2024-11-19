@@ -1,13 +1,14 @@
+import { NodeLogger } from '@unconventional-code/observability-sdk';
 import {
   AuthResetPasswordBody,
   ErrorResponse,
   ResetPassword200Response,
 } from '@unconventional-jackson/avoca-internal-api';
-import { NodeLogger } from '@unconventional-code/observability-sdk';
 import { hash } from 'bcrypt';
 import { Request, Response } from 'express';
+import * as speakeasy from 'speakeasy';
 
-import { UserModel } from '../../models/models/Users';
+import { EmployeeModel } from '../../models/models/Employees';
 
 export async function resetPasswordView(
   req: Request<unknown, unknown, AuthResetPasswordBody>,
@@ -19,11 +20,11 @@ export async function resetPasswordView(
   });
 
   try {
-    if (!req.body.newPassword) {
-      res.status(400).json({ message: 'Missing newPassword in the body.' });
+    if (!req.body.new_password) {
+      res.status(400).json({ message: 'Missing new_password in the body.' });
       return;
     }
-    const newPassword = req.body.newPassword;
+    const newPassword = req.body.new_password;
 
     if (!req.body.token) {
       res.status(400).json({ message: 'Missing token in the body.' });
@@ -31,33 +32,38 @@ export async function resetPasswordView(
     }
     const token = req.body.token;
 
-    const user = await UserModel.findOne({ where: { email: req.body.email } });
+    const employee = await EmployeeModel.findOne({ where: { email: req.body.email } });
 
-    // else if (res.locals.userId) {
-    //   user = await UserModel.findByPk(res.locals.userId);
+    // else if (res.locals.employee_id) {
+    //   employee = await UserModel.findByPk(res.locals.employee_id);
     // }
-    if (!user) {
+    if (!employee) {
       res.status(404).json({ error: 'User not found' });
       return;
     }
 
-    if (!user.authResetPasswordToken) {
-      res.status(400).json({ error: 'Token not found' });
+    if (!employee.auth_totp_secret) {
+      res.status(404).json({ error: 'TOTP not set up' });
       return;
     }
 
-    if (token !== user.authResetPasswordToken) {
-      res.status(400).json({ error: 'Invalid token' });
+    const verified = speakeasy.totp.verify({
+      secret: employee.auth_totp_secret,
+      encoding: 'ascii',
+      token,
+    });
+
+    if (!verified) {
+      res.status(400).json({ error: 'Invalid TOTP token' });
       return;
     }
 
     /**
-     * Hash the new password and update the user
+     * Hash the new password and update the employee
      */
     const authPasswordHash = await hash(newPassword, 10);
-    await user.update({
-      authPasswordHash,
-      authResetPasswordToken: null, // Clear the token
+    await employee.update({
+      auth_password_hash: authPasswordHash,
     });
 
     res.status(200).json({ message: 'Password updated' });

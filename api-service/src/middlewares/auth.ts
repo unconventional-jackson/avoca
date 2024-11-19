@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
 
-import { UserModel } from '../models/models/Users';
+import { EmployeeModel } from '../models/models/Employees';
 import { getConfig } from '../utils/secrets';
 
 export async function ensureToken(req: Request, res: Response, next: NextFunction) {
@@ -16,10 +16,10 @@ export async function ensureToken(req: Request, res: Response, next: NextFunctio
   try {
     const config = await getConfig();
     const decodedToken = jwt.verify(bearerToken, config.ACCESS_TOKEN_SECRET);
-    if (typeof decodedToken !== 'string' && 'userId' in decodedToken) {
-      const user = await UserModel.findByPk(decodedToken.userId);
-      if (user) {
-        res.locals.userId = user.userId;
+    if (typeof decodedToken !== 'string' && 'employee_id' in decodedToken) {
+      const employee = await EmployeeModel.findByPk(decodedToken.employee_id);
+      if (employee) {
+        res.locals.employee_id = employee.employee_id;
         next();
         return;
       }
