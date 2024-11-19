@@ -20,14 +20,19 @@ export async function resetPasswordView(
   });
 
   try {
+    if (!req.body.email) {
+      res.status(400).json({ error: 'Missing email in the body.' });
+      return;
+    }
+
     if (!req.body.new_password) {
-      res.status(400).json({ message: 'Missing new_password in the body.' });
+      res.status(400).json({ error: 'Missing new_password in the body.' });
       return;
     }
     const newPassword = req.body.new_password;
 
     if (!req.body.token) {
-      res.status(400).json({ message: 'Missing token in the body.' });
+      res.status(400).json({ error: 'Missing token in the body.' });
       return;
     }
     const token = req.body.token;

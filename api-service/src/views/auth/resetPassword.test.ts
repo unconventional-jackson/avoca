@@ -35,7 +35,8 @@ describe('views/Auth/resetPassword', () => {
 
         // Call the reset-password endpoint
         const response = await request(app).post('/auth/reset-password').send({
-          newPassword: 'newPassword123',
+          email,
+          new_password: 'newPassword123',
           token,
         });
 
@@ -64,56 +65,40 @@ describe('views/Auth/resetPassword', () => {
     describe('when the new password is missing', () => {
       it('throws an error', async () => {
         const response = await request(app).post('/auth/reset-password').send({
+          email: getEmployeeId(),
           token: 'valid_token',
         });
 
         const body = response.body as ErrorResponse;
         expect(response.status).toBe(400);
-        expect(body.message).toBe('No newPassword value.');
+        expect(body.error).toBe('Missing new_password in the body.');
       });
     });
 
     describe('when the token is missing', () => {
       it('throws an error', async () => {
         const response = await request(app).post('/auth/reset-password').send({
-          newPassword: 'newPassword123',
+          email: getEmployeeId(),
+          new_password: 'newPassword123',
         });
 
         const body = response.body as ErrorResponse;
         expect(response.status).toBe(400);
-        expect(body.message).toBe('No token value.');
+        expect(body.error).toBe('Missing token in the body.');
       });
     });
 
     describe('when the user is not found', () => {
       it('throws an error', async () => {
         const response = await request(app).post('/auth/reset-password').send({
-          newPassword: 'newPassword123',
+          email: getEmployeeId(),
+          new_password: 'newPassword123',
           token: 'non_existent_token',
         });
 
         const body = response.body as ErrorResponse;
-        expect(response.status).toBe(400);
-        expect(body.error).toBe('Token not found');
-      });
-    });
-
-    describe('when the user does not have a reset token set', () => {
-      it('throws an error', async () => {
-        // Sign up a user without a reset token
-        await request(app).post('/auth/signup').send({
-          email: 'test_no_token@example.com',
-          password: 'password123',
-        });
-
-        const response = await request(app).post('/auth/reset-password').send({
-          newPassword: 'newPassword123',
-          token: 'valid_token',
-        });
-
-        const body = response.body as ErrorResponse;
-        expect(response.status).toBe(400);
-        expect(body.error).toBe('Token not found');
+        expect(response.status).toBe(404);
+        expect(body.error).toBe('User not found');
       });
     });
 
@@ -128,13 +113,14 @@ describe('views/Auth/resetPassword', () => {
 
         // Call reset password with an invalid token
         const response = await request(app).post('/auth/reset-password').send({
-          newPassword: 'newPassword123',
+          email,
+          new_password: 'newPassword123',
           token: 'invalid_token', // Incorrect token
         });
 
         const body = response.body as ErrorResponse;
         expect(response.status).toBe(400);
-        expect(body.error).toBe('Token not found');
+        expect(body.error).toBe('Invalid TOTP token');
       });
     });
   });

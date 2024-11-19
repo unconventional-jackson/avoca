@@ -77,7 +77,7 @@ describe('views/Auth/signIn', () => {
 
         const body = response.body as ErrorResponse;
         expect(response.status).toBe(404);
-        expect(body.error).toBe('Admin not found');
+        expect(body.error).toBe('User not found');
       });
     });
 
@@ -98,7 +98,7 @@ describe('views/Auth/signIn', () => {
 
         const body = response.body as ErrorResponse;
         expect(response.status).toBe(500);
-        expect(body.error).toBe('Admin does not have a password hash yet');
+        expect(body.error).toBe('User does not have a password hash yet');
       });
     });
 

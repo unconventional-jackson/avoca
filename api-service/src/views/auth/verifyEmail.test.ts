@@ -77,7 +77,7 @@ describe('views/Auth/verifyEmail', () => {
 
         const body = response.body as ErrorResponse;
         expect(response.status).toBe(400);
-        expect(body.message).toBe('No token value.');
+        expect(body.message).toBe('Missing token in the body.');
       });
     });
 
@@ -138,7 +138,7 @@ describe('views/Auth/verifyEmail', () => {
 
         const body = response.body as ErrorResponse;
         expect(response.status).toBe(400);
-        expect(body.error).toBe('Invalid token for verifying email');
+        expect(body.error).toBe('Invalid or expired verification code');
       });
     });
   });

@@ -4,7 +4,7 @@ import * as speakeasy from 'speakeasy';
 import request from 'supertest';
 
 import { main } from '../../app';
-import { EmployeeModel } from '../../models/models/Employees';
+import { EmployeeModel, getEmployeeId } from '../../models/models/Employees';
 
 describe('views/Auth/totpVerify', () => {
   let app: Express;
@@ -40,7 +40,7 @@ describe('views/Auth/totpVerify', () => {
         });
 
         const body = response.body as TotpVerify200Response;
-        expect(response.status).toBe(201);
+        expect(response.status).toBe(200);
         expect(body.message).toBe('TOTP verified successfully');
       });
     });
@@ -67,7 +67,7 @@ describe('views/Auth/totpVerify', () => {
 
         const body = response.body as ErrorResponse;
         expect(response.status).toBe(400);
-        expect(body.message).toBe('No token value.');
+        expect(body.message).toBe('Missing token in the body.');
       });
     });
 
@@ -85,19 +85,26 @@ describe('views/Auth/totpVerify', () => {
     });
     describe('when the TOTP secret is not set up', () => {
       it('throws an error', async () => {
+        const email = getEmployeeId();
         // Create a user without a TOTP secret
         await request(app).post('/auth/signup').send({
-          email: 'test_no_totp@example.com',
+          email,
           password: 'password123',
         });
 
+        await EmployeeModel.update(
+          {
+            auth_totp_secret: null,
+          },
+          { where: { email } }
+        );
         const response = await request(app).post('/auth/totp/verify').send({
-          email: 'test_no_totp@example.com',
+          email,
           token: 'valid_token',
         });
 
         const body = response.body as ErrorResponse;
-        expect(response.status).toBe(404);
+        expect(response.status).toBe(400);
         expect(body.error).toBe('TOTP not set up');
       });
     });

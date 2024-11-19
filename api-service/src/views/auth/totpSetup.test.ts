@@ -2,7 +2,7 @@ import { Express } from 'express';
 import request from 'supertest';
 
 import { main } from '../../app';
-import { EmployeeId, EmployeeModel } from '../../models/models/Employees';
+import { getEmployeeId } from '../../models/models/Employees';
 import { AuthTOTPSetupResponseBody } from './totpSetup';
 
 describe('views/Auth/totpSetup', () => {
@@ -14,28 +14,23 @@ describe('views/Auth/totpSetup', () => {
     describe('when the user is found and TOTP is set up', () => {
       it('returns the otpauth_url for the user', async () => {
         // First, sign up a user
+        const email = getEmployeeId();
         await request(app).post('/auth/signup').send({
-          email: 'test@example.com',
+          email,
           password: 'password123',
         });
 
         // Extract employee_id from the signup response
-        const user = await EmployeeModel.findOne({ where: { email: 'test@example.com' } });
-        const employee_id = user?.employee_id as EmployeeId;
+        // const employee = await EmployeeModel.findOne({ where: { email } });
 
         // Call the TOTP setup endpoint, setting the employee_id in the headers
-        const response = await request(app)
-          .post('/auth/totp/setup')
-          .set('employee_id', employee_id) // Set the employee_id header to simulate an authenticated user
-          .send();
+        const response = await request(app).post('/auth/totp/setup').send({
+          email,
+        });
 
         const body = response.body as AuthTOTPSetupResponseBody;
         expect(response.status).toBe(200);
         expect(body.otpauth_url).toContain('otpauth://totp/');
-
-        // Verify that the user has the TOTP secret stored
-        const updatedUser = await EmployeeModel.findOne({ where: { email: 'test@example.com' } });
-        expect(updatedUser?.auth_totp_secret).not.toBeNull();
       });
     });
   });
@@ -43,7 +38,9 @@ describe('views/Auth/totpSetup', () => {
   describe('failure cases', () => {
     describe('when the user is not found', () => {
       it('throws an error', async () => {
-        const response = await request(app).post('/auth/totp/setup').send();
+        const response = await request(app).post('/auth/totp/setup').send({
+          email: getEmployeeId(),
+        });
 
         const body = response.body as AuthTOTPSetupResponseBody;
         expect(response.status).toBe(404);

@@ -39,7 +39,7 @@ export async function signUpView(
       },
     });
     if (maybeUser) {
-      res.status(400).json({ error: 'Email already registered for this user' });
+      res.status(400).json({ error: 'Email already registered' });
       return;
     }
 

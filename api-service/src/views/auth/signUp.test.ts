@@ -38,7 +38,7 @@ describe('views/Auth/signUp', () => {
           {
             to: ['test@example.com'],
             subject: 'Verify Your Email',
-            body: expect.stringContaining('Your verification token is:') as string,
+            body: expect.stringContaining('Your verification code is: ') as string,
           },
           expect.anything()
         );

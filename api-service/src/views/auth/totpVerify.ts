@@ -42,7 +42,7 @@ export async function totpVerifyView(
       return;
     }
     if (!employee.auth_totp_secret) {
-      res.status(404).json({ error: 'TOTP not set up' });
+      res.status(400).json({ error: 'TOTP not set up' });
       return;
     }
 
