@@ -1,23 +1,23 @@
-if (!process.env.MICROSOFT_SQL_SERVER_HOST) {
-  throw new Error('Missing environment variable MICROSOFT_SQL_SERVER_HOST');
+if (!process.env.POSTGRES_HOST) {
+  throw new Error('Missing environment variable POSTGRES_HOST');
 }
-const mssqlHost = process.env.MICROSOFT_SQL_SERVER_HOST ?? 'localhost';
-if (!(typeof process.env.MICROSOFT_SQL_SERVER_USER === 'string')) {
-  throw new Error('Missing environment variable MICROSOFT_SQL_SERVER_USER or secret username');
+const mssqlHost = process.env.POSTGRES_HOST ?? 'localhost';
+if (!(typeof process.env.POSTGRES_USER === 'string')) {
+  throw new Error('Missing environment variable POSTGRES_USER or secret username');
 }
-const mssqlUser = process.env.MICROSOFT_SQL_SERVER_USER;
-if (!(typeof process.env.MICROSOFT_SQL_SERVER_PASSWORD === 'string')) {
-  throw new Error('Missing environment variable MICROSOFT_SQL_SERVER_PASSWORD');
+const mssqlUser = process.env.POSTGRES_USER;
+if (!(typeof process.env.POSTGRES_PASSWORD === 'string')) {
+  throw new Error('Missing environment variable POSTGRES_PASSWORD');
 }
-const mssqlPassword = process.env.MICROSOFT_SQL_SERVER_PASSWORD;
-if (!process.env.MICROSOFT_SQL_SERVER_DB) {
-  throw new Error('Missing environment variable MICROSOFT_SQL_SERVER_DB');
+const mssqlPassword = process.env.POSTGRES_PASSWORD;
+if (!process.env.POSTGRES_DB) {
+  throw new Error('Missing environment variable POSTGRES_DB');
 }
-const mssqlDb = process.env.MICROSOFT_SQL_SERVER_DB;
-if (!process.env.MICROSOFT_SQL_SERVER_PORT) {
-  throw new Error('Missing environment variable MICROSOFT_SQL_SERVER_PORT');
+const mssqlDb = process.env.POSTGRES_DB;
+if (!process.env.POSTGRES_PORT) {
+  throw new Error('Missing environment variable POSTGRES_PORT');
 }
-const mssqlPort = parseInt(process.env.MICROSOFT_SQL_SERVER_PORT);
+const mssqlPort = parseInt(process.env.POSTGRES_PORT);
 
 module.exports = {
   local: {

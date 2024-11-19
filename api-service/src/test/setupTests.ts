@@ -45,11 +45,11 @@ if (!process.env.LOGGING_ENABLED) {
  */
 beforeEach(async () => {
   const config: IConfig = {
-    MICROSOFT_SQL_SERVER_HOST: 'localhost',
-    MICROSOFT_SQL_SERVER_USER: 'sa',
-    MICROSOFT_SQL_SERVER_PASSWORD: 'YourStrong!Passw0rd',
-    MICROSOFT_SQL_SERVER_DB: 'test',
-    MICROSOFT_SQL_SERVER_PORT: 1433,
+    POSTGRES_HOST: 'localhost',
+    POSTGRES_USER: 'sa',
+    POSTGRES_PASSWORD: 'YourStrong!Passw0rd',
+    POSTGRES_DB: 'test',
+    POSTGRES_PORT: 1433,
     APPLICATION_PORT: 4000,
     SENDGRID_API_KEY: 'sg.test',
     SENDGRID_SOURCE_EMAIL_ADDRESS: 'test@unconventionalcode.com',

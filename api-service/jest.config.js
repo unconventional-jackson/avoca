@@ -6,8 +6,7 @@ module.exports = {
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
   },
-  globalSetup: '<rootDir>/src/test/globalSetup.ts',
   setupFiles: ['<rootDir>/src/test/setup.ts'],
   setupFilesAfterEnv: ['<rootDir>/src/test/setupTests.ts'],
-  preset: 'ts-jest',
+  preset: '@shelf/jest-postgres',
 };

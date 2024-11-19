@@ -24,20 +24,21 @@ process.env.AWS_ACCOUNT_ID = 'test';
  */
 process.env.AWS_PROFILE = '';
 process.env.ENV = 'test';
-process.env.MICROSOFT_SQL_SERVER_HOST = 'localhost';
-process.env.MICROSOFT_SQL_SERVER_USER = 'sa';
-process.env.MICROSOFT_SQL_SERVER_PASSWORD = 'YourStrong!Passw0rd';
-process.env.MICROSOFT_SQL_SERVER_DB = 'test';
+process.env.POSTGRES_HOST = 'localhost';
+process.env.POSTGRES_USER = '';
+process.env.POSTGRES_PASSWORD = '';
+process.env.POSTGRES_DB = 'postgres';
+process.env.POSTGRES_PORT = '5432';
 
 import * as Config from '../utils/secrets';
 
 jest.spyOn(Config, 'getConfig').mockImplementation(async () =>
   Promise.resolve({
-    MICROSOFT_SQL_SERVER_HOST: 'localhost',
-    MICROSOFT_SQL_SERVER_USER: 'sa',
-    MICROSOFT_SQL_SERVER_PASSWORD: 'YourStrong!Passw0rd',
-    MICROSOFT_SQL_SERVER_DB: 'test',
-    MICROSOFT_SQL_SERVER_PORT: 1433,
+    POSTGRES_HOST: 'localhost',
+    POSTGRES_USER: '',
+    POSTGRES_PASSWORD: '',
+    POSTGRES_DB: 'postgres',
+    POSTGRES_PORT: 5432,
     APPLICATION_PORT: 4000,
     SENDGRID_API_KEY: 'sg.test',
     SENDGRID_SOURCE_EMAIL_ADDRESS: 'test@unconventionalcode.com',

@@ -1,5 +1,5 @@
 import { Sequelize } from '@sequelize/core';
-import { MsSqlDialect } from '@sequelize/mssql';
+import { PostgresDialect } from '@sequelize/postgres';
 import { NodeLogger } from '@unconventional-code/observability-sdk';
 
 import { IConfig } from '../utils/secrets';
@@ -18,24 +18,26 @@ let sequelize: Sequelize | null = null;
 export async function getDatabase(config: IConfig, testEnvironment = false) {
   const log = new NodeLogger({ correlation: 'system', name: 'database' });
   log.info('Creating sequelize instance', {
-    database_host: config.MICROSOFT_SQL_SERVER_HOST,
+    database_host: config.POSTGRES_HOST,
   });
   try {
     if (!sequelize) {
       sequelize = new Sequelize({
-        dialect: MsSqlDialect,
-        server: config.MICROSOFT_SQL_SERVER_HOST,
-        port: config.MICROSOFT_SQL_SERVER_PORT,
-        authentication: {
-          type: 'default',
-          options: {
-            userName: config.MICROSOFT_SQL_SERVER_USER,
-            password: config.MICROSOFT_SQL_SERVER_PASSWORD,
-          },
-        },
-        database: 'master', // config.MICROSOFT_SQL_SERVER_DB,
+        dialect: PostgresDialect,
+        host: config.POSTGRES_HOST,
+        port: config.POSTGRES_PORT,
+        user: config.POSTGRES_USER,
+        password: config.POSTGRES_PASSWORD,
+        database: config.POSTGRES_DB,
         logging: false,
-        trustServerCertificate: true,
+        ssl: ['prod', 'dev'].includes(config.ENV)
+          ? {
+              /**
+               * TODO: We want an actual signed certificate in production
+               */
+              rejectUnauthorized: false,
+            }
+          : false,
         define: {
           /**
            * Postgres uses underscored naming conventions.

@@ -20,11 +20,11 @@ export interface IConfig {
   ACCESS_TOKEN_SECRET: string;
   ENV: string;
   APPLICATION_PORT: number;
-  MICROSOFT_SQL_SERVER_HOST: string;
-  MICROSOFT_SQL_SERVER_USER: string;
-  MICROSOFT_SQL_SERVER_PASSWORD: string;
-  MICROSOFT_SQL_SERVER_DB: string;
-  MICROSOFT_SQL_SERVER_PORT: number;
+  POSTGRES_HOST: string;
+  POSTGRES_USER: string;
+  POSTGRES_PASSWORD: string;
+  POSTGRES_DB: string;
+  POSTGRES_PORT: number;
 
   SENDGRID_API_KEY: string;
   SENDGRID_SOURCE_EMAIL_ADDRESS: string;
@@ -60,39 +60,24 @@ export async function getConfig(): Promise<IConfig> {
       throw new Error('Invalid secrets');
     }
 
-    if (
-      !('MICROSOFT_SQL_SERVER_HOST' in secrets) ||
-      typeof secrets.MICROSOFT_SQL_SERVER_HOST !== 'string'
-    ) {
-      throw new Error('Missing environment variable MICROSOFT_SQL_SERVER_HOST');
+    if (!('POSTGRES_HOST' in secrets) || typeof secrets.POSTGRES_HOST !== 'string') {
+      throw new Error('Missing environment variable POSTGRES_HOST');
     }
 
-    if (
-      !('MICROSOFT_SQL_SERVER_USER' in secrets) ||
-      typeof secrets.MICROSOFT_SQL_SERVER_USER !== 'string'
-    ) {
-      throw new Error('Missing environment variable MICROSOFT_SQL_SERVER_USER');
+    if (!('POSTGRES_USER' in secrets) || typeof secrets.POSTGRES_USER !== 'string') {
+      throw new Error('Missing environment variable POSTGRES_USER');
     }
 
-    if (
-      !('MICROSOFT_SQL_SERVER_PASSWORD' in secrets) ||
-      typeof secrets.MICROSOFT_SQL_SERVER_PASSWORD !== 'string'
-    ) {
-      throw new Error('Missing environment variable MICROSOFT_SQL_SERVER_PASSWORD');
+    if (!('POSTGRES_PASSWORD' in secrets) || typeof secrets.POSTGRES_PASSWORD !== 'string') {
+      throw new Error('Missing environment variable POSTGRES_PASSWORD');
     }
 
-    if (
-      !('MICROSOFT_SQL_SERVER_DB' in secrets) ||
-      typeof secrets.MICROSOFT_SQL_SERVER_DB !== 'string'
-    ) {
-      throw new Error('Missing environment variable MICROSOFT_SQL_SERVER_DB');
+    if (!('POSTGRES_DB' in secrets) || typeof secrets.POSTGRES_DB !== 'string') {
+      throw new Error('Missing environment variable POSTGRES_DB');
     }
 
-    if (
-      !('MICROSOFT_SQL_SERVER_PORT' in secrets) ||
-      isNaN(parseInt(String(secrets.MICROSOFT_SQL_SERVER_PORT)))
-    ) {
-      throw new Error('Missing environment variable MICROSOFT_SQL_SERVER_PORT');
+    if (!('POSTGRES_PORT' in secrets) || isNaN(parseInt(String(secrets.POSTGRES_PORT)))) {
+      throw new Error('Missing environment variable POSTGRES_PORT');
     }
 
     if (!('APPLICATION_PORT' in secrets) || isNaN(parseInt(String(secrets.APPLICATION_PORT)))) {
@@ -126,11 +111,11 @@ export async function getConfig(): Promise<IConfig> {
     }
 
     config = {
-      MICROSOFT_SQL_SERVER_HOST: secrets.MICROSOFT_SQL_SERVER_HOST,
-      MICROSOFT_SQL_SERVER_USER: secrets.MICROSOFT_SQL_SERVER_USER,
-      MICROSOFT_SQL_SERVER_PASSWORD: secrets.MICROSOFT_SQL_SERVER_PASSWORD,
-      MICROSOFT_SQL_SERVER_DB: secrets.MICROSOFT_SQL_SERVER_DB,
-      MICROSOFT_SQL_SERVER_PORT: parseInt(String(secrets.MICROSOFT_SQL_SERVER_PORT)),
+      POSTGRES_HOST: secrets.POSTGRES_HOST,
+      POSTGRES_USER: secrets.POSTGRES_USER,
+      POSTGRES_PASSWORD: secrets.POSTGRES_PASSWORD,
+      POSTGRES_DB: secrets.POSTGRES_DB,
+      POSTGRES_PORT: parseInt(String(secrets.POSTGRES_PORT)),
       ACCESS_TOKEN_SECRET: secrets.ACCESS_TOKEN_SECRET,
       ENV: secrets.ENV,
       APPLICATION_PORT: parseInt(String(secrets.APPLICATION_PORT)),

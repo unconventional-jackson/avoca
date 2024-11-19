@@ -11,8 +11,8 @@ import { Attribute, BelongsTo, PrimaryKey, Table } from '@sequelize/core/decorat
 import { Tagged } from 'type-fest';
 import { v4 as uuidv4 } from 'uuid';
 
-import { Customer, CustomerId, CustomerModel } from './Customers';
-import { Employee, EmployeeId, EmployeeModel } from './Employees';
+import { CustomerId, CustomerModel, InternalCustomer } from './Customers';
+import { EmployeeId, EmployeeModel, InternalEmployee } from './Employees';
 import { JobId, JobModel } from './Jobs';
 import { Entity } from './types';
 
@@ -47,7 +47,7 @@ export interface PhoneCall extends Entity {
   /**
    * The customer entity associated with the phone call
    */
-  customer?: Customer | null;
+  customer?: InternalCustomer | null;
 
   /**
    * The phone number that the call came from
@@ -67,7 +67,7 @@ export interface PhoneCall extends Entity {
   /**
    * The employee entity associated with the phone call
    */
-  assigned_employee?: Employee | null;
+  assigned_employee?: InternalEmployee | null;
 }
 
 @Table({
