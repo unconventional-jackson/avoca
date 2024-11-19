@@ -9,7 +9,7 @@
     "@openapitools/openapi-generator-cli": "^2.9.0",
     "typescript": "*"
   },
-  "name": "@unconventional-jackson/avoca-api",
+  "name": "@unconventional-jackson/avoca-external-api",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "version": "0.0.1",
