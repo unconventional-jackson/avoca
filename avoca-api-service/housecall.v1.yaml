@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
   title: Housecall v1 API
-  version: '1.0'
+  version: "1.0"
   description: Housecall version 1 public API
   contact:
     name: Housecall Engineering
     email: apideveloper@housecallpro.com
 servers:
-  - url: 'https://api.housecallpro.com'
+  - url: "https://api.housecallpro.com"
 tags:
   - name: Customers
   - name: Employees
@@ -27,12 +27,12 @@ paths:
     get:
       summary: Get Application
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Application'
+                $ref: "#/components/schemas/Application"
       operationId: get-applications
       description: Get the application for a company.
       tags:
@@ -46,12 +46,12 @@ paths:
       summary: Enable Application
       operationId: post-application-enable
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Application'
+                $ref: "#/components/schemas/Application"
       security:
         - Application API Key: []
         - Housecall User OAuth Token: []
@@ -63,12 +63,12 @@ paths:
       summary: Disable Application
       operationId: post-application-disable
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Application'
+                $ref: "#/components/schemas/Application"
       security:
         - Application API Key: []
         - Housecall User OAuth Token: []
@@ -81,19 +81,19 @@ paths:
       tags:
         - Customers
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/PaginatedList'
+                  - $ref: "#/components/schemas/PaginatedList"
                   - type: object
                     properties:
                       customers:
                         type: array
                         items:
-                          $ref: '#/components/schemas/Customer'
+                          $ref: "#/components/schemas/Customer"
               examples:
                 example-1:
                   value:
@@ -127,7 +127,7 @@ paths:
             type: string
           in: query
           name: q
-          description: 'A query that can be used to search for a customer by name, email, mobile number and address.'
+          description: "A query that can be used to search for a customer by name, email, mobile number and address."
         - schema:
             type: number
             default: 1
@@ -181,26 +181,26 @@ paths:
       summary: Create Customer
       operationId: post-customers
       responses:
-        '201':
+        "201":
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Customer'
+                $ref: "#/components/schemas/Customer"
       description: Create a new Customer.
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CustomerCreate'
-        description: 'One of first_name, last_name, email, mobile_number, home_number, work_number are required.'
+              $ref: "#/components/schemas/CustomerCreate"
+        description: "One of first_name, last_name, email, mobile_number, home_number, work_number are required."
       tags:
         - Customers
       security:
         - Company API Key: []
         - Application API Key: []
         - Housecall User OAuth Token: []
-  '/customers/{customer_id}':
+  "/customers/{customer_id}":
     parameters:
       - schema:
           type: string
@@ -212,12 +212,12 @@ paths:
       tags:
         - Customers
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Customer'
+                $ref: "#/components/schemas/Customer"
       operationId: get-customers-customerId
       description: Get the customer via ID.
       security:
@@ -238,12 +238,12 @@ paths:
         - Customers
       operationId: put-customers-customer_id
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Customer'
+                $ref: "#/components/schemas/Customer"
       description: Update customer attributes
       security:
         - Company API Key: []
@@ -253,8 +253,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CustomerUpdate'
-  '/customers/{customer_id}/addresses':
+              $ref: "#/components/schemas/CustomerUpdate"
+  "/customers/{customer_id}/addresses":
     parameters:
       - schema:
           type: string
@@ -266,7 +266,7 @@ paths:
       tags:
         - Customers
       responses:
-        '200':
+        "200":
           description: OK
       operationId: get-customer-customer_id-addresses
       requestBody:
@@ -274,13 +274,13 @@ paths:
           application/json:
             schema:
               allOf:
-                - $ref: '#/components/schemas/PaginatedList'
+                - $ref: "#/components/schemas/PaginatedList"
                 - type: object
                   properties:
                     addresses:
                       type: array
                       items:
-                        $ref: '#/components/schemas/Address'
+                        $ref: "#/components/schemas/Address"
       description: Get all of a customer's addresses
       parameters:
         - schema:
@@ -315,21 +315,21 @@ paths:
       summary: Create an Address on a Customer
       operationId: post-customer-customer_id-addresses
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Address'
+                $ref: "#/components/schemas/Address"
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AddressCreate'
+              $ref: "#/components/schemas/AddressCreate"
       tags:
         - Customers
       description: Create an address on a customer
-  '/customers/{customer_id}/addresses/{address_id}':
+  "/customers/{customer_id}/addresses/{address_id}":
     parameters:
       - schema:
           type: string
@@ -346,12 +346,12 @@ paths:
       tags:
         - Customers
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Address'
+                $ref: "#/components/schemas/Address"
       operationId: get-customers-customer_id-addresses-address_id
       description: Get a customer's address via customer ID and address ID.
       security:
@@ -362,7 +362,7 @@ paths:
     get:
       summary: Get Employees
       responses:
-        '200':
+        "200":
           description: OK
           headers: {}
           content:
@@ -381,7 +381,7 @@ paths:
                   employees:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Employee'
+                      $ref: "#/components/schemas/Employee"
               examples:
                 example-1:
                   value:
@@ -451,7 +451,7 @@ paths:
           in: query
           name: location_ids
           description: Id of locations you want to pull from
-      description: 'Get all of the active employees in an organiztion. '
+      description: "Get all of the active employees in an organiztion. "
       tags:
         - Employees
       security:
@@ -464,19 +464,19 @@ paths:
       tags:
         - Jobs
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/PaginatedList'
+                  - $ref: "#/components/schemas/PaginatedList"
                   - type: object
                     properties:
                       jobs:
                         type: array
                         items:
-                          $ref: '#/components/schemas/Job'
+                          $ref: "#/components/schemas/Job"
               examples:
                 example-1:
                   value:
@@ -591,7 +591,7 @@ paths:
           description: Filters jobs by a single customer ID (string)
         - schema:
             type: string
-            default: '1'
+            default: "1"
           in: query
           name: page
           description: Paginated page number.
@@ -647,12 +647,12 @@ paths:
       summary: Create a Job
       operationId: post-jobs
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Job'
+                $ref: "#/components/schemas/Job"
       description: Create a job with the ID for an already existing address and customer.
       tags:
         - Jobs
@@ -660,8 +660,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/JobCreate'
-  '/jobs/{id}':
+              $ref: "#/components/schemas/JobCreate"
+  "/jobs/{id}":
     parameters:
       - schema:
           type: string
@@ -675,12 +675,12 @@ paths:
       tags:
         - Jobs
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Job'
+                $ref: "#/components/schemas/Job"
               examples:
                 example-1:
                   value:
@@ -760,8 +760,8 @@ paths:
                     updated_at: string
             application/xml:
               schema:
-                $ref: '#/components/schemas/Job'
-        '404':
+                $ref: "#/components/schemas/Job"
+        "404":
           description: Not Found
           content:
             application/json:
@@ -772,7 +772,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  '':
+                  "":
                     type: string
       operationId: get-jobs-id
       description: Get a job by ID.
@@ -785,7 +785,7 @@ paths:
           in: query
           name: expand
           description: Array of strings to expand response body
-  '/jobs/{job_id}/attachments':
+  "/jobs/{job_id}/attachments":
     parameters:
       - schema:
           type: string
@@ -796,7 +796,7 @@ paths:
       summary: Add an Attachment to a Job
       operationId: post-jobs-job_id-attachments
       responses:
-        '202':
+        "202":
           description: Accepted
           content:
             application/json:
@@ -823,7 +823,7 @@ paths:
         description: Attachments can be uploaded to a job via a file.
       tags:
         - Jobs
-  '/jobs/{job_id}/line_items':
+  "/jobs/{job_id}/line_items":
     parameters:
       - schema:
           type: string
@@ -834,7 +834,7 @@ paths:
       summary: Lists all line items for a job
       operationId: get-jobs-job_id-line-items
       responses:
-        '200':
+        "200":
           description: Ok
           content:
             application/json:
@@ -846,7 +846,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/LineItem'
+                      $ref: "#/components/schemas/LineItem"
       description: Lists all line items for a job
       tags:
         - Jobs
@@ -854,21 +854,21 @@ paths:
       summary: Add a line item to a Job
       operationId: post-jobs-job_id-line-items
       responses:
-        '201':
+        "201":
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LineItem'
+                $ref: "#/components/schemas/LineItem"
       description: Add a line item to a job. This is a rate limited request. If you intend to create multiple line items for the same job use Bulk update a job's line items request.
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LineItem'
+              $ref: "#/components/schemas/LineItem"
       tags:
         - Jobs
-  '/jobs/{job_id}/line_items/bulk_update':
+  "/jobs/{job_id}/line_items/bulk_update":
     parameters:
       - schema:
           type: string
@@ -879,14 +879,14 @@ paths:
       summary: Bulk update a job's line items
       operationId: put-jobs-job_id-line-items
       responses:
-        '200':
+        "200":
           description: Ok
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/LineItem'
+                  $ref: "#/components/schemas/LineItem"
       description: Bulk update a job's line items. If uuid not define for a line item it will be consider as a new line item for the job.
       requestBody:
         content:
@@ -894,10 +894,10 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/LineItem'
+                $ref: "#/components/schemas/LineItem"
       tags:
         - Jobs
-  '/jobs/{job_id}/line_items/{id}':
+  "/jobs/{job_id}/line_items/{id}":
     parameters:
       - schema:
           type: string
@@ -913,13 +913,13 @@ paths:
       summary: Update a single line item for a job
       operationId: update-job-line-item
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LineItem'
-        '400':
+                $ref: "#/components/schemas/LineItem"
+        "400":
           description: Bad request
           content:
             application/json:
@@ -931,8 +931,8 @@ paths:
                     description: All errors formatted in a sentence
                   attr1:
                     type: string
-                    description: 'Error message for field attr1, where attr1 would be one of the attributes for line item'
-        '404':
+                    description: "Error message for field attr1, where attr1 would be one of the attributes for line item"
+        "404":
           description: Not found
           content:
             application/json:
@@ -943,20 +943,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LineItem'
+              $ref: "#/components/schemas/LineItem"
       tags:
         - Jobs
     delete:
       summary: Delete a single line item for a job
       operationId: delete-job-line-item
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LineItem'
-        '404':
+                $ref: "#/components/schemas/LineItem"
+        "404":
           description: Not found
           content:
             application/json:
@@ -967,10 +967,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LineItem'
+              $ref: "#/components/schemas/LineItem"
       tags:
         - Jobs
-  '/jobs/{job_id}/appointments':
+  "/jobs/{job_id}/appointments":
     parameters:
       - schema:
           type: string
@@ -982,7 +982,7 @@ paths:
       tags:
         - Job Appointments
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
@@ -992,7 +992,7 @@ paths:
                   appointments:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Appointment'
+                      $ref: "#/components/schemas/Appointment"
       operationId: get-jobs-job_id-appointments
       description: Get all of the appointments for a job
       security:
@@ -1007,12 +1007,12 @@ paths:
       summary: Create appointment
       operationId: post-jobs-job_id-appointments
       responses:
-        '201':
+        "201":
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Appointment'
+                $ref: "#/components/schemas/Appointment"
       description: Add an appointment to a job.
       security:
         - Company API Key: []
@@ -1022,10 +1022,10 @@ paths:
           application/json:
             schema:
               allOf:
-                - $ref: '#/components/schemas/CreateAppointment'
+                - $ref: "#/components/schemas/CreateAppointment"
       tags:
         - Job Appointments
-  '/jobs/{job_id}/appointments/{appointment_id}':
+  "/jobs/{job_id}/appointments/{appointment_id}":
     parameters:
       - schema:
           type: string
@@ -1042,12 +1042,12 @@ paths:
       tags:
         - Job Appointments
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Appointment'
+                $ref: "#/components/schemas/Appointment"
       operationId: update-jobs-job_id-appointments
       description: Update job appointment
       security:
@@ -1057,12 +1057,12 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateAppointment'
+              $ref: "#/components/schemas/CreateAppointment"
     delete:
       summary: Delete appointment
       operationId: delete-jobs-job_id-appointments
       responses:
-        '200':
+        "200":
           description: OK
       description: Delete a job appointment.
       security:
@@ -1075,7 +1075,7 @@ paths:
               allOf: []
       tags:
         - Job Appointments
-  '/jobs/{job_id}/schedule':
+  "/jobs/{job_id}/schedule":
     parameters:
       - schema:
           type: string
@@ -1086,7 +1086,7 @@ paths:
       summary: Update job schedule
       operationId: update-job-schedule
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
@@ -1094,8 +1094,8 @@ paths:
                 type: object
                 x-examples:
                   example-1:
-                    start_time: '2019-03-27T15:08:08Z'
-                    end_time: '2019-03-27T15:08:08Z'
+                    start_time: "2019-03-27T15:08:08Z"
+                    end_time: "2019-03-27T15:08:08Z"
                     arrival_window_minutes: 60
                     assigned_employees:
                       - id: string
@@ -1136,11 +1136,11 @@ paths:
                   assigned_employees:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Employee'
+                      $ref: "#/components/schemas/Employee"
                   appointments:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Appointment'
+                      $ref: "#/components/schemas/Appointment"
                 required:
                   - start_time
                   - end_time
@@ -1148,8 +1148,8 @@ paths:
               examples:
                 example:
                   value:
-                    start_time: '2021-01-10T20:45:00'
-                    end_time: '2021-01-10T21:45:00'
+                    start_time: "2021-01-10T20:45:00"
+                    end_time: "2021-01-10T21:45:00"
                     arrival_window_minutes: 60
                     assigned_employees:
                       - id: string
@@ -1185,8 +1185,8 @@ paths:
               type: object
               x-examples:
                 example-1:
-                  start_time: '2021-06-10T19:43:05'
-                  end_time: '2021-06-10T20:43:05'
+                  start_time: "2021-06-10T19:43:05"
+                  end_time: "2021-06-10T20:43:05"
                   arrival_window_in_minutes: 60
                   notify: true
                   notify_pro: true
@@ -1199,13 +1199,13 @@ paths:
                   type: string
                   minLength: 1
                   format: date-time
-                  example: '2021-01-10T10:45:00'
+                  example: "2021-01-10T10:45:00"
                   description: Start time of job in iso8601
                 end_time:
                   type: string
                   minLength: 1
                   format: date-time
-                  example: '2021-01-10T11:45:00'
+                  example: "2021-01-10T11:45:00"
                   description: End time of job in iso8601
                 arrival_window_in_minutes:
                   type: number
@@ -1224,14 +1224,14 @@ paths:
                   type: array
                   minLength: 0
                   items:
-                    $ref: '#/components/schemas/DispatchedEmployee'
+                    $ref: "#/components/schemas/DispatchedEmployee"
               required:
                 - start_time
             examples:
               example:
                 value:
-                  start_time: '2021-01-10T20:45:00'
-                  end_time: '2021-01-10T21:45:00'
+                  start_time: "2021-01-10T20:45:00"
+                  end_time: "2021-01-10T21:45:00"
                   arrival_window_in_minutes: 60
                   notify: true
                   notify_pro: true
@@ -1239,7 +1239,7 @@ paths:
                     - assigned_employees
                   dispatched_employees:
                     - employee_id: string
-      description: 'Update a jobs schedule. Jobs with multi days feature containing more than 1 appointment can''t be updated through this endpoint, must use appointments endpoints.'
+      description: "Update a jobs schedule. Jobs with multi days feature containing more than 1 appointment can't be updated through this endpoint, must use appointments endpoints."
       parameters: []
       security:
         - Application API Key: []
@@ -1250,12 +1250,12 @@ paths:
       summary: Delete job schedule
       operationId: delete-job-schedule
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                description: ''
+                description: ""
                 type: object
                 x-examples:
                   example-1:
@@ -1281,7 +1281,7 @@ paths:
         - Housecall User OAuth Token: []
       tags:
         - Jobs
-  '/jobs/{job_id}/dispatch':
+  "/jobs/{job_id}/dispatch":
     parameters:
       - schema:
           type: string
@@ -1292,12 +1292,12 @@ paths:
       summary: Dispatch job to employees
       operationId: update-job-dispatch
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                description: ''
+                description: ""
                 type: object
                 x-examples:
                   example-1:
@@ -1332,7 +1332,7 @@ paths:
                   assigned_employees:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Employee'
+                      $ref: "#/components/schemas/Employee"
               examples:
                 example:
                   value:
@@ -1367,7 +1367,7 @@ paths:
         content:
           application/json:
             schema:
-              description: ''
+              description: ""
               type: object
               x-examples:
                 example-1:
@@ -1378,7 +1378,7 @@ paths:
                   type: array
                   minLength: 0
                   items:
-                    $ref: '#/components/schemas/DispatchedEmployee'
+                    $ref: "#/components/schemas/DispatchedEmployee"
               required:
                 - dispatched_employees
             examples:
@@ -1393,7 +1393,7 @@ paths:
         - Housecall User OAuth Token: []
       tags:
         - Jobs
-  '/jobs/{job_id}/invoices':
+  "/jobs/{job_id}/invoices":
     parameters:
       - schema:
           type: string
@@ -1405,7 +1405,7 @@ paths:
       tags:
         - Job Invoices
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
@@ -1417,10 +1417,10 @@ paths:
                     x-stoplight:
                       id: 4teygisrbwllt
                     items:
-                      $ref: '#/components/schemas/JobInvoice'
+                      $ref: "#/components/schemas/JobInvoice"
       operationId: get-jobs-job_id-invoices
-      description: 'Lists all invoices for a job. Note: Organization must have configured progressive invoicing'
-  '/jobs/{job_id}/tags':
+      description: "Lists all invoices for a job. Note: Organization must have configured progressive invoicing"
+  "/jobs/{job_id}/tags":
     parameters:
       - schema:
           type: string
@@ -1431,7 +1431,7 @@ paths:
       summary: Add job tag
       operationId: post-jobs-job_id-tags
       responses:
-        '201':
+        "201":
           description: Created
           content:
             application/json:
@@ -1441,7 +1441,7 @@ paths:
                   tags:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Tag'
+                      $ref: "#/components/schemas/Tag"
               examples:
                 example-1:
                   value:
@@ -1469,7 +1469,7 @@ paths:
               example-1:
                 value:
                   tag_id: string
-  '/jobs/{job_id}/notes':
+  "/jobs/{job_id}/notes":
     parameters:
       - schema:
           type: string
@@ -1480,12 +1480,12 @@ paths:
       summary: Add job note
       operationId: post-jobs-job_id-notes
       responses:
-        '201':
+        "201":
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Note'
+                $ref: "#/components/schemas/Note"
               examples: {}
       tags:
         - Jobs
@@ -1505,8 +1505,8 @@ paths:
               required:
                 - content
             examples: {}
-        description: ''
-  '/jobs/{job_id}/notes/{note_id}':
+        description: ""
+  "/jobs/{job_id}/notes/{note_id}":
     parameters:
       - schema:
           type: string
@@ -1522,7 +1522,7 @@ paths:
       summary: Delete job note
       operationId: delete-jobs-job_id-notes
       responses:
-        '200':
+        "200":
           description: OK
       description: Deletes a specific job note
       security:
@@ -1531,7 +1531,7 @@ paths:
         - Housecall User OAuth Token: []
       tags:
         - Jobs
-  '/jobs/{job_id}/tags/{tag_id}':
+  "/jobs/{job_id}/tags/{tag_id}":
     parameters:
       - schema:
           type: string
@@ -1547,7 +1547,7 @@ paths:
       summary: Remove job tag
       operationId: delete-jobs-job_id-tags-tag_id
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
@@ -1557,7 +1557,7 @@ paths:
                   tags:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Tag'
+                      $ref: "#/components/schemas/Tag"
               examples:
                 example-1:
                   value:
@@ -1571,7 +1571,7 @@ paths:
         - Housecall User OAuth Token: []
       tags:
         - Jobs
-  '/jobs/{job_id}/links':
+  "/jobs/{job_id}/links":
     parameters:
       - schema:
           type: string
@@ -1582,12 +1582,12 @@ paths:
       summary: Create Job Link
       operationId: create-job-link
       responses:
-        '201':
+        "201":
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/JobLink'
+                $ref: "#/components/schemas/JobLink"
       description: Create a new Job link
       security:
         - Application API Key: []
@@ -1596,7 +1596,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/JobLinkCreate'
+              $ref: "#/components/schemas/JobLinkCreate"
       tags:
         - Jobs
   /webhooks/subscription:
@@ -1604,9 +1604,9 @@ paths:
       summary: Create a Webhook Subscription
       operationId: post-webhooks-subscribe
       responses:
-        '200':
+        "200":
           description: OK
-      description: 'Webhooks are disabled by default and need to be subscribed for each company individually. Once subscribed, you will begin to receive events for the company on your webhook endpoint.'
+      description: "Webhooks are disabled by default and need to be subscribed for each company individually. Once subscribed, you will begin to receive events for the company on your webhook endpoint."
       requestBody:
         content:
           application/json:
@@ -1618,7 +1618,7 @@ paths:
       summary: Delete a Webhook Subscription
       operationId: delete-webhooks-subscribe
       responses:
-        '200':
+        "200":
           description: OK
       description: Delete a company's webhook subciption to stop receiving events for that company.
       requestBody:
@@ -1640,20 +1640,20 @@ paths:
       tags:
         - Estimates
       responses:
-        '200':
+        "200":
           description: OK
           headers: {}
           content:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/PaginatedList'
+                  - $ref: "#/components/schemas/PaginatedList"
                   - type: object
                     properties:
                       estimates:
                         type: array
                         items:
-                          $ref: '#/components/schemas/Estimate'
+                          $ref: "#/components/schemas/Estimate"
               examples:
                 example-1:
                   value:
@@ -1774,7 +1774,7 @@ paths:
           description: Filters estimates by a single customer ID (string)
         - schema:
             type: string
-            default: '1'
+            default: "1"
           in: query
           name: page
           description: Paginated page number.
@@ -1825,27 +1825,27 @@ paths:
       summary: Create an estimate
       operationId: post-estimates
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Estimate'
+                $ref: "#/components/schemas/Estimate"
       description: Create an estimate
       parameters: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EstimateCreate'
+              $ref: "#/components/schemas/EstimateCreate"
           application/xml:
             schema:
-              $ref: '#/components/schemas/EstimateCreate'
+              $ref: "#/components/schemas/EstimateCreate"
             examples: {}
-        description: ''
+        description: ""
       tags:
         - Estimates
-  '/estimates/{estimate_id}':
+  "/estimates/{estimate_id}":
     parameters:
       - schema:
           type: string
@@ -1857,12 +1857,12 @@ paths:
       tags:
         - Estimates
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Estimate'
+                $ref: "#/components/schemas/Estimate"
               examples:
                 example-1:
                   value:
@@ -1954,7 +1954,7 @@ paths:
           in: query
           name: expand
           description: Array of strings to expand response body
-  '/estimates/{estimate_id}/options/{option_id}/attachments':
+  "/estimates/{estimate_id}/options/{option_id}/attachments":
     parameters:
       - schema:
           type: string
@@ -1970,7 +1970,7 @@ paths:
       summary: Create Estimate option attachment
       operationId: create-estimate-option-attachment
       responses:
-        '202':
+        "202":
           description: Accepted
           content:
             application/json:
@@ -2001,7 +2001,7 @@ paths:
       tags:
         - Estimates
         - Options
-  '/estimates/{estimate_id}/options/{option_id}/links':
+  "/estimates/{estimate_id}/options/{option_id}/links":
     parameters:
       - schema:
           type: string
@@ -2017,12 +2017,12 @@ paths:
       summary: Create Estimate option link
       operationId: create-estimate-option-link
       responses:
-        '201':
+        "201":
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/JobLink'
+                $ref: "#/components/schemas/JobLink"
       description: Create a new estimate option link
       security:
         - Company API Key: []
@@ -2031,10 +2031,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/JobLinkCreate'
+              $ref: "#/components/schemas/JobLinkCreate"
       tags:
         - Estimates
-  '/estimates/{estimate_id}/options/{option_id}/schedule':
+  "/estimates/{estimate_id}/options/{option_id}/schedule":
     parameters:
       - schema:
           type: string
@@ -2091,7 +2091,7 @@ paths:
               required:
                 - start_time
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
@@ -2107,10 +2107,10 @@ paths:
                   assigned_employees:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Employee'
+                      $ref: "#/components/schemas/Employee"
       tags:
         - Estimates
-  '/estimates/{estimate_id}/options/{option_id}/notes':
+  "/estimates/{estimate_id}/options/{option_id}/notes":
     parameters:
       - schema:
           type: string
@@ -2126,12 +2126,12 @@ paths:
       summary: Create Estimate option note
       operationId: create-estimate-option-note
       responses:
-        '201':
+        "201":
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Note'
+                $ref: "#/components/schemas/Note"
       description: Create a new estimate option note
       security:
         - Housecall User OAuth Token: []
@@ -2148,7 +2148,7 @@ paths:
                 - content
       tags:
         - Estimates
-  '/estimates/{estimate_id}/options/{option_id}/notes/{note_id}':
+  "/estimates/{estimate_id}/options/{option_id}/notes/{note_id}":
     parameters:
       - schema:
           type: string
@@ -2169,7 +2169,7 @@ paths:
       summary: Delete estimate option note
       operationId: delete-estimates-estimate_id-options-option_id-notes
       responses:
-        '200':
+        "200":
           description: OK
       tags:
         - Estimates
@@ -2183,12 +2183,12 @@ paths:
       tags:
         - Company
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Company'
+                $ref: "#/components/schemas/Company"
       operationId: get-company
       security:
         - Company API Key: []
@@ -2206,12 +2206,12 @@ paths:
         - Application API Key: []
         - Housecall User OAuth Token: []
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CompleteScheduleAvailability'
+                $ref: "#/components/schemas/CompleteScheduleAvailability"
       description: See how an organization has configured their business hours and bookable windows.
     put:
       summary: Update a company's schedule windows
@@ -2226,7 +2226,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateCompleteScheduleAvailability'
+              $ref: "#/components/schemas/UpdateCompleteScheduleAvailability"
             examples:
               Example 1:
                 value:
@@ -2237,13 +2237,13 @@ paths:
                         - start_time: string
                           end_time: string
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CompleteScheduleAvailability'
-        '400':
+                $ref: "#/components/schemas/CompleteScheduleAvailability"
+        "400":
           description: Bad request
           content:
             application/json:
@@ -2255,7 +2255,7 @@ paths:
                     description: All errors formatted in a sentence
                   attr1:
                     type: string
-                    description: 'Error message for field attr1, where attr1 would be one of the attributes for the schedule availability object'
+                    description: "Error message for field attr1, where attr1 would be one of the attributes for the schedule availability object"
   /company/schedule_availability/booking_windows:
     get:
       summary: Booking Windows
@@ -2267,12 +2267,12 @@ paths:
         - Application API Key: []
         - Housecall User OAuth Token: []
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BookingWindows'
+                $ref: "#/components/schemas/BookingWindows"
               examples:
                 example-1:
                   value:
@@ -2282,7 +2282,7 @@ paths:
                         available: true
                     show_for_days: 0
                     start_date: string
-      description: 'See the actual available windows to book a job or estimate for a given time range (default 7 days). Booking availability is based on how the organization has configured Online Booking settings, as well as actual open time slots per employee.'
+      description: "See the actual available windows to book a job or estimate for a given time range (default 7 days). Booking availability is based on how the organization has configured Online Booking settings, as well as actual open time slots per employee."
       parameters:
         - schema:
             type: string
@@ -2300,7 +2300,7 @@ paths:
       tags:
         - Events
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
@@ -2318,7 +2318,7 @@ paths:
                   events:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Event'
+                      $ref: "#/components/schemas/Event"
               examples:
                 example-1:
                   value:
@@ -2424,7 +2424,7 @@ paths:
         - Company API Key: []
         - Application API Key: []
         - Housecall User OAuth Token: []
-  '/events/{event_id}':
+  "/events/{event_id}":
     parameters:
       - schema:
           type: string
@@ -2436,12 +2436,12 @@ paths:
       tags:
         - Events
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Event'
+                $ref: "#/components/schemas/Event"
               examples:
                 example-1:
                   value:
@@ -2505,19 +2505,19 @@ paths:
       tags:
         - Tags
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/PaginatedList'
+                  - $ref: "#/components/schemas/PaginatedList"
                   - type: object
                     properties:
                       tags:
                         type: array
                         items:
-                          $ref: '#/components/schemas/Tag'
+                          $ref: "#/components/schemas/Tag"
               examples:
                 example-1:
                   value:
@@ -2568,12 +2568,12 @@ paths:
       summary: Create a tag
       operationId: post-tags
       responses:
-        '201':
+        "201":
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Tag'
+                $ref: "#/components/schemas/Tag"
       tags:
         - Tags
       description: Create a tag
@@ -2593,7 +2593,7 @@ paths:
               example-1:
                 value:
                   name: string
-  '/tags/{tag_id}':
+  "/tags/{tag_id}":
     parameters:
       - schema:
           type: string
@@ -2604,12 +2604,12 @@ paths:
       summary: Update a tag
       operationId: put-tags-tag_id
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Tag'
+                $ref: "#/components/schemas/Tag"
       tags:
         - Tags
       description: Update a tag value
@@ -2634,12 +2634,12 @@ paths:
       summary: Create Lead
       operationId: post-leads
       responses:
-        '201':
+        "201":
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Lead'
+                $ref: "#/components/schemas/Lead"
       description: Create a lead with the ID for an already existing customer.
       security:
         - Company API Key: []
@@ -2649,26 +2649,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LeadCreate'
+              $ref: "#/components/schemas/LeadCreate"
       tags:
         - Leads
     get:
       summary: Get Leads
       operationId: get-leads
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/PaginatedList'
+                  - $ref: "#/components/schemas/PaginatedList"
                   - type: object
                     properties:
                       leads:
                         type: array
                         items:
-                          $ref: '#/components/schemas/Lead'
+                          $ref: "#/components/schemas/Lead"
       description: Get a list of leads
       parameters:
         - schema:
@@ -2683,7 +2683,7 @@ paths:
           description: Filters leads by a single customer ID (string)
         - schema:
             type: string
-            default: '1'
+            default: "1"
           in: query
           name: page
           description: Paginated page number.
@@ -2739,7 +2739,7 @@ paths:
         - Housecall User OAuth Token: []
       tags:
         - Leads
-  '/leads/{id}':
+  "/leads/{id}":
     parameters:
       - schema:
           type: string
@@ -2751,12 +2751,12 @@ paths:
       tags:
         - Leads
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Lead'
+                $ref: "#/components/schemas/Lead"
       operationId: get-leads-id
       description: Get the lead via ID.
       security:
@@ -2769,19 +2769,19 @@ paths:
       tags:
         - Lead Sources
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/PaginatedList'
+                  - $ref: "#/components/schemas/PaginatedList"
                   - type: object
                     properties:
                       lead_sources:
                         type: array
                         items:
-                          $ref: '#/components/schemas/LeadSource'
+                          $ref: "#/components/schemas/LeadSource"
       operationId: get-lead_sources
       description: Get a list of available lead sources.
       security:
@@ -2819,12 +2819,12 @@ paths:
       summary: Create lead source
       operationId: post-lead_sources
       responses:
-        '201':
+        "201":
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LeadSource'
+                $ref: "#/components/schemas/LeadSource"
       description: Create a lead source
       tags:
         - Lead Sources
@@ -2842,7 +2842,7 @@ paths:
                   type: string
               required:
                 - name
-  '/lead_sources/{lead_source_id}':
+  "/lead_sources/{lead_source_id}":
     parameters:
       - schema:
           type: string
@@ -2853,12 +2853,12 @@ paths:
       summary: Update Lead Source
       operationId: put-lead_sources-lead_source_id
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LeadSource'
+                $ref: "#/components/schemas/LeadSource"
       description: Update a specific lead source. Only lead sources marked as editable can be updated.
       security:
         - Company API Key: []
@@ -2880,19 +2880,19 @@ paths:
       tags:
         - Job Types
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/PaginatedList'
+                  - $ref: "#/components/schemas/PaginatedList"
                   - type: object
                     properties:
                       job_types:
                         type: array
                         items:
-                          $ref: '#/components/schemas/JobType'
+                          $ref: "#/components/schemas/JobType"
       operationId: get-job_fields-job_types
       description: Get a list of job types
       security:
@@ -2909,12 +2909,12 @@ paths:
       summary: Create Job Type
       operationId: post-job_fields-job_types
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/JobType'
+                $ref: "#/components/schemas/JobType"
       description: create a job type
       security:
         - Company API Key: []
@@ -2931,7 +2931,7 @@ paths:
                 - name
       tags:
         - Job Types
-  '/job_fields/job_types/{job_type_id}':
+  "/job_fields/job_types/{job_type_id}":
     parameters:
       - schema:
           type: string
@@ -2942,12 +2942,12 @@ paths:
       summary: Update a Job Type
       operationId: put-job_fields-job_types
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/JobType'
+                $ref: "#/components/schemas/JobType"
       description: Update a job type
       security:
         - Company API Key: []
@@ -2970,13 +2970,13 @@ paths:
       tags:
         - Invoices
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/PaginatedList'
+                  - $ref: "#/components/schemas/PaginatedList"
                   - type: object
                     x-stoplight:
                       id: 8vehf17tqgg8r
@@ -2987,7 +2987,7 @@ paths:
                           id: prgk2z9jx3xcz
                         items:
                           allOf:
-                            - $ref: '#/components/schemas/JobInvoice'
+                            - $ref: "#/components/schemas/JobInvoice"
                             - type: object
                               x-stoplight:
                                 id: 9yl2rmlsiui5y
@@ -2997,7 +2997,7 @@ paths:
                                   x-stoplight:
                                     id: p2cg7fh3jdpv0
       operationId: get-invoices
-      description: 'Get a list of invoices. Note: Organization must have configured progressive invoicing'
+      description: "Get a list of invoices. Note: Organization must have configured progressive invoicing"
       security:
         - Company API Key: []
         - Application API Key: []
@@ -3025,49 +3025,49 @@ paths:
           description: Filters invoices by status.
         - schema:
             type: string
-            example: '2024-01-30T00:00:00Z'
+            example: "2024-01-30T00:00:00Z"
           in: query
           name: created_at_min
           description: Filters invoices with a created_at greater than or equal to the input date
         - schema:
             type: string
-            example: '2024-01-30T00:00:00Z'
+            example: "2024-01-30T00:00:00Z"
           in: query
           name: created_at_max
           description: Filters invoices with a created_at less than or equal to the input date
         - schema:
             type: string
-            example: '2024-01-30T00:00:00Z'
+            example: "2024-01-30T00:00:00Z"
           in: query
           name: due_at_min
           description: Filters invoices with a due_at greater than or equal to the input date
         - schema:
             type: string
-            example: '2024-01-30T00:00:00Z'
+            example: "2024-01-30T00:00:00Z"
           in: query
           name: due_at_max
           description: Filters invoices with a due_at less than or equal to the input date
         - schema:
             type: string
-            example: '2024-01-30T00:00:00Z'
+            example: "2024-01-30T00:00:00Z"
           in: query
           name: paid_at_min
           description: Filters invoices with a paid_at greater than or equal to the input date
         - schema:
             type: string
-            example: '2024-01-30T00:00:00Z'
+            example: "2024-01-30T00:00:00Z"
           in: query
           name: paid_at_max
           description: Filters invoices with a paid_at less than or equal to the input date
         - schema:
             type: number
-            example: '10'
+            example: "10"
           in: query
           name: amount_due_min
           description: Filters invoices with an amount_due greater than or equal to the input amount
         - schema:
             type: number
-            example: '10'
+            example: "10"
           in: query
           name: amount_due_max
           description: Filters invoices with an amount_due less than or equal to the input amount
@@ -3091,7 +3091,7 @@ paths:
           description: Paginated page number.
         - schema:
             type: string
-            default: '10'
+            default: "10"
           in: query
           name: page_size
           description: Number of invoices returned per page.
@@ -3113,7 +3113,7 @@ paths:
             type: string
           description: UUID of the material category to fetch materials under
       responses:
-        '200':
+        "200":
           description: Materials fetched
           content:
             application/json:
@@ -3136,7 +3136,7 @@ paths:
                     type: integer
                     description: total records count
                   data:
-                    $ref: '#/components/schemas/Material'
+                    $ref: "#/components/schemas/Material"
       x-stoplight:
         id: lazh7oq73q8p4
     post:
@@ -3199,15 +3199,15 @@ paths:
                   cost: 90
                   price: 120
       responses:
-        '200':
+        "200":
           description: Material created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Material'
+                $ref: "#/components/schemas/Material"
       x-stoplight:
         id: nrc9vl52ralcs
-  '/api/price_book/materials/{uuid}':
+  "/api/price_book/materials/{uuid}":
     parameters:
       - name: uuid
         in: path
@@ -3253,13 +3253,13 @@ paths:
                 value:
                   description: New Description
       responses:
-        '200':
+        "200":
           description: Material updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Material'
-        '404':
+                $ref: "#/components/schemas/Material"
+        "404":
           description: Material Not Found
       x-stoplight:
         id: zf96jbzyvnlfc
@@ -3273,13 +3273,13 @@ paths:
         - Housecall User OAuth Token: []
       operationId: delete-material
       responses:
-        '200':
+        "200":
           description: Material deleted
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Material'
-        '404':
+                $ref: "#/components/schemas/Material"
+        "404":
           description: Material Not Found
       x-stoplight:
         id: jli92apz4ca2y
@@ -3301,7 +3301,7 @@ paths:
             type: string
           description: Including the UUID of a specific material category will fetch all material categories that reside under that category. Not including a UUID will fetch all root level categories.
       responses:
-        '200':
+        "200":
           description: Material Categories Fetched
           content:
             application/json:
@@ -3321,7 +3321,7 @@ paths:
                     type: integer
                     description: total records count
                   data:
-                    $ref: '#/components/schemas/MaterialCategory'
+                    $ref: "#/components/schemas/MaterialCategory"
       x-stoplight:
         id: hd73ks2r55j9o
     post:
@@ -3344,7 +3344,7 @@ paths:
               properties:
                 material_category_uuid:
                   type: string
-                  description: 'UUID of the material category to create this new category under; if left blank, the category will be created at the root level'
+                  description: "UUID of the material category to create this new category under; if left blank, the category will be created at the root level"
                 name:
                   type: string
                   description: name of the material category to be created
@@ -3353,15 +3353,15 @@ paths:
                 value:
                   name: New Category
       responses:
-        '200':
+        "200":
           description: Material Category created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MaterialCategory'
+                $ref: "#/components/schemas/MaterialCategory"
       x-stoplight:
         id: thf5tkmnnukhk
-  '/api/price_book/material_categories/{uuid}':
+  "/api/price_book/material_categories/{uuid}":
     parameters:
       - name: uuid
         in: path
@@ -3392,13 +3392,13 @@ paths:
                 value:
                   name: New Name
       responses:
-        '200':
+        "200":
           description: Material Category updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MaterialCategory'
-        '404':
+                $ref: "#/components/schemas/MaterialCategory"
+        "404":
           description: Material Category Not Found
       x-stoplight:
         id: zuawigu2l7q5o
@@ -3412,13 +3412,13 @@ paths:
         - Company API Key: []
         - Housecall User OAuth Token: []
       responses:
-        '200':
+        "200":
           description: Material category deleted
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MaterialCategory'
-        '404':
+                $ref: "#/components/schemas/MaterialCategory"
+        "404":
           description: Material category not found
       requestBody:
         content:
@@ -3628,7 +3628,7 @@ components:
             notes:
               type: array
               items:
-                $ref: '#/components/schemas/Note'
+                $ref: "#/components/schemas/Note"
             created_at:
               type: string
             updated_at:
@@ -3642,11 +3642,11 @@ components:
               items:
                 type: string
         address:
-          $ref: '#/components/schemas/Address'
+          $ref: "#/components/schemas/Address"
         notes:
           type: array
           items:
-            $ref: '#/components/schemas/Note'
+            $ref: "#/components/schemas/Note"
         work_status:
           type: string
           enum:
@@ -3658,9 +3658,9 @@ components:
             - user_canceled
             - pro_canceled
         work_timestamps:
-          $ref: '#/components/schemas/WorkTimestamps'
+          $ref: "#/components/schemas/WorkTimestamps"
         schedule:
-          $ref: '#/components/schemas/Schedule'
+          $ref: "#/components/schemas/Schedule"
         total_amount:
           type: integer
         outstanding_balance:
@@ -3668,7 +3668,7 @@ components:
         assigned_employees:
           type: array
           items:
-            $ref: '#/components/schemas/Employee'
+            $ref: "#/components/schemas/Employee"
         tags:
           type: array
           items:
@@ -3684,14 +3684,14 @@ components:
           type: object
           properties:
             job_type:
-              $ref: '#/components/schemas/JobType'
+              $ref: "#/components/schemas/JobType"
             business_unit:
-              $ref: '#/components/schemas/JobType'
+              $ref: "#/components/schemas/JobType"
         attachments:
           type: array
           description: Only present if expanded with attachments
           items:
-            $ref: '#/components/schemas/Attachment'
+            $ref: "#/components/schemas/Attachment"
         created_at:
           type: string
         updated_at:
@@ -3799,7 +3799,7 @@ components:
     DispatchedEmployee:
       title: DispatchedEmployee
       x-examples: {}
-      description: ''
+      description: ""
       allOf:
         - type: object
           properties:
@@ -3870,13 +3870,13 @@ components:
             addresses:
               type: array
               items:
-                $ref: '#/components/schemas/Address'
+                $ref: "#/components/schemas/Address"
         - properties:
             attachments:
               type: array
               description: Only present if expanded with attachments
               items:
-                $ref: '#/components/schemas/Attachment'
+                $ref: "#/components/schemas/Attachment"
             created_at:
               type: string
             updated_at:
@@ -3902,7 +3902,7 @@ components:
               type: string
           required:
             - id
-        - $ref: '#/components/schemas/JobLinkCreate'
+        - $ref: "#/components/schemas/JobLinkCreate"
     AddressCreate:
       title: AddressCreate
       type: object
@@ -3941,7 +3941,7 @@ components:
       properties:
         invoice_number:
           type: number
-          description: 'Invoice number must be unique across all of a company''s jobs in Housecall Pro. If left blank, one will be automatically generated.'
+          description: "Invoice number must be unique across all of a company's jobs in Housecall Pro. If left blank, one will be automatically generated."
         customer_id:
           type: string
         address_id:
@@ -3971,7 +3971,7 @@ components:
         line_items:
           type: array
           items:
-            $ref: '#/components/schemas/LineItemCreate'
+            $ref: "#/components/schemas/LineItemCreate"
         tags:
           type: array
           items:
@@ -4031,7 +4031,7 @@ components:
             id: b4fdt4m20q7fo
           description: Only present if expanded with appointments
           items:
-            $ref: '#/components/schemas/Appointment'
+            $ref: "#/components/schemas/Appointment"
     Attachment:
       title: Attachment
       type: object
@@ -4079,7 +4079,7 @@ components:
           type: string
         description:
           type: string
-          description: ''
+          description: ""
         unit_price:
           type: number
           default: 0
@@ -4154,7 +4154,7 @@ components:
               items:
                 type: string
         address:
-          $ref: '#/components/schemas/Address'
+          $ref: "#/components/schemas/Address"
         created_at:
           type: string
         updated_at:
@@ -4164,13 +4164,13 @@ components:
         company_id:
           type: string
         work_timestamps:
-          $ref: '#/components/schemas/WorkTimestamps'
+          $ref: "#/components/schemas/WorkTimestamps"
         schedule:
-          $ref: '#/components/schemas/Schedule'
+          $ref: "#/components/schemas/Schedule"
         assigned_employees:
           type: array
           items:
-            $ref: '#/components/schemas/Employee'
+            $ref: "#/components/schemas/Employee"
         estimate_fields:
           type: object
           properties:
@@ -4181,7 +4181,7 @@ components:
         options:
           type: array
           items:
-            $ref: '#/components/schemas/EstimateOption'
+            $ref: "#/components/schemas/EstimateOption"
     EstimateOption:
       title: Estimate Option
       type: object
@@ -4196,7 +4196,7 @@ components:
           type: integer
         approval_status:
           type: string
-          example: 'pro declined, pro approved, declined, approved, awaiting response, expired'
+          example: "pro declined, pro approved, declined, approved, awaiting response, expired"
         message_from_pro:
           type: string
         tags:
@@ -4205,11 +4205,11 @@ components:
             type: string
         status:
           type: string
-          example: 'open, needs scheduling, scheduled, in progress, timed out, canceled, deleted, complete unrated, complete rated, created job from estimate'
+          example: "open, needs scheduling, scheduled, in progress, timed out, canceled, deleted, complete unrated, complete rated, created job from estimate"
         notes:
           type: array
           items:
-            $ref: '#/components/schemas/Note'
+            $ref: "#/components/schemas/Note"
         created_at:
           type: string
         updated_at:
@@ -4218,7 +4218,7 @@ components:
           type: array
           description: Only present if expanded with attachments
           items:
-            $ref: '#/components/schemas/Attachment'
+            $ref: "#/components/schemas/Attachment"
     WorkTimestamps:
       title: Work Timestamps
       type: object
@@ -4250,7 +4250,7 @@ components:
         logo_url:
           type: string
         address:
-          $ref: '#/components/schemas/AddressCreate'
+          $ref: "#/components/schemas/AddressCreate"
         website:
           type: string
         default_arrival_window:
@@ -4260,8 +4260,8 @@ components:
         locations:
           type: array
           items:
-            $ref: '#/components/schemas/Company'
-      description: ''
+            $ref: "#/components/schemas/Company"
+      description: ""
     CompleteScheduleAvailability:
       title: Complete schedule availability
       type: object
@@ -4363,7 +4363,7 @@ components:
       properties:
         estimate_number:
           type: integer
-          description: 'Estimate number unique across all of a company''s estimates in Housecall Pro. If left blank, one will be automatically generated.'
+          description: "Estimate number unique across all of a company's estimates in Housecall Pro. If left blank, one will be automatically generated."
         note:
           type: string
         message:
@@ -4405,7 +4405,7 @@ components:
               line_items:
                 type: array
                 items:
-                  $ref: '#/components/schemas/LineItemCreate'
+                  $ref: "#/components/schemas/LineItemCreate"
         tax:
           type: object
           properties:
@@ -4518,7 +4518,7 @@ components:
         assigned_employees:
           type: array
           items:
-            $ref: '#/components/schemas/Employee'
+            $ref: "#/components/schemas/Employee"
         schedule:
           type: object
           properties:
@@ -4647,7 +4647,7 @@ components:
           type: integer
       required:
         - customer_id
-      description: ''
+      description: ""
     Lead:
       title: Lead
       type: object
@@ -4741,7 +4741,7 @@ components:
           items:
             type: string
         assigned_employee:
-          $ref: '#/components/schemas/Employee'
+          $ref: "#/components/schemas/Employee"
         status:
           type: string
           enum:
@@ -4785,10 +4785,10 @@ components:
         start_time:
           type: string
           description: Start time of job appointment in iso8601
-          example: '2021-01-10T10:45:00'
+          example: "2021-01-10T10:45:00"
         end_time:
           type: string
-          example: '2021-01-10T10:45:00'
+          example: "2021-01-10T10:45:00"
           description: End time of job appointment in iso8601
         arrival_window_minutes:
           type: integer
@@ -4807,11 +4807,11 @@ components:
         start_time:
           type: string
           description: Start time of job appointment in iso8601
-          example: '2021-01-10T10:45:00'
+          example: "2021-01-10T10:45:00"
         end_time:
           type: string
           description: End time of job appointment in iso8601
-          example: '2021-01-10T10:45:00'
+          example: "2021-01-10T10:45:00"
         arrival_window_minutes:
           type: integer
           description: Integer value in minutes of arrival window
@@ -4881,25 +4881,25 @@ components:
           x-stoplight:
             id: e4gwxothh0czl
           items:
-            $ref: '#/components/schemas/InvoiceItem'
+            $ref: "#/components/schemas/InvoiceItem"
         taxes:
           type: array
           x-stoplight:
             id: z8k304zjlfoer
           items:
-            $ref: '#/components/schemas/InvoiceTax'
+            $ref: "#/components/schemas/InvoiceTax"
         discounts:
           type: array
           x-stoplight:
             id: 1eatdly8ujen2
           items:
-            $ref: '#/components/schemas/InvoiceDiscount'
+            $ref: "#/components/schemas/InvoiceDiscount"
         payments:
           type: array
           x-stoplight:
             id: ys45ormkcw4ce
           items:
-            $ref: '#/components/schemas/InvoicePayment'
+            $ref: "#/components/schemas/InvoicePayment"
     InvoiceItem:
       title: InvoiceItem
       type: object
@@ -5091,9 +5091,9 @@ components:
         Authorization Header value format [Token {api-key}]
     Housecall User OAuth Token:
       type: oauth2
-      description: ''
+      description: ""
       flows:
         clientCredentials:
-          tokenUrl: ''
-          refreshUrl: ''
+          tokenUrl: ""
+          refreshUrl: ""
           scopes: {}
