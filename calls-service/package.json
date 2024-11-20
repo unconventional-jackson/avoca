@@ -2,7 +2,7 @@
   "name": "@unconventional-jackson/avoca-calls-service",
   "version": "1.0.0",
   "description": "Avoca Calls Service - generates stochastic phone call transcripts in real-time for simulating the Customer Support experience",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
     "lint:check:eslint": "eslint . --ext .js,.jsx,.ts,.tsx",

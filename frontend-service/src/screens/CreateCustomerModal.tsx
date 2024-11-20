@@ -302,6 +302,17 @@ export function CreateCustomerModal({ open, onClose, refetch }: CreateCustomerMo
               fullWidth
             />
           </Grid>
+          <Grid item xs={12}>
+            <TextField
+              label="Notifications Enabled"
+              name="name"
+              type="checkbox"
+              value={notificationsEnabled}
+              onChange={handleChangeNotificationsEnabled}
+              required
+              fullWidth
+            />
+          </Grid>
         </Grid>
       </DialogContent>
       <DialogActions>

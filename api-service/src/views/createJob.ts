@@ -46,24 +46,27 @@ export async function createJobView(
 
     const existingJobsThatOverlap = await JobModel.count({
       where: {
-        [Op.or]: [
-          {
-            scheduled_start: {
-              [Op.lte]: new Date(req.body.schedule.scheduled_end),
+        [Op.and]: {
+          customer_id: req.body.customer_id,
+          [Op.or]: [
+            {
+              scheduled_start: {
+                [Op.lte]: new Date(req.body.schedule.scheduled_end),
+              },
+              scheduled_end: {
+                [Op.gte]: new Date(req.body.schedule.scheduled_start),
+              },
             },
-            scheduled_end: {
-              [Op.gte]: new Date(req.body.schedule.scheduled_start),
+            {
+              scheduled_start: {
+                [Op.gte]: new Date(req.body.schedule.scheduled_start),
+              },
+              scheduled_end: {
+                [Op.lte]: new Date(req.body.schedule.scheduled_end),
+              },
             },
-          },
-          {
-            scheduled_start: {
-              [Op.gte]: new Date(req.body.schedule.scheduled_start),
-            },
-            scheduled_end: {
-              [Op.lte]: new Date(req.body.schedule.scheduled_end),
-            },
-          },
-        ],
+          ],
+        },
       },
     });
     if (existingJobsThatOverlap > 0) {

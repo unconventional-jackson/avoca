@@ -58,6 +58,9 @@ export const PhoneCallsProvider = ({ url, children }: PhoneCallsProviderProps) =
   useEffect(() => {
     const fetchCalls = async () => {
       try {
+        if (!authUser?.employee_id) {
+          return;
+        }
         const response = await internalSdk.getPhoneCalls();
         const mostRecentCallTimestamp = Math.max(
           ...(response.data.phone_calls ?? [])
@@ -121,7 +124,7 @@ export const PhoneCallsProvider = ({ url, children }: PhoneCallsProviderProps) =
     const intervalId = setInterval(fetchCalls, 5000); // Poll every 5 seconds
     fetchCalls(); // Initial fetch
     return () => clearInterval(intervalId);
-  }, []);
+  }, [authUser?.employee_id]);
 
   const sendClientConnected = useCallback(() => {
     if (

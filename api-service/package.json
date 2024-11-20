@@ -2,7 +2,7 @@
   "name": "@unconventional-jackson/avoca-api-service",
   "version": "1.0.0",
   "description": "Avoca backend API",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
     "lint:check:eslint": "eslint . --ext .js,.jsx,.ts,.tsx",

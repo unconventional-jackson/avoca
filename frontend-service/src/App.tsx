@@ -46,7 +46,7 @@ export function App() {
         <BrowserRouter>
           <DebugContextProvider>
             <AuthProvider>
-              <PhoneCallsProvider url={Config.WS_URL}>
+              <PhoneCallsProvider url={Config.WSS_URL}>
                 <Routes>
                   <Route path="/" element={<Root />} />
 

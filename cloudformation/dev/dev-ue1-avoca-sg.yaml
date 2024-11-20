@@ -1,0 +1,129 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+Description: >
+  Security Groups for Avoca Dev
+
+Parameters:
+  DevUe1AvocaVpcId:
+    Type: String
+    Default: "vpc-0af36419a37a86205"
+    Description: VPC ID
+  DevUe1AvocaVpcCIDR:
+    Type: String
+    Default: "10.100.10.0/24"
+    Description: VPC CIDR for Security Group rules (e.g. 192.168.0.0/24)
+
+Outputs:
+  DevUe1AvocaDatabaseSecurityGroup:
+    Description: DB Security Group ID
+    Value: !Ref DevUe1AvocaDatabaseSecurityGroup
+    Export:
+      Name: !Sub DevUe1AvocaDatabaseSecurityGroup
+
+  DevUe1AvocaAppSecurityGroup:
+    Description: App Security Group ID
+    Value: !Ref DevUe1AvocaAppSecurityGroup
+    Export:
+      Name: !Sub DevUe1AvocaAppSecurityGroup
+
+  DevUe1AppALBSecurityGroup:
+    Description: App ALB Security Group ID
+    Value: !Ref DevUe1AppALBSecurityGroup
+    Export:
+      Name: DevUe1AppALBSecurityGroup
+
+Resources:
+  # DB Security Group. Ingress from VPC IPs only.
+  DevUe1AvocaDatabaseSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: DevUe1AvocaDatabaseSecurityGroup
+      GroupDescription: Internal access to DB
+      VpcId: !Ref DevUe1AvocaVpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: "22"
+          ToPort: "22"
+          CidrIp: !Ref DevUe1AvocaVpcCIDR
+        - IpProtocol: tcp
+          FromPort: "5432"
+          ToPort: "5432"
+          CidrIp: !Ref DevUe1AvocaVpcCIDR
+        - IpProtocol: icmp
+          FromPort: "-1"
+          ToPort: "-1"
+          CidrIp: !Ref DevUe1AvocaVpcCIDR
+      SecurityGroupEgress:
+        - IpProtocol: "-1"
+          CidrIp: 0.0.0.0/0
+
+  # App Security Group. Ingress from VPC IPs only.
+  # Will lock down to ALB later
+  DevUe1AvocaAppSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    DependsOn: DevUe1AppALBSecurityGroup
+    Properties:
+      GroupName: DevUe1AvocaAppSecurityGroup
+      GroupDescription: Internal access to App
+      VpcId: !Ref DevUe1AvocaVpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: "22"
+          ToPort: "22"
+          CidrIp: !Ref DevUe1AvocaVpcCIDR
+        - IpProtocol: tcp
+          FromPort: "4000"
+          ToPort: "4000"
+          CidrIp: !Ref DevUe1AvocaVpcCIDR
+        - IpProtocol: tcp
+          FromPort: "4000"
+          ToPort: "4000"
+          SourceSecurityGroupId: !Ref DevUe1AppALBSecurityGroup
+        - IpProtocol: tcp
+          FromPort: "8080"
+          ToPort: "8080"
+          CidrIp: !Ref DevUe1AvocaVpcCIDR
+        - IpProtocol: tcp
+          FromPort: "8080"
+          ToPort: "8080"
+          SourceSecurityGroupId: !Ref DevUe1AppALBSecurityGroup
+        - IpProtocol: tcp
+          FromPort: "80"
+          ToPort: "80"
+          SourceSecurityGroupId: !Ref DevUe1AppALBSecurityGroup
+        - IpProtocol: icmp
+          FromPort: "-1"
+          ToPort: "-1"
+          CidrIp: !Ref DevUe1AvocaVpcCIDR
+      SecurityGroupEgress:
+        - IpProtocol: "-1"
+          CidrIp: 0.0.0.0/0
+
+  # App ALB Security Group
+  DevUe1AppALBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: DevUe1AppALBSecurityGroup
+      GroupDescription: App Application Loadbalancer
+      VpcId: !Ref DevUe1AvocaVpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: "8080"
+          ToPort: "8080"
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: "80"
+          ToPort: "80"
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: "443"
+          ToPort: "443"
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: icmp
+          FromPort: "-1"
+          ToPort: "-1"
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: "-1"
+          CidrIp: 0.0.0.0/0
+## EOF

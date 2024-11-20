@@ -25,16 +25,16 @@ const requestInterceptor = (config: InternalAxiosRequestConfig<unknown>) => {
 
   const authUser = JSON.parse(localStorage.getItem('user') || '{}') as AuthUser;
 
-  const access_token = authUser.access_token;
+  const access_token = authUser?.access_token;
   config.headers['Authorization'] = `Bearer ${access_token}`;
   config.headers['x-app-version'] = version;
   return config;
 };
 
 const responseInterceptor = async (error: any) => {
-  if (!error.config?.url?.includes('auth')) {
+  if (!error?.config?.url?.includes('auth')) {
     console.error('Error in axios response', error);
-    if (error.response.status === 401) {
+    if (error?.response?.status === 401) {
       try {
         const authUser = JSON.parse(localStorage.getItem('user') || '{}') as AuthUser;
         const response = await axios.post(`${Config.API_URL}/auth/refresh-token`, {

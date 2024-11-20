@@ -1,0 +1,371 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+Description: >
+  EC2 Instances for ZA TRACS
+
+Parameters:
+  DevUe1AvocaVpcId:
+    Type: String
+    Default: "vpc-0af36419a37a86205"
+    Description: VPC ID
+  DevUe1AvocaPrivateSubnetA:
+    Type: String
+    Default: "subnet-0be38e889344cda9a"
+    Description: Private Subnet ID Availability Zone A
+  DevUe1AvocaApiALBSubnetA:
+    Type: String
+    Default: "subnet-0193d293406ae4e1a"
+    Description: ALB Public Subnet ID Availability Zone A
+  DevUe1AvocaApiALBSubnetB:
+    Type: String
+    Default: "subnet-0a8f62590b170db76"
+    Description: ALB Public Subnet ID Availability Zone B
+  DevUe1AvocaApiALBCertArn:
+    Type: String
+    Default: arn:aws:acm:us-east-1:536060039117:certificate/6261c1bc-578e-4f79-b9ea-36b284d87ec5
+    Description: Api ALB HTTPS Certificate ARN
+  DevUe1AvocaAppSecurityGroup:
+    Type: String
+    Default: "sg-0f3ec3d669b574998"
+    Description: DevUe1AvocaAppSecurityGroup Security Group ID
+  DevUe1AppALBSecurityGroup:
+    Type: String
+    Default: "sg-08b97a761af813379"
+    Description: DevUe1AppALBSecurityGroup Security Group ID
+  DevUe1AvocaDatabaseSecurityGroup:
+    Type: String
+    Default: "sg-042804f28d0b12d17"
+    Description: DevUe1AvocaDatabase Security Group ID
+  DevUe1AvocaNATSecurityGroup:
+    Type: String
+    Default: "sg-0ed462f334637eec9"
+    Description: NAT Security Group ID
+  Debian12AmiID:
+    Type: String
+    Default: "ami-058bd2d568351da34"
+    Description: Debian 12 AMI ID (Default is us-east-2 AMI ID)
+
+Outputs:
+  DevUe1AvocaApiServicePrivateIp:
+    Description: Avoca API Service Instance Private IP
+    Value: !GetAtt DevUe1AvocaApiServiceInstance.PrivateIp
+    Export:
+      Name: "DevUe1AvocaApiServicePrivateIp"
+  DevUe1AvocaCallsServicePrivateIp:
+    Description: Avoca Calls Service Instance Private IP
+    Value: !GetAtt DevUe1AvocaCallsServiceInstance.PrivateIp
+    Export:
+      Name: "DevUe1AvocaCallsServicePrivateIp"
+  DevUe1AvocaDatabasePrivateIp:
+    Description: Avoca Database Instance Private IP
+    Value: !GetAtt DevUe1AvocaDatabaseInstance.PrivateIp
+    Export:
+      Name: "DevUe1AvocaDatabasePrivateIp"
+  DevUe1AvocaApiALBUrl:
+    Description: Application Load Balancer URL
+    Value: !Join
+      - ""
+      - - "https://"
+        - !GetAtt DevUe1AvocaApiALB.DNSName
+
+Resources:
+  ## IAM Roles and Profiles
+
+  # Instance Systems Manager IAM Role and Profile
+  DevUe1AvocaApiServiceIAMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ["ec2.amazonaws.com"]
+            Action: sts:AssumeRole
+      Path: "/"
+      Policies:
+        - PolicyName: DevUe1AvocaApiServiceIAMRole
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource: !Sub "arn:aws:secretsmanager:us-east-1:${AWS::AccountId}:secret:/dev/avoca/api-service-??????"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+        - arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+
+  DevUe1AvocaApiServiceIAMInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: "/"
+      Roles:
+        - !Ref DevUe1AvocaApiServiceIAMRole
+
+  ## EC2 Instance(s)
+  DevUe1AvocaApiServiceInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref Debian12AmiID
+      InstanceType: t3.micro
+      IamInstanceProfile: !Ref DevUe1AvocaApiServiceIAMInstanceProfile
+      KeyName: dev-ue1-avoca-key-pair
+      SubnetId: !Ref DevUe1AvocaPrivateSubnetA
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: 10
+            VolumeType: gp3
+      SecurityGroupIds:
+        - !Ref DevUe1AvocaAppSecurityGroup
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          apt update
+          DEBIAN_FRONTEND=noninteractive apt-get -y dist-upgrade
+          # install SSM Agent
+          cd /tmp
+          wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
+          dpkg -i /tmp/amazon-ssm-agent.deb
+          systemctl enable amazon-ssm-agent
+          systemctl start amazon-ssm-agent
+          # install awscli
+          apt -y install awscli
+          # install docker
+          DEBIAN_FRONTEND=noninteractive apt -y install apt-transport-https ca-certificates curl gnupg
+          install -m 0755 -d /etc/apt/keyrings
+          curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+          chmod a+r /etc/apt/keyrings/docker.asc
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian bookworm stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+          curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker.gpg
+          apt update
+          DEBIAN_FRONTEND=noninteractive apt -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+          # configure docker service
+          systemctl enable docker
+          systemctl start docker
+          # Allow running docker without sudo
+          sudo usermod -aG docker admin
+          newgrp docker
+          sleep 15
+          # reboot for upgrade
+          shutdown -r now
+
+  # EC2 Calls Service Instance
+  DevUe1AvocaCallsServiceInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref Debian12AmiID
+      InstanceType: t3.micro
+      IamInstanceProfile: !Ref DevUe1AvocaApiServiceIAMInstanceProfile
+      KeyName: dev-ue1-avoca-key-pair
+      SubnetId: !Ref DevUe1AvocaPrivateSubnetA
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: 10
+            VolumeType: gp3
+      SecurityGroupIds:
+        - !Ref DevUe1AvocaAppSecurityGroup
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          apt update
+          DEBIAN_FRONTEND=noninteractive apt-get -y dist-upgrade
+          # install SSM Agent
+          cd /tmp
+          wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
+          dpkg -i /tmp/amazon-ssm-agent.deb
+          systemctl enable amazon-ssm-agent
+          systemctl start amazon-ssm-agent
+          # install awscli
+          apt -y install awscli
+          # install docker
+          DEBIAN_FRONTEND=noninteractive apt -y install apt-transport-https ca-certificates curl gnupg
+          install -m 0755 -d /etc/apt/keyrings
+          curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+          chmod a+r /etc/apt/keyrings/docker.asc
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian bookworm stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+          curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker.gpg
+          apt update
+          DEBIAN_FRONTEND=noninteractive apt -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+          # configure docker service
+          systemctl enable docker
+          systemctl start docker
+          # Allow running docker without sudo
+          sudo usermod -aG docker admin
+          newgrp docker
+          sleep 15
+          # reboot for upgrade
+          shutdown -r now
+
+  # EC2 DB Instance
+  DevUe1AvocaDatabaseInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref Debian12AmiID
+      InstanceType: t3a.medium
+      IamInstanceProfile: !Ref DevUe1AvocaApiServiceIAMInstanceProfile
+      KeyName: dev-ue1-avoca-key-pair
+      SubnetId: !Ref DevUe1AvocaPrivateSubnetA
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: 10
+            VolumeType: gp3
+      SecurityGroupIds:
+        - !Ref DevUe1AvocaDatabaseSecurityGroup
+        - !Ref DevUe1AvocaNATSecurityGroup
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          apt update
+          DEBIAN_FRONTEND=noninteractive apt-get -y dist-upgrade
+          # install SSM Agent
+          cd /tmp
+          wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
+          dpkg -i /tmp/amazon-ssm-agent.deb
+          systemctl enable amazon-ssm-agent
+          systemctl start amazon-ssm-agent
+          # install awscli
+          #apt -y install awscli
+          # reboot
+          # install postgres
+          DEBIAN_FRONTEND=noninteractive apt -y install postgresql postgresql-contrib
+          # configure postgresql listener
+          echo "listen_addresses = '*'" >> /etc/postgresql/15/main/postgresql.conf
+          # configure postgresql service
+          systemctl enable postgres
+          systemctl start postgres
+          sleep 15
+          # reboot for upgrade
+          shutdown -r now
+
+  ## Application Load Balancers
+  # Api ALB
+  DevUe1AvocaApiALB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      SecurityGroups:
+        - !Ref DevUe1AppALBSecurityGroup
+      Subnets:
+        - !Ref DevUe1AvocaApiALBSubnetA
+        - !Ref DevUe1AvocaApiALBSubnetB
+      Type: application
+
+  DevUe1AvocaApiALBListenerHTTPRedirect:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - RedirectConfig:
+            Host: "#{host}"
+            Path: "/#{path}"
+            Port: "443"
+            Protocol: HTTPS
+            StatusCode: HTTP_302
+          Type: redirect
+      LoadBalancerArn: !Ref DevUe1AvocaApiALB
+      Port: 80
+      Protocol: HTTP
+
+  DevUe1AvocaApiALBListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref DevUe1AvocaApiALB
+      Port: 443
+      Protocol: HTTPS
+      #SslPolicy: !Ref SslPolicy
+      Certificates:
+        - CertificateArn: !Ref DevUe1AvocaApiALBCertArn
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref DevUe1AvocaApiTargetGroup
+
+  DevUe1AvocaCallsALBListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref DevUe1AvocaApiALB
+      Port: 8080
+      Protocol: HTTPS
+      #SslPolicy: !Ref SslPolicy
+      Certificates:
+        - CertificateArn: !Ref DevUe1AvocaApiALBCertArn
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref DevUe1AvocaCallsTargetGroup
+
+  # DevUe1AvocaApiALBListenerRule1:
+  #   Type: "AWS::ElasticLoadBalancingV2::ListenerRule"
+  #   Properties:
+  #     Actions:
+  #       - Type: forward
+  #         TargetGroupArn: !Ref DevUe1AvocaApiTargetGroup
+  #     ListenerArn: !Ref DevUe1AvocaApiALBListener
+  #     Priority: 1
+
+  # DevUe1AvocaApiALBListenerRule2:
+  #   Type: "AWS::ElasticLoadBalancingV2::ListenerRule"
+  #   Properties:
+  #     Actions:
+  #       - Type: forward
+  #         TargetGroupArn: !Ref DevUe1AvocaCallsTargetGroup
+  #     ListenerArn: !Ref DevUe1AvocaApiALBListener
+  #     Priority: 2
+
+  DevUe1AvocaApiTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: DevUe1AvocaApiTargetGroup
+      HealthCheckIntervalSeconds: 10
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 3
+      HealthCheckProtocol: HTTP
+      HealthCheckPort: 4000
+      HealthCheckPath: "/"
+      Matcher:
+        HttpCode: "200"
+      Port: 4000
+      Protocol: HTTP
+      TargetGroupAttributes:
+        - Key: deregistration_delay.timeout_seconds
+          Value: "30"
+        - Key: load_balancing.cross_zone.enabled
+          Value: "true"
+        - Key: load_balancing.algorithm.type
+          Value: "least_outstanding_requests"
+      TargetType: instance
+      Targets:
+        - Id: !Ref DevUe1AvocaApiServiceInstance
+          Port: 4000
+      VpcId: !Ref DevUe1AvocaVpcId
+
+  DevUe1AvocaCallsTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: DevUe1AvocaCallsTargetGroup
+      HealthCheckIntervalSeconds: 10
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 3
+      HealthCheckProtocol: HTTP
+      HealthCheckPort: 4000
+      HealthCheckPath: "/"
+      Matcher:
+        HttpCode: "200"
+      Port: 8080
+      Protocol: HTTP
+      TargetGroupAttributes:
+        - Key: deregistration_delay.timeout_seconds
+          Value: "30"
+        - Key: load_balancing.cross_zone.enabled
+          Value: "true"
+        - Key: load_balancing.algorithm.type
+          Value: "least_outstanding_requests"
+      TargetType: instance
+      Targets:
+        - Id: !Ref DevUe1AvocaCallsServiceInstance
+          Port: 8080
+      VpcId: !Ref DevUe1AvocaVpcId
+# EOF

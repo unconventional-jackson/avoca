@@ -1,0 +1,149 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+Description: >
+  Creates S3 buckets Dev Avoca web application.
+
+Parameters:
+  DevAvocaBucketName:
+    Type: String
+    Default: 536060039117-us-east-1-dev-avoca-web-app
+    Description: The name of the S3 bucket for the app.dev.avocatakehome.com website.
+
+  DevAvocaCertificateArn:
+    Type: String
+    Default: arn:aws:acm:us-east-1:536060039117:certificate/1b09a965-caa6-4ffd-b2e7-bcb770950e2b
+    Description: The ARN of the ACM certificate for the app.dev.avocatakehome.com website. Note that the certificate must be in the us-east-1 region to be used with CloudFront.
+
+  DevAvocaHostedZoneId:
+    Type: String
+    Default: "Z0867287RG0GE16DUXZ9"
+    Description: The hosted zone ID for the app.dev.avocatakehome.com website.
+
+  CloudFrontPartitionHostedZoneId:
+    Type: String
+    Default: "Z2FDTNDATAQYW2"
+    Description: The hosted zone ID for the AWS CloudFront partition. This should never change and is always set to a default of Z2FDTNDATAQYW2, but there is a separate hosted zone ID for the AWS China partition (Z3RFFRIM2A3IF5) if ever needed.
+
+Resources:
+  DevUe1AvocaS3WebAppBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      BucketName: !Ref DevAvocaBucketName
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      WebsiteConfiguration:
+        ErrorDocument: index.html
+        IndexDocument: index.html
+
+  DevUe1AvocaS3WebAppBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket:
+        Ref: DevUe1AvocaS3WebAppBucket
+      PolicyDocument:
+        Statement:
+          - Action: s3:GetObject
+            Effect: Allow
+            Principal:
+              CanonicalUser:
+                Fn::GetAtt:
+                  - DevUe1AvocaCloudFrontOriginAccessIdentity
+                  - S3CanonicalUserId
+            Resource:
+              - !Sub "${DevUe1AvocaS3WebAppBucket.Arn}/*"
+          - Action:
+              - s3:GetBucket*
+              - s3:GetObject*
+              - s3:List*
+            Effect: Allow
+            Principal:
+              CanonicalUser:
+                Fn::GetAtt:
+                  - DevUe1AvocaCloudFrontOriginAccessIdentity
+                  - S3CanonicalUserId
+            Resource:
+              - !Sub "${DevUe1AvocaS3WebAppBucket.Arn}"
+              - !Sub "${DevUe1AvocaS3WebAppBucket.Arn}/*"
+            Sid: AllowCloudFrontToGetBucket
+        Version: "2012-10-17"
+
+  DevUe1AvocaCloudFrontOriginAccessIdentity:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: OAI for app.dev.avocatakehome.com website.
+
+  DevUe1AvocaCloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    DependsOn:
+      - DevUe1AvocaS3WebAppBucket
+      - DevUe1AvocaCloudFrontOriginAccessIdentity
+    Properties:
+      DistributionConfig:
+        Aliases:
+          - app.dev.avocatakehome.com
+        CustomErrorResponses:
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: "/index.html"
+          - ErrorCode: 403
+            ResponseCode: 200
+            ResponsePagePath: "/index.html"
+        DefaultCacheBehavior:
+          AllowedMethods:
+            - GET
+            - HEAD
+          CachedMethods:
+            - GET
+            - HEAD
+          Compress: true
+          ForwardedValues:
+            Cookies:
+              Forward: none
+            QueryString: false
+          TargetOriginId: origin1
+          ViewerProtocolPolicy: redirect-to-https
+        DefaultRootObject: index.html
+        Enabled: true
+        HttpVersion: http2
+        IPV6Enabled: true
+        Origins:
+          - ConnectionAttempts: 3
+            ConnectionTimeout: 10
+            DomainName:
+              Fn::GetAtt:
+                - DevUe1AvocaS3WebAppBucket
+                - RegionalDomainName
+            Id: origin1
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${DevUe1AvocaCloudFrontOriginAccessIdentity}"
+        PriceClass: PriceClass_100
+        ViewerCertificate:
+          AcmCertificateArn: !Ref DevAvocaCertificateArn
+          MinimumProtocolVersion: TLSv1.2_2021
+          SslSupportMethod: sni-only
+
+  DevAvocaAliasRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      AliasTarget:
+        DNSName:
+          Fn::GetAtt:
+            - DevUe1AvocaCloudFrontDistribution
+            - DomainName
+        HostedZoneId: !Ref CloudFrontPartitionHostedZoneId
+      HostedZoneId: !Ref DevAvocaHostedZoneId
+      Name: app.dev.avocatakehome.com.
+      Type: A
+
+Outputs:
+  DevUe1AvocaCloudFrontDistributionId:
+    Description: The ID of the CloudFront distribution for the app.dev.avocatakehome.com website.
+    Value: !Ref DevUe1AvocaCloudFrontDistribution

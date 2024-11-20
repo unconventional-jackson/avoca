@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 node:22-alpine as builder
+FROM --platform=linux/amd64 node:20-alpine as builder
 
 WORKDIR /app
 COPY package.json .
@@ -6,8 +6,14 @@ COPY package-lock.json .
 RUN npm install
 
 COPY . .
-
 RUN npm run build
+
+FROM --platform=linux/amd64 node:20-alpine
+WORKDIR /app
+COPY package.json .
+COPY package-lock.json .
+RUN npm install --omit=dev
+COPY --from=builder /app/dist ./dist
 
 EXPOSE 4000
 

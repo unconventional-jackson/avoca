@@ -129,6 +129,7 @@ export function AuthProvider({ children }: PropsWithChildren<unknown>) {
     async (email: string, code: string, password: string) => {
       // Make a POST request to the reset password API
       await apiSdk.resetPassword({
+        email,
         new_password: password,
         token: code, // using code as the token
       });

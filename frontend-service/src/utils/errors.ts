@@ -1,18 +1,4 @@
-import { GraphQLClientResponse } from 'graphql-request';
 import { AxiosError } from 'axios';
-
-export function parseGraphQlError(error: unknown) {
-  if (error instanceof Error) {
-    if ('response' in error && typeof error.response === 'object' && error.response !== null) {
-      const graphQlResponse = error.response as GraphQLClientResponse<unknown>;
-      if (graphQlResponse.errors) {
-        return graphQlResponse.errors.map((err) => err.message).join('\n');
-      }
-    }
-    return error.message;
-  }
-  return String(error);
-}
 
 export function parseAxiosError(error: unknown) {
   if (
