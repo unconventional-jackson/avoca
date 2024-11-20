@@ -1,84 +1,98 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
-import { useParams } from 'react-router-dom';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { parseAxiosError } from '../utils/errors';
-import { Dialog, DialogActions, DialogContent, Grid, TextField } from '@mui/material';
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  Grid,
+  MenuItem,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { useSdk } from '../api/sdk';
+import { DatePicker } from '@mui/x-date-pickers';
+import { useCustomersSdk, useJobsSdk } from '../api/sdk';
+import { useAuth } from '../contexts/AuthContext';
+import { GetCustomerCustomerIdAddressesRequest } from '@unconventional-jackson/avoca-external-api';
+import { DateTime } from 'luxon';
 
 interface CreateJobModalProps {
   open: boolean;
   onClose: () => void;
   refetch: () => Promise<unknown>;
+  customerId: string;
 }
 
-export function CreateJobModal({ open, onClose, refetch }: CreateJobModalProps) {
+export function CreateJobModal({ open, customerId, onClose, refetch }: CreateJobModalProps) {
   const queryClient = useQueryClient();
-  const apiSdk = useSdk();
+  const jobsSdk = useJobsSdk();
+  const customersSdk = useCustomersSdk();
+  const { authUser } = useAuth();
 
   /**
-   * Manage the teamName
+   * Manage the selected address
    */
-  const [firstName, setFirstName] = useState('');
-  const handleChangeFirstName = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setFirstName(e.target.value);
+  const [selectedAddressId, setSelectedAddressId] = useState('');
+  const handleChangeSelectedAddressId = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setSelectedAddressId(event.target.value);
+    },
+    []
+  );
+  const getAddressesQuery = useQuery({
+    queryKey: [
+      'addresses',
+      {
+        customerId,
+      },
+    ],
+    queryFn: async () => {
+      const response = await customersSdk.getCustomerCustomerIdAddresses(customerId);
+      return response.data as unknown as GetCustomerCustomerIdAddressesRequest;
+    },
+    enabled: !!customerId,
+  });
+
+  /**
+   * Manage the scheduled start date
+   */
+  const [scheduledStart, setScheduledStart] = useState<DateTime | null>(null);
+  const handleChangeScheduledStart = useCallback((newValue: DateTime | null) => {
+    setScheduledStart(newValue);
   }, []);
 
   /**
-   * Manage the lastName
+   * Manage the scheduled end date
    */
-  const [lastName, setLastName] = useState('');
-  const handleChangeLastName = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setLastName(e.target.value);
+  const [scheduledEnd, setScheduledEnd] = useState<DateTime | null>(null);
+  const handleChangeScheduledEnd = useCallback((newValue: DateTime | null) => {
+    setScheduledEnd(newValue);
   }, []);
 
   /**
-   * Manage the email
+   * Manage the arrival window
    */
-  const [email, setEmail] = useState('');
-  const handleChangeEmail = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
+  const [arrivalWindow, setArrivalWindow] = useState('');
+  const handleChangeArrivalWindow = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setArrivalWindow(e.target.value?.replace(/\D/g, ''));
   }, []);
 
   /**
-   * Manage the company
+   * Manage the notes
    */
-  const [company, setCompany] = useState('');
-  const handleChangeCompany = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setCompany(e.target.value);
+  const [notes, setNotes] = useState('');
+  const handleChangeNotes = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setNotes(e.target.value);
   }, []);
 
   /**
-   * Manage the notificationsEnabled
+   * Manage the invoiceNumber
    */
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const handleChangeNotificationsEnabled = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setNotificationsEnabled(e.target.checked);
-  }, []);
-
-  /**
-   * Manage the mobileNumber
-   */
-  const [mobileNumber, setMobileNumber] = useState('');
-  const handleChangeMobileNumber = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setMobileNumber(e.target.value);
-  }, []);
-
-  /**
-   * Manage the homeNumber
-   */
-  const [homeNumber, setHomeNumber] = useState('');
-  const handleChangeHomeNumber = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setHomeNumber(e.target.value);
-  }, []);
-
-  /**
-   * Manage the workNumber
-   */
-  const [workNumber, setWorkNumber] = useState('');
-  const handleChangeWorkNumber = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setWorkNumber(e.target.value);
+  const [invoiceNumber, setInvoiceNumber] = useState('');
+  const handleChangeInvoiceNumber = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setInvoiceNumber(e.target.value.replace(/\D/g, ''));
   }, []);
 
   /**
@@ -97,177 +111,154 @@ export function CreateJobModal({ open, onClose, refetch }: CreateJobModalProps) 
     setLeadSource(e.target.value);
   }, []);
 
-  // "first_name": "string",
-  //     "last_name": "string",
-  //     "email": "string",
-  //     "company": "string",
-  //     "notifications_enabled": true,
-  //     "mobile_number": "string",
-  //     "home_number": "string",
-  //     "work_number": "string",
-  //     "tags": [
-  //       "string"
-  //     ],
-  //     "lead_source": "string",
-  //     "addresses": [
-  //       {
-  //         "id": "string",
-  //         "street": "string",
-  //         "street_line_2": "string",
-  //         "city": "string",
-  //         "state": "string",
-  //         "zip": "string",
-  //         "country": "string"
-  //       }
-  //     ]
-
   /**
    * Reset the state whenever the Modal opens
    */
   const handleClose = useCallback(() => {
-    setFirstName('');
-    setLastName('');
-    setEmail('');
-    setCompany('');
-    setNotificationsEnabled(false);
-    setMobileNumber('');
-    setHomeNumber('');
-    setWorkNumber('');
+    setSelectedAddressId('');
+    setScheduledStart(null);
+    setScheduledEnd(null);
+    setArrivalWindow('');
+    setNotes('');
+    setInvoiceNumber('');
     setTags('');
     setLeadSource('');
     onClose();
   }, [onClose]);
 
-  const isDataValid = useMemo(() => {
-    if ((firstName?.trim().length ?? 0) > 0) {
+  const [loading, setLoading] = useState(false);
+  const disableSubmit = useMemo(() => {
+    if (!selectedAddressId) {
       return true;
     }
-  }, [firstName]);
-
-  const [loading, setLoading] = useState(false);
-  const handleSubmit = useCallback(async () => {
-    if (isDataValid) {
-      try {
-        setLoading(true);
-        await apiSdk.CreateJob({
-          input: {
-            first_name: firstName,
-            last_name: lastName,
-            email: email,
-            company: company,
-            notifications_enabled: notificationsEnabled,
-            mobile_number: mobileNumber,
-            home_number: homeNumber,
-            work_number: workNumber,
-            tags: tags,
-            lead_source: leadSource,
-            addresses: [
-              {
-                id: '',
-                street: '',
-                street_line_2: '',
-                city: '',
-                state: '',
-                zip: '',
-                country: '',
-              },
-            ],
-          },
-        });
-        await refetch();
-        handleClose();
-      } catch (error) {
-        toast.error(`Failed to create team: ${parseAxiosError(error)}`);
-      } finally {
-        setLoading(false);
-      }
+    if (!customerId) {
+      return true;
     }
-  }, [apiSdk, isDataValid, refetch, queryClient, handleClose]);
+    if (!scheduledStart) {
+      return true;
+    }
+    if (!scheduledEnd) {
+      return true;
+    }
+    if (!arrivalWindow) {
+      return true;
+    }
+    return false;
+  }, [loading, selectedAddressId, customerId, scheduledStart, scheduledEnd, arrivalWindow]);
+  const handleSubmit = useCallback(async () => {
+    try {
+      setLoading(true);
+      await jobsSdk.postJobs({
+        address_id: selectedAddressId,
+        customer_id: customerId,
+        assigned_employee_ids: authUser?.employee_id ? [authUser?.employee_id] : [],
+        invoice_number: Number(invoiceNumber),
+        job_fields: {},
+        lead_source: leadSource,
+        line_items: [],
+        notes,
+        schedule: {
+          arrival_window: Number(arrivalWindow),
+          scheduled_end: scheduledEnd?.toISODate() ?? undefined,
+          scheduled_start: scheduledStart?.toISODate() ?? undefined,
+        },
+        tags: tags.split(',').map((tag) => tag.trim()),
+      });
+      await refetch();
+      handleClose();
+    } catch (error) {
+      toast.error(`Failed to create team: ${parseAxiosError(error)}`);
+    } finally {
+      setLoading(false);
+    }
+  }, [jobsSdk, refetch, queryClient, handleClose]);
 
   return (
     <Dialog open={open} onClose={handleClose}>
       <DialogContent dividers>
         <Grid container spacing={2}>
-          <Grid item xs={6}>
+          <Grid item xs={12}>
+            <Typography variant="h6">Create Job for Customer</Typography>
+          </Grid>
+          <Grid item xs={12}>
             <TextField
-              label="First Name"
-              name="name"
-              type="text"
-              value={firstName}
-              onChange={handleChangeFirstName}
-              placeholder="First Name"
-              required
               fullWidth
+              select
+              label="Customer Address"
+              variant="outlined"
+              // margin="normal"
+              value={selectedAddressId}
+              onChange={handleChangeSelectedAddressId}
+              required
+            >
+              {(getAddressesQuery.data?.addresses ?? []).map((address) => (
+                <MenuItem key={address.id} value={address.id}>
+                  {address.street}
+                  {address.street_line_2 ? ', ' + address.street_line_2 : ''}, {address.city},{' '}
+                  {address.state}, {address.zip}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+          <Grid item xs={4}>
+            <DatePicker
+              label="Scheduled Start Date"
+              value={scheduledStart}
+              onChange={handleChangeScheduledStart}
+              slotProps={{
+                textField: {
+                  fullWidth: true,
+                  // margin: 'normal',
+                },
+              }}
             />
           </Grid>
-          <Grid item xs={6}>
-            <TextField
-              label="Last Name"
-              name="name"
-              type="text"
-              value={lastName}
-              onChange={handleChangeLastName}
-              placeholder="Last Name"
-              required
-              fullWidth
+          <Grid item xs={4}>
+            <DatePicker
+              label="Scheduled End Date"
+              value={scheduledEnd}
+              onChange={handleChangeScheduledEnd}
+              slotProps={{
+                textField: {
+                  fullWidth: true,
+                  // margin: 'normal',
+                },
+              }}
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={4}>
             <TextField
-              label="Email"
+              label="Arrival Window"
               name="name"
               type="text"
-              value={email}
-              onChange={handleChangeEmail}
-              placeholder="Email"
+              value={arrivalWindow}
+              onChange={handleChangeArrivalWindow}
+              placeholder="15 minutes"
               required
               fullWidth
+              // margin="normal"
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12}>
             <TextField
-              label="Company"
+              label="Notes"
               name="name"
               type="text"
-              value={company}
-              onChange={handleChangeCompany}
-              placeholder="Company"
+              value={notes}
+              onChange={handleChangeNotes}
+              placeholder="Enter notes, if applicable"
               required
               fullWidth
             />
           </Grid>
           <Grid item xs={12}>
             <TextField
-              label="Mobile Number"
+              label="Invoice Number"
               name="name"
               type="text"
-              value={mobileNumber}
-              onChange={handleChangeMobileNumber}
-              placeholder="(111) 111-1111"
-              required
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              label="Home Number"
-              name="name"
-              type="text"
-              value={homeNumber}
-              onChange={handleChangeHomeNumber}
-              placeholder="(222) 222-2222"
-              required
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              label="Work Number"
-              name="name"
-              type="text"
-              value={workNumber}
-              onChange={handleChangeWorkNumber}
-              placeholder="(333) 333-3333"
+              value={invoiceNumber}
+              onChange={handleChangeInvoiceNumber}
+              placeholder="123456"
               required
               fullWidth
             />
@@ -299,7 +290,13 @@ export function CreateJobModal({ open, onClose, refetch }: CreateJobModalProps) 
         </Grid>
       </DialogContent>
       <DialogActions>
-        <LoadingButton autoFocus onClick={handleSubmit} disabled={loading} loading={loading}>
+        <LoadingButton onClick={handleClose}>Cancel</LoadingButton>
+        <LoadingButton
+          autoFocus
+          onClick={handleSubmit}
+          disabled={loading || disableSubmit}
+          loading={loading}
+        >
           Save
         </LoadingButton>
       </DialogActions>

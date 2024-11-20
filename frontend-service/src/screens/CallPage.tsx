@@ -5,8 +5,11 @@ import { useCallback, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useInternalSdk } from '../api/sdk';
 import { toast } from 'react-toastify';
-import { CopyAll, Create, Search } from '@mui/icons-material';
+import { CopyAll, Create, Refresh, Search } from '@mui/icons-material';
 import { SearchCustomerModal } from './CustomerSearchModal';
+import { CreateJobModal } from './CreateJobModal';
+import { parseAxiosError } from '../utils/errors';
+import { Customer } from '@unconventional-jackson/avoca-external-api';
 
 export function CallPage() {
   const { phone_call_id } = useParams();
@@ -17,8 +20,16 @@ export function CallPage() {
   const getCallQuery = useQuery({
     queryKey: ['phoneCalls', phone_call_id],
     queryFn: async () => {
-      const response = await callsSdk.getPhoneCalls(phone_call_id);
-      return response.data;
+      try {
+        if (!phone_call_id) {
+          throw new Error('Missing phone call ID');
+        }
+        const response = await callsSdk.getPhoneCall(phone_call_id);
+        return response.data;
+      } catch (error) {
+        toast.error(`Failed to fetch phone call: ${parseAxiosError(error)}`);
+        throw error;
+      }
     },
     enabled: !!phone_call_id,
     // retry: 1,
@@ -48,15 +59,46 @@ export function CallPage() {
    */
   const [isJobCreationModalOpen, setIsJobCreationModalOpen] = useState(false);
   const handleOpenJobCreationModal = useCallback(() => {
+    console.log('handleOpenJobCreationModal');
     if (!call.customer_id || !!call.job_id) {
       return;
     }
     setIsJobCreationModalOpen(true);
-  }, []);
+  }, [call.customer_id, call.job_id]);
   const handleCloseJobCreationModal = useCallback(() => {
     setIsJobCreationModalOpen(false);
   }, []);
 
+  /**
+   * Parse useful customer details
+   */
+  const customerDetails = useMemo(() => {
+    if (!call.customer_id) {
+      return null;
+    }
+    if (call.customer?.id) {
+      const customer = call.customer as Customer;
+      if (customer?.first_name && customer?.last_name) {
+        return `${customer.first_name} ${customer.last_name}`;
+      }
+      if (customer?.first_name) {
+        return customer.first_name;
+      }
+      if (customer?.last_name) {
+        return customer.last_name;
+      }
+      if (customer?.email) {
+        return customer.email;
+      }
+      if (customer?.company) {
+        return customer.company;
+      }
+    }
+    if (call.customer_id) {
+      return call.customer_id;
+    }
+    return null;
+  }, [call.customer_id, call.customer]);
   /**
    * Copy the customer ID to the clipboard - useful for searching in the CRM or support w/ engineering
    */
@@ -136,16 +178,27 @@ export function CallPage() {
   return (
     <Box>
       <Container>
-        <h1>Phone Call</h1>
-        <p>Call ID: {phone_call_id}</p>
-
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Typography variant="h3" mt={2}>
+            Phone Call
+          </Typography>
+          <Box>
+            <IconButton onClick={() => getCallQuery.refetch()}>
+              <Refresh />
+            </IconButton>
+          </Box>
+        </Box>
+        <Divider
+          sx={{
+            mt: 2,
+            mb: 2,
+          }}
+        />
         <Grid container spacing={2}>
           <Grid item xs={6}>
             <Typography variant="body2">Customer</Typography>
             <Box display="flex" justifyContent="space-between">
-              <Typography variant="h6">
-                {call?.customer_id ? call.customer_id : 'Unassigned'}
-              </Typography>
+              <Typography variant="h6">{customerDetails ?? 'Unassigned'}</Typography>
               {call.customer_id ? (
                 <IconButton onClick={handleCopyCustomerIdToClipboard} disabled={!call.customer_id}>
                   <CopyAll />
@@ -256,6 +309,14 @@ export function CallPage() {
         phoneCallId={phone_call_id}
         refetch={getCallQuery.refetch}
       />
+      {call.customer_id && (
+        <CreateJobModal
+          open={isJobCreationModalOpen}
+          onClose={handleCloseJobCreationModal}
+          customerId={call.customer_id}
+          refetch={getCallQuery.refetch}
+        />
+      )}
     </Box>
   );
 }

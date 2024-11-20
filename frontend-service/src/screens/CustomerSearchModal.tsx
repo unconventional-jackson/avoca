@@ -59,7 +59,7 @@ export function SearchCustomerModal({
       setLoading(true);
       debounceRef.current = setTimeout(() => {
         customersSdk
-          .getV1Customers(searchTerm, 1, 50)
+          .getV1Customers(searchTerm, 0, 50)
           .then((response) => {
             setCustomers(response.data.customers || []);
           })

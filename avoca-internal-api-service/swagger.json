@@ -608,6 +608,42 @@
       }
     },
     "/phone-calls/{phone_call_id}": {
+      "get": {
+        "summary": "Get a phone call",
+        "description": "Retrieves a phone call in the system.",
+        "operationId": "getPhoneCall",
+        "parameters": [
+          {
+            "name": "phone_call_id",
+            "in": "path",
+            "description": "The unique identifier for the phone call",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Phone call retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhoneCall"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "Phone call not found"
+          },
+          "500": {
+            "$ref": "#/components/responses/ErrorResponse",
+            "description": "Internal server error"
+          }
+        }
+      },
       "put": {
         "summary": "Update a phone call",
         "description": "Updates a phone call in the system.",
@@ -961,6 +997,36 @@
           "employee_id": {
             "description": "The employee that accepted the phone call",
             "type": "string"
+          },
+          "employee": {
+            "type": "object",
+            "description": "Expanded field from Avoca API",
+            "additionalProperties": true,
+            "properties": {
+              "employee_id": {
+                "type": "string"
+              }
+            }
+          },
+          "job": {
+            "type": "object",
+            "description": "Expanded field from Avoca API",
+            "additionalProperties": true,
+            "properties": {
+              "id": {
+                "type": "string"
+              }
+            }
+          },
+          "customer": {
+            "type": "object",
+            "description": "Expanded field from Avoca API",
+            "additionalProperties": true,
+            "properties": {
+              "id": {
+                "type": "string"
+              }
+            }
           }
         }
       },

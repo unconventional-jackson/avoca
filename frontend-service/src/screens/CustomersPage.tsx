@@ -19,7 +19,9 @@ import { MainContent } from '../components/MainContent/MainContent';
 import { parseAxiosError } from '../utils/errors';
 import { CreateCustomerModal } from './CreateCustomerModal';
 import { AppBar, Box, Button, Grid, TextField, Toolbar, Typography } from '@mui/material';
-import { LocationOn, PersonAdd } from '@mui/icons-material';
+import { AddLocationAlt, LocationOn, PersonAdd } from '@mui/icons-material';
+import { ViewCustomerAddressesModal } from './ViewCustomerAddressesModal';
+import { CreateCustomerAddressesModal } from './CreateCustomerAddressModal';
 
 type ViewCustomerAddressesActionProps = GridActionsCellItemProps & {
   id: string;
@@ -41,12 +43,42 @@ function ViewCustomerAddressesAction({ id, refetch, ...props }: ViewCustomerAddr
         onClick={handleOpenViewCustomerAddressesModal}
         label="Addresses"
       />
-      {/* <DeleteCustomerModal
-        open={isDeleteCustomerModalOpen}
-        onClose={handleCloseDeleteCustomerModal}
-        id={id}
+      <ViewCustomerAddressesModal
+        open={isViewCustomerAddressesModalOpen}
+        onClose={handleCloseViewCustomerAddressesModal}
+        customerId={id}
         refetch={refetch}
-      /> */}
+      />
+    </Fragment>
+  );
+}
+
+type CreateCustomerAddressActionProps = GridActionsCellItemProps & {
+  id: string;
+  refetch: () => Promise<unknown>;
+};
+function CreateCustomerAddressAction({ id, refetch, ...props }: CreateCustomerAddressActionProps) {
+  const [isCreateCustomerAddressModalOpen, setIsCreateCustomerAddressModalOpen] = useState(false);
+  const handleOpenCreateCustomerAddressModal = useCallback(() => {
+    setIsCreateCustomerAddressModalOpen(true);
+  }, [id]);
+  const handleCloseCreateCustomerAddressModal = useCallback(() => {
+    setIsCreateCustomerAddressModalOpen(false);
+  }, []);
+
+  return (
+    <Fragment>
+      <GridActionsCellItem
+        {...props}
+        onClick={handleOpenCreateCustomerAddressModal}
+        label="Address"
+      />
+      <CreateCustomerAddressesModal
+        open={isCreateCustomerAddressModalOpen}
+        onClose={handleCloseCreateCustomerAddressModal}
+        customerId={id}
+        refetch={refetch}
+      />
     </Fragment>
   );
 }
@@ -100,6 +132,13 @@ export function CustomersPage() {
             refetch={refetch}
             showInMenu={false}
             icon={<LocationOn />}
+          />,
+          <CreateCustomerAddressAction
+            id={params.row.id}
+            label="Address"
+            refetch={refetch}
+            showInMenu={false}
+            icon={<AddLocationAlt />}
           />,
           <ViewCustomerJobsAction
             id={params.row.id}

@@ -32,7 +32,6 @@ import { PhoneCallsProvider } from './contexts/PhoneCallsContext';
 import { Config } from './config';
 import { CustomersPage } from './screens/CustomersPage';
 import { JobsPage } from './screens/JobsPage';
-import { CallsPage } from './screens/CallsPage';
 import { CallPage } from './screens/CallPage';
 
 export function App() {

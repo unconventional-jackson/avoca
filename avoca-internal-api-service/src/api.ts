@@ -416,6 +416,54 @@ export interface PhoneCall {
      * @memberof PhoneCall
      */
     'employee_id'?: string;
+    /**
+     * 
+     * @type {PhoneCallEmployee}
+     * @memberof PhoneCall
+     */
+    'employee'?: PhoneCallEmployee;
+    /**
+     * 
+     * @type {PhoneCallJob}
+     * @memberof PhoneCall
+     */
+    'job'?: PhoneCallJob;
+    /**
+     * 
+     * @type {PhoneCallJob}
+     * @memberof PhoneCall
+     */
+    'customer'?: PhoneCallJob;
+}
+/**
+ * Expanded field from Avoca API
+ * @export
+ * @interface PhoneCallEmployee
+ */
+export interface PhoneCallEmployee {
+    [key: string]: any;
+
+    /**
+     * 
+     * @type {string}
+     * @memberof PhoneCallEmployee
+     */
+    'employee_id'?: string;
+}
+/**
+ * Expanded field from Avoca API
+ * @export
+ * @interface PhoneCallJob
+ */
+export interface PhoneCallJob {
+    [key: string]: any;
+
+    /**
+     * 
+     * @type {string}
+     * @memberof PhoneCallJob
+     */
+    'id'?: string;
 }
 /**
  * 
@@ -953,6 +1001,40 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * Retrieves a phone call in the system.
+         * @summary Get a phone call
+         * @param {string} phoneCallId The unique identifier for the phone call
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPhoneCall: async (phoneCallId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'phoneCallId' is not null or undefined
+            assertParamExists('getPhoneCall', 'phoneCallId', phoneCallId)
+            const localVarPath = `/phone-calls/{phone_call_id}`
+                .replace(`{${"phone_call_id"}}`, encodeURIComponent(String(phoneCallId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Retrieves all phone calls in the system.
          * @summary Get all phone calls
          * @param {number} [page] The page number to retrieve
@@ -1393,6 +1475,19 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
+         * Retrieves a phone call in the system.
+         * @summary Get a phone call
+         * @param {string} phoneCallId The unique identifier for the phone call
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getPhoneCall(phoneCallId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PhoneCall>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPhoneCall(phoneCallId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.getPhoneCall']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
          * Retrieves all phone calls in the system.
          * @summary Get all phone calls
          * @param {number} [page] The page number to retrieve
@@ -1577,6 +1672,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.forgotPassword(authForgotPasswordRequestBody, options).then((request) => request(axios, basePath));
         },
         /**
+         * Retrieves a phone call in the system.
+         * @summary Get a phone call
+         * @param {string} phoneCallId The unique identifier for the phone call
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPhoneCall(phoneCallId: string, options?: RawAxiosRequestConfig): AxiosPromise<PhoneCall> {
+            return localVarFp.getPhoneCall(phoneCallId, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Retrieves all phone calls in the system.
          * @summary Get all phone calls
          * @param {number} [page] The page number to retrieve
@@ -1736,6 +1841,18 @@ export class DefaultApi extends BaseAPI {
      */
     public forgotPassword(authForgotPasswordRequestBody: AuthForgotPasswordRequestBody, options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).forgotPassword(authForgotPasswordRequestBody, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Retrieves a phone call in the system.
+     * @summary Get a phone call
+     * @param {string} phoneCallId The unique identifier for the phone call
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getPhoneCall(phoneCallId: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getPhoneCall(phoneCallId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
