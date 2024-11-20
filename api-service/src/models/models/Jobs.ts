@@ -43,6 +43,16 @@ export interface InternalJob extends Entity, Nullable<AvocaJob> {
    * (AVOCA) The customer's address associated with the job
    */
   address_id?: AddressId;
+
+  /**
+   * (CUSTOM) Adding schedule_start as a flat structure for easier querying
+   */
+  scheduled_start?: Date | null;
+
+  /**
+   * (CUSTOM) Adding schedule_end as a flat structure for easier querying
+   */
+  scheduled_end?: Date | null;
 }
 
 @Table({
@@ -105,6 +115,12 @@ export class JobModel extends Model<InferAttributes<JobModel>, InferCreationAttr
 
   @Attribute(DataTypes.JSON)
   declare schedule: Schedule | null;
+
+  @Attribute(DataTypes.DATE)
+  declare scheduled_start: Date | null;
+
+  @Attribute(DataTypes.DATE)
+  declare scheduled_end: Date | null;
 
   @Attribute(DataTypes.FLOAT)
   declare total_amount: number | null;

@@ -15,7 +15,6 @@ import { useQuery } from '@tanstack/react-query';
 import { useCustomersSdk } from '../api/sdk';
 import { useNavigate } from 'react-router-dom';
 import { PageLayout } from '../components/PageLayout/PageLayout';
-import { MainContent } from '../components/MainContent/MainContent';
 import { parseAxiosError } from '../utils/errors';
 import { CreateCustomerModal } from './CreateCustomerModal';
 import { AppBar, Box, Button, Grid, TextField, Toolbar, Typography } from '@mui/material';
@@ -256,37 +255,35 @@ export function CustomersPage() {
           </Toolbar>
         </AppBar>
       </Box>
-      <MainContent>
-        <Grid container spacing={2}>
-          <Grid item xs={12} m={2} flexShrink={1}>
-            <TextField
-              label="Search"
-              variant="outlined"
-              fullWidth
-              value={searchTerm}
-              onChange={handleChangeSearchTerm}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <Box style={{ height: 600, width: '100%' }} justifyContent="flex-start">
-              <DataGrid
-                rows={rows}
-                columns={columns}
-                rowCount={rowCount}
-                loading={isLoading}
-                paginationMode="server"
-                paginationModel={paginationModel}
-                onPaginationModelChange={handlePaginationModelChange}
-                filterMode="server"
-                filterModel={filterModel}
-                onFilterModelChange={handleFilterModelChange}
-                onRowClick={handleRowClick}
-                pageSizeOptions={[10, 25, 50, 100]}
-              />
-            </Box>
-          </Grid>
+      <Grid container spacing={2}>
+        <Grid item xs={12} m={2} flexShrink={1}>
+          <TextField
+            label="Search"
+            variant="outlined"
+            fullWidth
+            value={searchTerm}
+            onChange={handleChangeSearchTerm}
+          />
         </Grid>
-      </MainContent>
+        <Grid item xs={12}>
+          <Box style={{ height: 600, width: '100%' }} justifyContent="flex-start">
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              rowCount={rowCount}
+              loading={isLoading}
+              paginationMode="server"
+              paginationModel={paginationModel}
+              onPaginationModelChange={handlePaginationModelChange}
+              filterMode="server"
+              filterModel={filterModel}
+              onFilterModelChange={handleFilterModelChange}
+              onRowClick={handleRowClick}
+              pageSizeOptions={[10, 25, 50, 100]}
+            />
+          </Box>
+        </Grid>
+      </Grid>
       <CreateCustomerModal
         open={isCreateCustomerModalOpen}
         onClose={handleCloseCreateCustomerModal}

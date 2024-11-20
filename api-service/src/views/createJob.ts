@@ -48,18 +48,18 @@ export async function createJobView(
       where: {
         [Op.or]: [
           {
-            'schedule.scheduled_start': {
+            scheduled_start: {
               [Op.lte]: new Date(req.body.schedule.scheduled_end),
             },
-            'schedule.scheduled_end': {
+            scheduled_end: {
               [Op.gte]: new Date(req.body.schedule.scheduled_start),
             },
           },
           {
-            'schedule.scheduled_start': {
+            scheduled_start: {
               [Op.gte]: new Date(req.body.schedule.scheduled_start),
             },
-            'schedule.scheduled_end': {
+            scheduled_end: {
               [Op.lte]: new Date(req.body.schedule.scheduled_end),
             },
           },
@@ -82,6 +82,8 @@ export async function createJobView(
         id: getJobId(),
         content,
       })),
+      scheduled_start: new Date(req.body.schedule.scheduled_start),
+      scheduled_end: new Date(req.body.schedule.scheduled_end),
       id: getJobId(),
     });
 

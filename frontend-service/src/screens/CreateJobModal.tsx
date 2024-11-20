@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { parseAxiosError } from '../utils/errors';
 import {
   Dialog,
@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { DatePicker } from '@mui/x-date-pickers';
-import { useCustomersSdk, useJobsSdk } from '../api/sdk';
+import { useCustomersSdk, useInternalSdk, useJobsSdk } from '../api/sdk';
 import { useAuth } from '../contexts/AuthContext';
 import { GetCustomerCustomerIdAddressesRequest } from '@unconventional-jackson/avoca-external-api';
 import { DateTime } from 'luxon';
@@ -23,12 +23,19 @@ interface CreateJobModalProps {
   onClose: () => void;
   refetch: () => Promise<unknown>;
   customerId: string;
+  phoneCallId: string;
 }
 
-export function CreateJobModal({ open, customerId, onClose, refetch }: CreateJobModalProps) {
-  const queryClient = useQueryClient();
+export function CreateJobModal({
+  open,
+  customerId,
+  phoneCallId,
+  onClose,
+  refetch,
+}: CreateJobModalProps) {
   const jobsSdk = useJobsSdk();
   const customersSdk = useCustomersSdk();
+  const internalSdk = useInternalSdk();
   const { authUser } = useAuth();
 
   /**
@@ -148,7 +155,7 @@ export function CreateJobModal({ open, customerId, onClose, refetch }: CreateJob
   const handleSubmit = useCallback(async () => {
     try {
       setLoading(true);
-      await jobsSdk.postJobs({
+      const response = await jobsSdk.postJobs({
         address_id: selectedAddressId,
         customer_id: customerId,
         assigned_employee_ids: authUser?.employee_id ? [authUser?.employee_id] : [],
@@ -164,6 +171,9 @@ export function CreateJobModal({ open, customerId, onClose, refetch }: CreateJob
         },
         tags: tags.split(',').map((tag) => tag.trim()),
       });
+      await internalSdk.updatePhoneCall(phoneCallId, {
+        job_id: response.data.id,
+      });
       await refetch();
       handleClose();
     } catch (error) {
@@ -171,7 +181,21 @@ export function CreateJobModal({ open, customerId, onClose, refetch }: CreateJob
     } finally {
       setLoading(false);
     }
-  }, [jobsSdk, refetch, queryClient, handleClose]);
+  }, [
+    internalSdk,
+    authUser?.employee_id,
+    customerId,
+    handleClose,
+    invoiceNumber,
+    jobsSdk,
+    leadSource,
+    notes,
+    refetch,
+    scheduledEnd,
+    scheduledStart,
+    phoneCallId,
+    selectedAddressId,
+  ]);
 
   return (
     <Dialog open={open} onClose={handleClose}>

@@ -80,6 +80,15 @@ export function SearchCustomerModal({
     };
   }, [searchTerm, customersSdk]);
 
+  /**
+   * Reset the state whenever the Modal opens
+   */
+  const handleClose = useCallback(() => {
+    setSearchTerm('');
+    setSelectedCustomer(null);
+    onClose();
+  }, [onClose]);
+
   const handleSubmit = useCallback(async () => {
     if (!selectedCustomer) {
       return;
@@ -90,18 +99,11 @@ export function SearchCustomerModal({
         customer_id: selectedCustomer.id,
       });
       await refetch();
-      onClose();
+      handleClose();
     } catch (error) {
       toast.error(`Failed to assign customer to call: ${parseAxiosError(error)}`);
     }
-  }, [selectedCustomer, internalSdk, phoneCallId, refetch, onClose]);
-  /**
-   * Reset the state whenever the Modal opens
-   */
-  const handleClose = useCallback(() => {
-    setSearchTerm('');
-    onClose();
-  }, [onClose]);
+  }, [selectedCustomer, internalSdk, phoneCallId, refetch, handleClose]);
 
   return (
     <Dialog open={open} onClose={handleClose} fullWidth>

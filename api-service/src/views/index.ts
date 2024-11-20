@@ -10,6 +10,7 @@ import { createPhoneCallView } from './createPhoneCall';
 import { getCustomerView } from './getCustomer';
 import { getCustomerAddressesView } from './getCustomerAddresses';
 import { getCustomersView } from './getCustomers';
+import { getJobsView } from './getJobs';
 import { getPhoneCallView } from './getPhoneCall';
 import { getPhoneCallsView } from './getPhoneCalls';
 import { updateCustomerView } from './updateCustomer';
@@ -43,3 +44,4 @@ routes.get('/phone-calls/:phone_call_id', expressAsyncHandler(getPhoneCallView))
 routes.put('/phone-calls/:phone_call_id', expressAsyncHandler(updatePhoneCallView));
 
 routes.post('/jobs', expressAsyncHandler(createJobView));
+routes.get('/jobs', expressAsyncHandler(getJobsView));

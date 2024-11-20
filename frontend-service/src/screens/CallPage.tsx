@@ -315,6 +315,7 @@ export function CallPage() {
           onClose={handleCloseJobCreationModal}
           customerId={call.customer_id}
           refetch={getCallQuery.refetch}
+          phoneCallId={phone_call_id}
         />
       )}
     </Box>
