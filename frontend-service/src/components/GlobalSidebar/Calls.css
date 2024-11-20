@@ -30,6 +30,28 @@
   color: #000;
 }
 
+.call-item.assigned-self.active {
+  background-color: #e0ffe0;
+  border-color: #00ff00;
+  color: #000;
+}
+
+.call-item.assigned-self.inactive {
+  background-color: #f0f0f0;
+  color: #888;
+}
+
+.call-item.assigned-other.active {
+  background-color: #e0f0ff;
+  border-color: #0000ff;
+  color: #000;
+}
+
+.call-item.assigned-other.inactive {
+  background-color: #f0f0f0;
+  color: #888;
+}
+
 .call-header {
   flex: 1;
 }

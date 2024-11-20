@@ -589,6 +589,220 @@ export interface VerifyEmail200Response {
      */
     'employee'?: AuthUser;
 }
+/**
+ * Sent by the client to the server to establish an initial connection and inform them of their employee ID
+ * @export
+ * @interface WebsocketClientConnectedPayload
+ */
+export interface WebsocketClientConnectedPayload {
+    /**
+     * 
+     * @type {WebsocketMessageType}
+     * @memberof WebsocketClientConnectedPayload
+     */
+    'event': WebsocketMessageType;
+    /**
+     * The unique identifier for the employee connection
+     * @type {string}
+     * @memberof WebsocketClientConnectedPayload
+     */
+    'employee_id': string;
+    /**
+     * The JWT token for the employee connection, which must have been obtained from the API
+     * @type {string}
+     * @memberof WebsocketClientConnectedPayload
+     */
+    'token': string;
+}
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const WebsocketMessageType = {
+    PhoneCallStarted: 'phone_call_started',
+    PhoneCallEnded: 'phone_call_ended',
+    PhoneCallTranscript: 'phone_call_transcript',
+    PhoneCallAssigned: 'phone_call_assigned',
+    PhoneCallAccepted: 'phone_call_accepted',
+    PhoneCallToken: 'phone_call_token',
+    ClientConnected: 'client_connected'
+} as const;
+
+export type WebsocketMessageType = typeof WebsocketMessageType[keyof typeof WebsocketMessageType];
+
+
+/**
+ * Sent by the client to the server to accept a phone call and assign it to ones self
+ * @export
+ * @interface WebsocketPhoneCallAcceptedPayload
+ */
+export interface WebsocketPhoneCallAcceptedPayload {
+    /**
+     * 
+     * @type {WebsocketMessageType}
+     * @memberof WebsocketPhoneCallAcceptedPayload
+     */
+    'event': WebsocketMessageType;
+    /**
+     * The unique identifier for the phone call
+     * @type {string}
+     * @memberof WebsocketPhoneCallAcceptedPayload
+     */
+    'phone_call_id': string;
+    /**
+     * The unique identifier for the employee that accepted the phone call
+     * @type {string}
+     * @memberof WebsocketPhoneCallAcceptedPayload
+     */
+    'employee_id': string;
+}
+
+
+/**
+ * Sent by the server to all listening clients when a phone call is assigned to an employee, in order to take it off the queue of other employees.
+ * @export
+ * @interface WebsocketPhoneCallAssignedPayload
+ */
+export interface WebsocketPhoneCallAssignedPayload {
+    /**
+     * 
+     * @type {WebsocketMessageType}
+     * @memberof WebsocketPhoneCallAssignedPayload
+     */
+    'event': WebsocketMessageType;
+    /**
+     * The unique identifier for the phone call
+     * @type {string}
+     * @memberof WebsocketPhoneCallAssignedPayload
+     */
+    'phone_call_id': string;
+    /**
+     * The unique identifier for the employee that accepted the phone call
+     * @type {string}
+     * @memberof WebsocketPhoneCallAssignedPayload
+     */
+    'employee_id': string;
+}
+
+
+/**
+ * Broadcast by the server to all clients to inform them of a phone call ending
+ * @export
+ * @interface WebsocketPhoneCallEndedPayload
+ */
+export interface WebsocketPhoneCallEndedPayload {
+    /**
+     * 
+     * @type {WebsocketMessageType}
+     * @memberof WebsocketPhoneCallEndedPayload
+     */
+    'event': WebsocketMessageType;
+    /**
+     * The unique identifier for the phone call
+     * @type {string}
+     * @memberof WebsocketPhoneCallEndedPayload
+     */
+    'phone_call_id': string;
+    /**
+     * The end of the phone call
+     * @type {string}
+     * @memberof WebsocketPhoneCallEndedPayload
+     */
+    'end_date_time': string;
+}
+
+
+/**
+ * Broadcast by the server to all clients to inform them of a new phone call becoming available
+ * @export
+ * @interface WebsocketPhoneCallStartedPayload
+ */
+export interface WebsocketPhoneCallStartedPayload {
+    /**
+     * 
+     * @type {WebsocketMessageType}
+     * @memberof WebsocketPhoneCallStartedPayload
+     */
+    'event': WebsocketMessageType;
+    /**
+     * The unique identifier for the phone call
+     * @type {string}
+     * @memberof WebsocketPhoneCallStartedPayload
+     */
+    'phone_call_id': string;
+    /**
+     * The start of the phone call
+     * @type {string}
+     * @memberof WebsocketPhoneCallStartedPayload
+     */
+    'start_date_time': string;
+    /**
+     * The phone number that the call came from
+     * @type {string}
+     * @memberof WebsocketPhoneCallStartedPayload
+     */
+    'phone_number': string;
+}
+
+
+/**
+ * Sent by the server to the assigned client to inform them of new tokens being processed on the ongoing phone call
+ * @export
+ * @interface WebsocketPhoneCallTokenPayload
+ */
+export interface WebsocketPhoneCallTokenPayload {
+    /**
+     * 
+     * @type {WebsocketMessageType}
+     * @memberof WebsocketPhoneCallTokenPayload
+     */
+    'event': WebsocketMessageType;
+    /**
+     * The unique identifier for the phone call
+     * @type {string}
+     * @memberof WebsocketPhoneCallTokenPayload
+     */
+    'phone_call_id': string;
+    /**
+     * The token for the phone call
+     * @type {string}
+     * @memberof WebsocketPhoneCallTokenPayload
+     */
+    'token': string;
+}
+
+
+/**
+ * Sent by the server to the assigned client to inform them of the current transcript-to-date for the phone call
+ * @export
+ * @interface WebsocketPhoneCallTranscriptPayload
+ */
+export interface WebsocketPhoneCallTranscriptPayload {
+    /**
+     * 
+     * @type {WebsocketMessageType}
+     * @memberof WebsocketPhoneCallTranscriptPayload
+     */
+    'event': WebsocketMessageType;
+    /**
+     * The unique identifier for the phone call
+     * @type {string}
+     * @memberof WebsocketPhoneCallTranscriptPayload
+     */
+    'phone_call_id': string;
+    /**
+     * The current transcript-to-date for the phone call
+     * @type {string}
+     * @memberof WebsocketPhoneCallTranscriptPayload
+     */
+    'transcript': string;
+}
+
+
 
 /**
  * DefaultApi - axios parameter creator
@@ -1053,7 +1267,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             assertParamExists('updatePhoneCall', 'phoneCallId', phoneCallId)
             // verify required parameter 'updatePhoneCallRequestBody' is not null or undefined
             assertParamExists('updatePhoneCall', 'updatePhoneCallRequestBody', updatePhoneCallRequestBody)
-            const localVarPath = `/phene-calls/{phone_call_id}`
+            const localVarPath = `/phone-calls/{phone_call_id}`
                 .replace(`{${"phone_call_id"}}`, encodeURIComponent(String(phoneCallId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);

@@ -33,6 +33,7 @@ import { Config } from './config';
 import { CustomersPage } from './screens/CustomersPage';
 import { JobsPage } from './screens/JobsPage';
 import { CallsPage } from './screens/CallsPage';
+import { CallPage } from './screens/CallPage';
 
 export function App() {
   return (
@@ -69,7 +70,9 @@ export function App() {
                     </Route>
                   </Route>
                   <Route path="app" element={<RestrictedNavigation />}>
-                    <Route index path="calls" element={<CallsPage />} />
+                    <Route path="calls">
+                      <Route path=":phone_call_id" element={<CallPage />} />
+                    </Route>
                     <Route path="customers" element={<CustomersPage />} />
                     <Route path="jobs" element={<JobsPage />} />
                     <Route

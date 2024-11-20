@@ -29,7 +29,7 @@
     "@sequelize/postgres": "^7.0.0-alpha.43",
     "@unconventional-code/observability-sdk": "^0.0.32",
     "@unconventional-jackson/avoca-external-api": "^0.0.1",
-    "@unconventional-jackson/avoca-internal-api": "^0.0.11",
+    "@unconventional-jackson/avoca-internal-api": "^0.0.19",
     "axios": "^1.6.2",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",

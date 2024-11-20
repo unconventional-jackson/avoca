@@ -20,6 +20,7 @@ export interface IConfig {
   ACCESS_TOKEN_SECRET: string;
   ENV: string;
   APPLICATION_PORT: number;
+  CALLS_SERVICE_API_KEY: string;
   POSTGRES_HOST: string;
   POSTGRES_USER: string;
   POSTGRES_PASSWORD: string;
@@ -84,6 +85,13 @@ export async function getConfig(): Promise<IConfig> {
       throw new Error('Missing environment variable APPLICATION_PORT');
     }
 
+    if (
+      !('CALLS_SERVICE_API_KEY' in secrets) ||
+      typeof secrets.CALLS_SERVICE_API_KEY !== 'string'
+    ) {
+      throw new Error('Missing environment variable CALLS_SERVICE_API_KEY');
+    }
+
     if (!('ACCESS_TOKEN_SECRET' in secrets) || typeof secrets.ACCESS_TOKEN_SECRET !== 'string') {
       throw new Error('Missing environment variable ACCESS_TOKEN_SECRET');
     }
@@ -116,6 +124,7 @@ export async function getConfig(): Promise<IConfig> {
       POSTGRES_PASSWORD: secrets.POSTGRES_PASSWORD,
       POSTGRES_DB: secrets.POSTGRES_DB,
       POSTGRES_PORT: parseInt(String(secrets.POSTGRES_PORT)),
+      CALLS_SERVICE_API_KEY: secrets.CALLS_SERVICE_API_KEY,
       ACCESS_TOKEN_SECRET: secrets.ACCESS_TOKEN_SECRET,
       ENV: secrets.ENV,
       APPLICATION_PORT: parseInt(String(secrets.APPLICATION_PORT)),

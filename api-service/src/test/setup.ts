@@ -40,6 +40,7 @@ jest.spyOn(Config, 'getConfig').mockImplementation(async () =>
     POSTGRES_DB: 'postgres',
     POSTGRES_PORT: 5432,
     APPLICATION_PORT: 4000,
+    CALLS_SERVICE_API_KEY: 'test',
     SENDGRID_API_KEY: 'sg.test',
     SENDGRID_SOURCE_EMAIL_ADDRESS: 'test@unconventionalcode.com',
     ACCESS_TOKEN_SECRET: 'secret',

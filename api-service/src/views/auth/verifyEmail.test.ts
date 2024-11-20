@@ -65,7 +65,7 @@ describe('views/Auth/verifyEmail', () => {
 
         const body = response.body as ErrorResponse;
         expect(response.status).toBe(400);
-        expect(body.message).toBe('Missing email in the body.');
+        expect(body.error).toBe('Missing email in the body.');
       });
     });
 
@@ -77,7 +77,7 @@ describe('views/Auth/verifyEmail', () => {
 
         const body = response.body as ErrorResponse;
         expect(response.status).toBe(400);
-        expect(body.message).toBe('Missing token in the body.');
+        expect(body.error).toBe('Missing token in the body.');
       });
     });
 

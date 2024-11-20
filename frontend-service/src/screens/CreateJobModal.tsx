@@ -14,7 +14,6 @@ interface CreateJobModalProps {
 }
 
 export function CreateJobModal({ open, onClose, refetch }: CreateJobModalProps) {
-  const { clientId } = useParams();
   const queryClient = useQueryClient();
   const apiSdk = useSdk();
 
@@ -183,7 +182,7 @@ export function CreateJobModal({ open, onClose, refetch }: CreateJobModalProps) 
         setLoading(false);
       }
     }
-  }, [apiSdk, clientId, isDataValid, refetch, queryClient, handleClose]);
+  }, [apiSdk, isDataValid, refetch, queryClient, handleClose]);
 
   return (
     <Dialog open={open} onClose={handleClose}>

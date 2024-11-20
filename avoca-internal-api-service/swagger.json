@@ -607,7 +607,7 @@
         }
       }
     },
-    "/phene-calls/{phone_call_id}": {
+    "/phone-calls/{phone_call_id}": {
       "put": {
         "summary": "Update a phone call",
         "description": "Updates a phone call in the system.",
@@ -1014,6 +1014,153 @@
             "example": 10
           }
         }
+      },
+      "WebsocketMessageType": {
+        "type": "string",
+        "enum": [
+          "phone_call_started",
+          "phone_call_ended",
+          "phone_call_transcript",
+          "phone_call_assigned",
+          "phone_call_accepted",
+          "phone_call_token",
+          "client_connected"
+        ]
+      },
+      "WebsocketPhoneCallStartedPayload": {
+        "type": "object",
+        "description": "Broadcast by the server to all clients to inform them of a new phone call becoming available",
+        "properties": {
+          "event": {
+            "$ref": "#/components/schemas/WebsocketMessageType"
+          },
+          "phone_call_id": {
+            "type": "string",
+            "description": "The unique identifier for the phone call"
+          },
+          "start_date_time": {
+            "type": "string",
+            "description": "The start of the phone call"
+          },
+          "phone_number": {
+            "type": "string",
+            "description": "The phone number that the call came from"
+          }
+        },
+        "required": [
+          "phone_call_id",
+          "phone_number",
+          "start_date_time",
+          "event"
+        ]
+      },
+      "WebsocketPhoneCallAcceptedPayload": {
+        "type": "object",
+        "description": "Sent by the client to the server to accept a phone call and assign it to ones self",
+        "properties": {
+          "event": {
+            "$ref": "#/components/schemas/WebsocketMessageType"
+          },
+          "phone_call_id": {
+            "type": "string",
+            "description": "The unique identifier for the phone call"
+          },
+          "employee_id": {
+            "type": "string",
+            "description": "The unique identifier for the employee that accepted the phone call"
+          }
+        },
+        "required": ["phone_call_id", "employee_id", "event"]
+      },
+      "WebsocketPhoneCallAssignedPayload": {
+        "type": "object",
+        "description": "Sent by the server to all listening clients when a phone call is assigned to an employee, in order to take it off the queue of other employees.",
+        "properties": {
+          "event": {
+            "$ref": "#/components/schemas/WebsocketMessageType"
+          },
+          "phone_call_id": {
+            "type": "string",
+            "description": "The unique identifier for the phone call"
+          },
+          "employee_id": {
+            "type": "string",
+            "description": "The unique identifier for the employee that accepted the phone call"
+          }
+        },
+        "required": ["phone_call_id", "employee_id", "event"]
+      },
+      "WebsocketPhoneCallTokenPayload": {
+        "type": "object",
+        "description": "Sent by the server to the assigned client to inform them of new tokens being processed on the ongoing phone call",
+        "properties": {
+          "event": {
+            "$ref": "#/components/schemas/WebsocketMessageType"
+          },
+          "phone_call_id": {
+            "type": "string",
+            "description": "The unique identifier for the phone call"
+          },
+          "token": {
+            "type": "string",
+            "description": "The token for the phone call"
+          }
+        },
+        "required": ["phone_call_id", "token", "event"]
+      },
+      "WebsocketPhoneCallTranscriptPayload": {
+        "type": "object",
+        "description": "Sent by the server to the assigned client to inform them of the current transcript-to-date for the phone call",
+        "properties": {
+          "event": {
+            "$ref": "#/components/schemas/WebsocketMessageType"
+          },
+          "phone_call_id": {
+            "type": "string",
+            "description": "The unique identifier for the phone call"
+          },
+          "transcript": {
+            "type": "string",
+            "description": "The current transcript-to-date for the phone call"
+          }
+        },
+        "required": ["phone_call_id", "transcript", "event"]
+      },
+      "WebsocketPhoneCallEndedPayload": {
+        "type": "object",
+        "description": "Broadcast by the server to all clients to inform them of a phone call ending",
+        "properties": {
+          "event": {
+            "$ref": "#/components/schemas/WebsocketMessageType"
+          },
+          "phone_call_id": {
+            "type": "string",
+            "description": "The unique identifier for the phone call"
+          },
+          "end_date_time": {
+            "type": "string",
+            "description": "The end of the phone call"
+          }
+        },
+        "required": ["phone_call_id", "end_date_time", "event"]
+      },
+      "WebsocketClientConnectedPayload": {
+        "type": "object",
+        "description": "Sent by the client to the server to establish an initial connection and inform them of their employee ID",
+        "properties": {
+          "event": {
+            "$ref": "#/components/schemas/WebsocketMessageType"
+          },
+          "employee_id": {
+            "type": "string",
+            "description": "The unique identifier for the employee connection"
+          },
+          "token": {
+            "type": "string",
+            "description": "The JWT token for the employee connection, which must have been obtained from the API"
+          }
+        },
+        "required": ["token", "employee_id", "event"]
       },
       "ErrorResponse": {
         "type": "object",

@@ -33,18 +33,37 @@ export async function updatePhoneCallView(
     const input: Partial<InternalPhoneCall> = {};
 
     if (req.body.customer_id) {
+      log.info('Assigning Customer to Phone Call', {
+        customer_id: req.body.customer_id,
+        phone_call_id: req.params.phone_call_id,
+      });
       input.customer_id = req.body.customer_id as CustomerId;
     }
     if (req.body.job_id) {
+      log.info('Assigning Job to Phone Call', {
+        job_id: req.body.job_id,
+        phone_call_id: req.params.phone_call_id,
+      });
       input.job_id = req.body.job_id as JobId;
     }
     if (req.body.transcript) {
+      log.info('Updating transcript of Phone Call', {
+        phone_call_id: req.params.phone_call_id,
+      });
       input.transcript = req.body.transcript;
     }
     if (req.body.end_date_time) {
+      log.info('Updating end of Phone Call', {
+        phone_call_id: req.params.phone_call_id,
+        end_date_time: req.body.end_date_time,
+      });
       input.end_date_time = new Date(req.body.end_date_time);
     }
     if (req.body.employee_id) {
+      log.info('Assigning Employee to Phone Call', {
+        employee_id: req.body.employee_id,
+        phone_call_id: req.params.phone_call_id,
+      });
       input.employee_id = req.body.employee_id as EmployeeId;
     }
     const [updated, updatedPhoneCalls] = await PhoneCallModel.update(

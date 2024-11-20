@@ -20,6 +20,25 @@ services:
     depends_on:
       - avoca-database-service
 
+  avoca-calls-service:
+    build:
+      context: ./calls-service
+      dockerfile: Dockerfile.local
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./calls-service:/app # Mount for hot-reloading
+      - /app/node_modules # Exclude node_modules from mounting
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - ENV=local
+      - AWS_PROFILE
+      - AWS_SESSION_TOKEN
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+    depends_on:
+      - avoca-api-service
+
   # avoca-frontend-service:
   #   build:
   #     context: ./frontend-service

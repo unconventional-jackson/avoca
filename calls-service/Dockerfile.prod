@@ -16,6 +16,6 @@ RUN npm install --omit=dev
 COPY .env.prod .
 COPY --from=builder /app/dist ./dist
 
-EXPOSE 4000
+EXPOSE 8080
 
 CMD ["npm", "run", "start:prod"]

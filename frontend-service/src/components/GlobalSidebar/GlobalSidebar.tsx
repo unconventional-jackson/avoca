@@ -1,10 +1,8 @@
 import './GlobalSidebar.css';
 import './Calls.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSignOut } from '@fortawesome/free-solid-svg-icons';
 import { useCallback } from 'react';
 import {
   Box,
@@ -13,17 +11,19 @@ import {
   ListItemText,
   MenuItem,
   MenuList,
-  Tooltip,
+  Typography,
 } from '@mui/material';
 import AvocaLogoUrl from '../../assets/avoca_logo.svg';
 import { useQueryClient } from '@tanstack/react-query';
-import { Person, Menu } from '@mui/icons-material';
+import { Person, Menu, ExitToApp } from '@mui/icons-material';
 import { usePhoneCalls } from '../../contexts/PhoneCallsContext';
 
 export function GlobalSidebar() {
-  const { signOut } = useAuth();
+  const { authUser, signOut } = useAuth();
   const queryClient = useQueryClient();
-  const { phoneCalls } = usePhoneCalls();
+
+  const { phoneCalls, sendPhoneCallAccepted } = usePhoneCalls();
+  const navigate = useNavigate();
 
   const handleSignOut = useCallback(async () => {
     try {
@@ -37,10 +37,10 @@ export function GlobalSidebar() {
 
   return (
     <div className="sidebar">
-      <div className="sidebar-top-section">
-        <Box padding={2}>
-          <img src={AvocaLogoUrl} className="sidebar-logo" alt="app icon" />
-        </Box>
+      <Box padding={2}>
+        <img src={AvocaLogoUrl} className="sidebar-logo" alt="app icon" />
+      </Box>
+      <Box>
         <MenuList>
           <Link to="/app/customers">
             <MenuItem>
@@ -67,40 +67,61 @@ export function GlobalSidebar() {
             </MenuItem>
           </Link>
         </MenuList>
-        <Divider />
-        <Box padding={2}>
-          <ul className="call-list">
-            {phoneCalls.map((call) => (
-              <li key={call.phone_call_id} className={`call-item ${call.status}`}>
-                <div className="call-header">
-                  <span className="phone-number">{call.phone_number}</span>
-                  <span className="start-time">
-                    {call.start_date_time && new Date(call.start_date_time).toLocaleTimeString()}
-                  </span>
+      </Box>
+      <Divider />
+      <Box padding={2} overflow="scroll" flex={1}>
+        <ul className="call-list">
+          {phoneCalls.map((call) => (
+            <li
+              key={call.phone_call_id}
+              className={`call-item ${call.end_date_time ? 'inactive' : 'active'} ${call.employee_id && call.employee_id !== authUser?.employee_id ? 'assigned-other' : ''}  ${call.employee_id && call.employee_id === authUser?.employee_id ? 'assigned-self' : ''}`}
+              onClick={() => {
+                if (call.end_date_time) {
+                  return;
+                }
+                if (call.employee_id && call.employee_id !== authUser?.employee_id) {
+                  return;
+                }
+
+                if (!call.phone_call_id) {
+                  return;
+                }
+
+                sendPhoneCallAccepted(call.phone_call_id);
+                navigate(`/app/calls/${call.phone_call_id}`);
+              }}
+            >
+              <div className="call-header">
+                <Typography variant="body2">{call.phone_number}</Typography>
+                <Typography variant="caption">
+                  {call.start_date_time && new Date(call.start_date_time).toLocaleTimeString()}
+                </Typography>
+              </div>
+              {!call.end_date_time ? (
+                <div className="call-status">
+                  <span className="timer">{call.elapsed}s</span>
+                  <span className="recording-icon"></span>
                 </div>
-                {!call.end_date_time ? (
-                  <div className="call-status">
-                    <span className="timer">{call.elapsed}s</span>
-                    <span className="recording-icon"></span>
-                  </div>
-                ) : (
-                  <div className="call-status">
-                    {new Date(call.end_date_time).toLocaleTimeString()}
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
-        </Box>
-      </div>
-      <div className="sidebar-bottom-section">
-        <Tooltip title="Sign out">
-          <div className="sidebar-navigation-link" onClick={handleSignOut}>
-            <FontAwesomeIcon icon={faSignOut} className="sidebar-navigation-link-icon" />
-            <span>Sign Out</span>
-          </div>
-        </Tooltip>
-      </div>
+              ) : (
+                <div className="call-status">
+                  {new Date(call.end_date_time).toLocaleTimeString()}
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      </Box>
+
+      <Box>
+        <MenuList>
+          <MenuItem onClick={handleSignOut}>
+            <ListItemIcon>
+              <ExitToApp fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Sign Out</ListItemText>
+          </MenuItem>
+        </MenuList>
+      </Box>
     </div>
   );
 }
