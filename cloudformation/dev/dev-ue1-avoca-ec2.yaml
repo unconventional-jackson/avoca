@@ -44,6 +44,10 @@ Parameters:
     Type: String
     Default: "ami-058bd2d568351da34"
     Description: Debian 12 AMI ID (Default is us-east-2 AMI ID)
+  DevUe1AvocaHostedZoneId:
+    Type: String
+    Default: "Z0867287RG0GE16DUXZ9"
+    Description: The hosted zone ID for the app.dev.avocatakehome.com website.
 
 Outputs:
   DevUe1AvocaApiServicePrivateIp:
@@ -120,6 +124,9 @@ Resources:
             VolumeType: gp3
       SecurityGroupIds:
         - !Ref DevUe1AvocaAppSecurityGroup
+      Tags:
+        - Key: Name
+          Value: DevUe1AvocaApiServiceInstance
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
@@ -168,6 +175,9 @@ Resources:
             VolumeType: gp3
       SecurityGroupIds:
         - !Ref DevUe1AvocaAppSecurityGroup
+      Tags:
+        - Key: Name
+          Value: DevUe1AvocaCallsServiceInstance
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
@@ -217,6 +227,9 @@ Resources:
       SecurityGroupIds:
         - !Ref DevUe1AvocaDatabaseSecurityGroup
         - !Ref DevUe1AvocaNATSecurityGroup
+      Tags:
+        - Key: Name
+          Value: DevUe1AvocaDatabaseInstance
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
@@ -253,6 +266,9 @@ Resources:
         - !Ref DevUe1AvocaApiALBSubnetA
         - !Ref DevUe1AvocaApiALBSubnetB
       Type: application
+      Tags:
+        - Key: Name
+          Value: DevUe1AvocaApiALB
 
   DevUe1AvocaApiALBListenerHTTPRedirect:
     Type: AWS::ElasticLoadBalancingV2::Listener
@@ -340,6 +356,22 @@ Resources:
         - Id: !Ref DevUe1AvocaApiServiceInstance
           Port: 4000
       VpcId: !Ref DevUe1AvocaVpcId
+
+  DevUe1AvocaApiAliasRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      AliasTarget:
+        DNSName:
+          Fn::GetAtt:
+            - DevUe1AvocaApiALB
+            - DNSName
+        HostedZoneId:
+          Fn::GetAtt:
+            - DevUe1AvocaApiALB
+            - CanonicalHostedZoneID
+      HostedZoneId: !Ref DevUe1AvocaHostedZoneId
+      Name: api.dev.avocatakehome.com.
+      Type: A
 
   DevUe1AvocaCallsTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup

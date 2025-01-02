@@ -43,6 +43,7 @@ export function TotpVerifyScreen() {
           placeholder="Enter the TOTP code"
           value={totpCode}
           onChange={(e) => setTotpCode(e.target.value)}
+          fullWidth
         />
       </Grid>
 

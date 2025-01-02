@@ -86,6 +86,7 @@ export function ResetPasswordScreen() {
           value={email}
           type="email"
           onChange={handleChangeEmail}
+          fullWidth
         />
       </Grid>
       <Grid item xs={12}>
@@ -94,6 +95,7 @@ export function ResetPasswordScreen() {
           placeholder="Enter the code you received in your email"
           value={code}
           onChange={handleChangeCode}
+          fullWidth
         />
       </Grid>
       <Grid item xs={12}>
@@ -103,6 +105,7 @@ export function ResetPasswordScreen() {
           value={password}
           type="password"
           onChange={handleChangePassword}
+          fullWidth
         />
         {password
           ? Object.entries(requirements).map(([requirement, regex], index) => {
@@ -126,6 +129,7 @@ export function ResetPasswordScreen() {
           value={confirmPassword}
           type="password"
           onChange={handleChangeConfirmPassword}
+          fullWidth
         />
       </Grid>
       <Grid item xs={12}>

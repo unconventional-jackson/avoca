@@ -115,6 +115,10 @@ fi
 
 # 5. Run migrations against the database
 if [ "$STEP_05_MIGRATIONS" -eq 1 ]; then
+  # Kill any connections to 5432
+  echo "Killing any processes on port 5432..."
+  kill -9 $(lsof -t -i:5432)
+
   # Open an SSH tunnel and map local port 5432 to the remote database port
   echo "Opening SSH tunnel to database..."
   ssh prod-ue1-avoca-database-tunnel &

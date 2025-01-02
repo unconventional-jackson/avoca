@@ -383,6 +383,9 @@ Resources:
       KeyName: dev-ue1-avoca-key-pair
       SubnetId: !Ref DevUe1AvocaPublicAZASubnet
       AvailabilityZone: us-east-1a
+      Tags:
+        - Key: Name
+          Value: DevUe1AvocaBastionInstance
       SecurityGroupIds:
         - !Ref DevUe1AvocaNATSecurityGroup
         - !Ref DevUe1AvocaBastionSecurityGroup

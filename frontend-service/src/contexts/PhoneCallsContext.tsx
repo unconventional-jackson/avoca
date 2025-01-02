@@ -60,9 +60,22 @@ export const PhoneCallsProvider = ({ url, children }: PhoneCallsProviderProps) =
 
   // Fetch calls from API on a polling basis
   useEffect(() => {
+    let intervalId: ReturnType<typeof setInterval> | null = null;
+    if (
+      !authUser?.employee_id ||
+      !authUser?.auth_totp_verified_at ||
+      !authUser?.auth_email_verified
+    ) {
+      return () => {};
+    }
+
     const fetchCalls = async () => {
       try {
-        if (!authUser?.employee_id) {
+        if (
+          !authUser?.employee_id ||
+          !authUser?.auth_totp_verified_at ||
+          !authUser?.auth_email_verified
+        ) {
           return;
         }
         const response = await internalSdk.getPhoneCalls();
@@ -125,10 +138,10 @@ export const PhoneCallsProvider = ({ url, children }: PhoneCallsProviderProps) =
       }
     };
 
-    const intervalId = setInterval(fetchCalls, 5000); // Poll every 5 seconds
+    intervalId = setInterval(fetchCalls, 5000); // Poll every 5 seconds
     fetchCalls(); // Initial fetch
-    return () => clearInterval(intervalId);
-  }, [authUser?.employee_id]);
+    return () => intervalId && clearInterval(intervalId);
+  }, [authUser?.employee_id, authUser?.auth_totp_verified_at, authUser?.auth_email_verified]);
 
   const sendClientConnected = useCallback(() => {
     if (

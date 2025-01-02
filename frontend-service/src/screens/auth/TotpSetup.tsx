@@ -1,3 +1,4 @@
+import './Auth.css';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -30,7 +31,6 @@ export function TotpSetupScreen() {
         setOtpauthUrl(response.otpauth_url);
       } catch (error) {
         toast.error(`Failed to fetch TOTP setup: ${parseAxiosError(error)}`);
-        console.error(error);
       } finally {
         setLoading(false);
       }

@@ -115,6 +115,10 @@ fi
 
 # 5. Run migrations against the database
 if [ "$STEP_05_MIGRATIONS" -eq 1 ]; then
+  # Kill any connections to 5432
+  echo "Killing any processes on port 5432..."
+  kill -9 $(lsof -t -i:5432) || true
+
   # Open an SSH tunnel and map local port 5432 to the remote database port
   echo "Opening SSH tunnel to database..."
   ssh dev-ue1-avoca-database-tunnel &
@@ -253,7 +257,7 @@ if [ "$STEP_07_CALLS_SERVICE" -eq 1 ]; then
   # SSH into the EC2 Instance
   # This assumes an SSH profile is configured and already set up to tunnel via the Bastion instance
   # On a first time deploy, this would probably fail because we don't yet know the IP address for the EC2 instance
-  echo "Establishing SSH connection to API container..."
+  echo "Establishing SSH connection to Calls container..."
 
   # SSH into the EC2 instance and run commands using local key file
   ssh dev-ue1-avoca-calls << EOF

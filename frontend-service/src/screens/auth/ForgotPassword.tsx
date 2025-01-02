@@ -47,6 +47,7 @@ export function ForgotPasswordScreen() {
           value={email}
           type="email"
           onChange={handleChangeEmail}
+          fullWidth
         />
       </Grid>
 

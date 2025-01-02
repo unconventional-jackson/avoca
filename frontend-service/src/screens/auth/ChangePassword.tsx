@@ -63,6 +63,7 @@ export function ChangePasswordScreen() {
           value={oldPassword}
           type="password"
           onChange={handleChangeOldPassword}
+          fullWidth
         />
       </Grid>
       <Grid item xs={12}>
@@ -72,6 +73,7 @@ export function ChangePasswordScreen() {
           value={password}
           type="password"
           onChange={handleChangePassword}
+          fullWidth
         />
         {password
           ? Object.entries(requirements).map(([requirement, regex], index) => {
@@ -95,6 +97,7 @@ export function ChangePasswordScreen() {
           value={confirmPassword}
           type="password"
           onChange={handleChangeConfirmPassword}
+          fullWidth
         />
       </Grid>
       <Grid item xs={12}>
