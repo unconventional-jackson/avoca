@@ -1,11 +1,11 @@
 import './Auth.css';
 import { useCallback, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../contexts/AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { Grid, TextField } from '@mui/material';
+import { Button, Grid, TextField } from '@mui/material';
 import { parseAxiosError } from '../../utils/errors';
 import { toast } from 'react-toastify';
 import { LoadingButton } from '@mui/lab';
@@ -142,12 +142,12 @@ export function ResetPasswordScreen() {
         </LoadingButton>
       </Grid>
       <Grid item xs={12}>
-        <Link to="/sign-in">
-          <div className="Auth-link-centered">Already have an account? Sign in.</div>
-        </Link>
-        <Link to="/sign-up">
-          <div className="Auth-link-centered">Need to create an account? Sign up.</div>
-        </Link>
+        <Button variant="text" onClick={() => navigate('/sign-in')} fullWidth>
+          Already have an account? Sign in.
+        </Button>
+        <Button variant="text" onClick={() => navigate('/sign-up')} fullWidth>
+          Need to create an account? Sign up.
+        </Button>
       </Grid>
     </Grid>
   );

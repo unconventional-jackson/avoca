@@ -1090,8 +1090,19 @@
           "phone_call_assigned",
           "phone_call_accepted",
           "phone_call_token",
-          "client_connected"
+          "client_connected",
+          "phone_call_initiated_externally"
         ]
+      },
+      "WebsocketPhoneCallInitiatedExternallyPayload": {
+        "type": "object",
+        "description": "Broadcast by the server to all clients to inform them of a new phone call being initiated externally",
+        "properties": {
+          "event": {
+            "$ref": "#/components/schemas/WebsocketMessageType"
+          }
+        },
+        "required": ["event"]
       },
       "WebsocketPhoneCallStartedPayload": {
         "type": "object",

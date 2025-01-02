@@ -3,12 +3,11 @@ import './Auth.css';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useCallback, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-import { Config } from '../../config';
 import { useAuth } from '../../contexts/AuthContext';
-import { Grid, TextField } from '@mui/material';
+import { Button, Grid, TextField } from '@mui/material';
 import { parseAxiosError } from '../../utils/errors';
 import { LoadingButton } from '@mui/lab';
 
@@ -48,7 +47,9 @@ export function SignUpScreen() {
         setLoading(true);
         await signUp(email.toLowerCase(), password);
         // Before navigating, send a verification email
-        navigate('/verify-email');
+        navigate('/verify-email', {
+          state: { email },
+        });
       } catch (error) {
         toast.error(`Failed to create account: ${parseAxiosError(error)}`);
       } finally {
@@ -60,9 +61,6 @@ export function SignUpScreen() {
 
   const emailExists = useMemo(() => /^.+@.+\..+$/.test(email), [email]);
   const emailValid = useMemo(() => {
-    if (['dev', 'local'].includes(Config.ENV) && !/\w+@unconventionalcode\.com$/.test(email)) {
-      return false;
-    }
     return true;
   }, [email]);
 
@@ -160,9 +158,9 @@ export function SignUpScreen() {
         </LoadingButton>
       </Grid>
       <Grid item xs={12}>
-        <Link to="/sign-in">
-          <div className="Auth-link-centered">Already have an account? Sign in.</div>
-        </Link>
+        <Button variant="text" onClick={() => navigate('/sign-in')}>
+          Already have an account? Sign in.
+        </Button>
       </Grid>
     </Grid>
   );

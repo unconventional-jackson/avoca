@@ -677,7 +677,8 @@ export const WebsocketMessageType = {
     PhoneCallAssigned: 'phone_call_assigned',
     PhoneCallAccepted: 'phone_call_accepted',
     PhoneCallToken: 'phone_call_token',
-    ClientConnected: 'client_connected'
+    ClientConnected: 'client_connected',
+    PhoneCallInitiatedExternally: 'phone_call_initiated_externally'
 } as const;
 
 export type WebsocketMessageType = typeof WebsocketMessageType[keyof typeof WebsocketMessageType];
@@ -761,6 +762,21 @@ export interface WebsocketPhoneCallEndedPayload {
      * @memberof WebsocketPhoneCallEndedPayload
      */
     'end_date_time': string;
+}
+
+
+/**
+ * Broadcast by the server to all clients to inform them of a new phone call being initiated externally
+ * @export
+ * @interface WebsocketPhoneCallInitiatedExternallyPayload
+ */
+export interface WebsocketPhoneCallInitiatedExternallyPayload {
+    /**
+     * 
+     * @type {WebsocketMessageType}
+     * @memberof WebsocketPhoneCallInitiatedExternallyPayload
+     */
+    'event': WebsocketMessageType;
 }
 
 

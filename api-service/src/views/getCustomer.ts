@@ -19,7 +19,7 @@ export async function getCustomerView(
   });
 
   try {
-    const customerModel = await CustomerModel.findByPk(req.query.customer_id);
+    const customerModel = await CustomerModel.findByPk(req.params.customer_id);
 
     if (!customerModel) {
       res.status(404).json({ error: 'Customer not found' });

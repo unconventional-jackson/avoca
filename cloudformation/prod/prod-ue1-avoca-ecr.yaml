@@ -1,0 +1,92 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+Description: >
+  Creates an ECR repository for the Avoca container images.
+
+Parameters:
+  ProdUe1AvocaApiRepositoryName:
+    Type: String
+    Description: The name of the ECR repository, e.g. 'prod-api-container'
+    Default: "prod-ue1-avoca-api-container"
+
+  ProdUe1AvocaCallsRepositoryName:
+    Type: String
+    Description: The name of the ECR repository, e.g. 'prod-api-container'
+    Default: "prod-ue1-avoca-calls-container"
+
+Resources:
+  ProdUe1AvocaApiContainerECRRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Ref ProdUe1AvocaApiRepositoryName
+      EmptyOnDelete: false
+      EncryptionConfiguration:
+        EncryptionType: AES256
+        # KmsKey: String # Only necessary if using a custom KMS key
+      ImageScanningConfiguration:
+        ScanOnPush: false
+      ImageTagMutability: IMMUTABLE
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Keep only the last 10 images",
+                "selection": {
+                  "tagStatus": "any",
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 1
+                },
+                "action": {
+                    "type": "expire"
+                }
+              }
+            ]
+          }
+  ProdUe1AvocaCallsContainerECRRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Ref ProdUe1AvocaCallsRepositoryName
+      EmptyOnDelete: false
+      EncryptionConfiguration:
+        EncryptionType: AES256
+        # KmsKey: String # Only necessary if using a custom KMS key
+      ImageScanningConfiguration:
+        ScanOnPush: false
+      ImageTagMutability: IMMUTABLE
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Keep only the last 10 images",
+                "selection": {
+                  "tagStatus": "any",
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 1
+                },
+                "action": {
+                    "type": "expire"
+                }
+              }
+            ]
+          }
+
+Outputs:
+  ProdUe1AvocaApiContainerECRRepositoryUri:
+    Description: "URI of the ECR repository"
+    Value: !GetAtt
+      - ProdUe1AvocaApiContainerECRRepository
+      - RepositoryUri
+    Export:
+      Name: ProdUe1AvocaApiContainerECRRepositoryUri
+
+  ProdUe1AvocaCallsContainerECRRepositoryUri:
+    Description: "URI of the ECR repository"
+    Value: !GetAtt
+      - ProdUe1AvocaCallsContainerECRRepository
+      - RepositoryUri
+    Export:
+      Name: ProdUe1AvocaCallsContainerECRRepositoryUri

@@ -16,6 +16,7 @@ import { MainContent } from '../components/MainContent/MainContent';
 import { parseAxiosError } from '../utils/errors';
 import { Job } from '@unconventional-jackson/avoca-external-api';
 import { AppBar, Toolbar, Typography } from '@mui/material';
+import { EditJobModal } from './EditJobModal';
 
 export function JobsPage() {
   const jobsSdk = useJobsSdk();
@@ -141,9 +142,21 @@ export function JobsPage() {
   /**
    * MUI
    */
+  const [isEditJobModalOpen, setIsEditJobModalOpen] = useState(false);
+  const [jobId, setJobId] = useState<string | null>(null);
+  const [customerId, setCustomerId] = useState<string | null>(null);
+  const handleClosedEditJobModal = useCallback(() => {
+    setIsEditJobModalOpen(false);
+    setJobId(null);
+    setCustomerId(null);
+  }, []);
   const handleRowClick = useCallback(
     (params: GridRowParams) => {
-      navigate(`/app/customers/${params.row.customerId}`);
+      const row = params.row as Job;
+      setJobId(row.id ?? null);
+      // @ts-ignore Bad API definition
+      setCustomerId(row.customer_id ?? row.customer?.id ?? null);
+      setIsEditJobModalOpen(true);
     },
     [navigate]
   );
@@ -175,6 +188,14 @@ export function JobsPage() {
           />
         </div>
       </MainContent>
+      {jobId && customerId && (
+        <EditJobModal
+          open={isEditJobModalOpen}
+          onClose={handleClosedEditJobModal}
+          jobId={jobId}
+          customerId={customerId}
+        />
+      )}
     </PageLayout>
   );
 }

@@ -126,7 +126,7 @@ export function SearchCustomerModal({
           ) : !customers?.length ? (
             <Box display="flex" justifyContent="center" alignItems="center" flex={1}>
               <Typography variant="body2" textAlign="center" flex={1}>
-                No customers found
+                {!searchTerm ? 'Enter a search term' : 'No customers found'}
               </Typography>
             </Box>
           ) : (

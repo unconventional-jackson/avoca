@@ -7,6 +7,7 @@ import { useCallback } from 'react';
 import {
   Box,
   Divider,
+  IconButton,
   ListItemIcon,
   ListItemText,
   MenuItem,
@@ -22,7 +23,7 @@ export function GlobalSidebar() {
   const { authUser, signOut } = useAuth();
   const queryClient = useQueryClient();
 
-  const { phoneCalls, sendPhoneCallAccepted } = usePhoneCalls();
+  const { phoneCalls, sendPhoneCallInitiatedExternally, sendPhoneCallAccepted } = usePhoneCalls();
   const navigate = useNavigate();
 
   const handleSignOut = useCallback(async () => {
@@ -37,8 +38,18 @@ export function GlobalSidebar() {
 
   return (
     <div className="sidebar">
-      <Box padding={2}>
-        <img src={AvocaLogoUrl} className="sidebar-logo" alt="app icon" />
+      <Box padding={2} justifyContent="center" display="flex" alignItems="center">
+        <IconButton
+          color="primary"
+          aria-label="add an alarm"
+          sx={{
+            height: 128,
+            width: 128,
+          }}
+          onClick={sendPhoneCallInitiatedExternally}
+        >
+          <img src={AvocaLogoUrl} className="sidebar-logo" alt="app icon" />
+        </IconButton>
       </Box>
       <Box>
         <MenuList>
@@ -76,18 +87,15 @@ export function GlobalSidebar() {
               key={call.phone_call_id}
               className={`call-item ${call.end_date_time ? 'inactive' : 'active'} ${call.employee_id && call.employee_id !== authUser?.employee_id ? 'assigned-other' : ''}  ${call.employee_id && call.employee_id === authUser?.employee_id ? 'assigned-self' : ''}`}
               onClick={() => {
-                if (call.end_date_time) {
-                  return;
+                if (
+                  !(
+                    call.end_date_time ||
+                    (call.employee_id && call.employee_id !== authUser?.employee_id) ||
+                    !call.phone_call_id
+                  )
+                ) {
+                  sendPhoneCallAccepted(call.phone_call_id);
                 }
-                if (call.employee_id && call.employee_id !== authUser?.employee_id) {
-                  return;
-                }
-
-                if (!call.phone_call_id) {
-                  return;
-                }
-
-                sendPhoneCallAccepted(call.phone_call_id);
                 navigate(`/app/calls/${call.phone_call_id}`);
               }}
             >

@@ -1,20 +1,19 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
-import { useParams } from 'react-router-dom';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { parseAxiosError } from '../utils/errors';
 import { Dialog, DialogActions, DialogContent, Grid, TextField } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { useCustomersSdk } from '../api/sdk';
 
-interface CreateCustomerModalProps {
+interface EditCustomerModalProps {
   open: boolean;
   onClose: () => void;
   refetch: () => Promise<unknown>;
+  customerId: string;
 }
 
-export function CreateCustomerModal({ open, onClose, refetch }: CreateCustomerModalProps) {
-  const { clientId } = useParams();
+export function EditCustomerModal({ customerId, open, onClose, refetch }: EditCustomerModalProps) {
   const queryClient = useQueryClient();
   const customersSdk = useCustomersSdk();
 
@@ -127,6 +126,34 @@ export function CreateCustomerModal({ open, onClose, refetch }: CreateCustomerMo
   //         "country": "string"
   //       }
   //     ]
+  const getCustomerQuery = useQuery({
+    queryKey: [
+      'customer',
+      {
+        customerId,
+      },
+    ],
+    queryFn: async () => {
+      const response = await customersSdk.getCustomersCustomerId(customerId);
+      return response.data;
+    },
+    enabled: !!customerId,
+  });
+  const customer = useMemo(() => getCustomerQuery.data, [getCustomerQuery.data]);
+  useEffect(() => {
+    if (customer) {
+      setFirstName(customer.first_name ?? '');
+      setLastName(customer.last_name ?? '');
+      setEmail(customer.email ?? '');
+      setCompany(customer.company ?? '');
+      setNotificationsEnabled(customer.notifications_enabled ?? false);
+      setMobileNumber(customer.mobile_number ?? '');
+      setHomeNumber(customer.home_number ?? '');
+      setWorkNumber(customer.work_number ?? '');
+      setTags(customer.tags?.join(', ') ?? '');
+      setLeadSource(customer.lead_source ?? '');
+    }
+  }, [customer]);
 
   /**
    * Reset the state whenever the Modal opens
@@ -156,7 +183,7 @@ export function CreateCustomerModal({ open, onClose, refetch }: CreateCustomerMo
     if (isDataValid) {
       try {
         setLoading(true);
-        await customersSdk.postCustomers({
+        await customersSdk.putCustomersCustomerId(customerId, {
           first_name: firstName || undefined,
           last_name: lastName || undefined,
           email: email || undefined,
@@ -179,18 +206,18 @@ export function CreateCustomerModal({ open, onClose, refetch }: CreateCustomerMo
           //   },
           // ],
         });
-        toast.success('Customer created successfully');
+        toast.success('Customer updated successfully');
         await refetch();
         handleClose();
       } catch (error) {
-        toast.error(`Failed to create team: ${parseAxiosError(error)}`);
+        toast.error(`Failed to update customer: ${parseAxiosError(error)}`);
       } finally {
         setLoading(false);
       }
     }
   }, [
     customersSdk,
-    clientId,
+    customerId,
     isDataValid,
     refetch,
     queryClient,
@@ -333,6 +360,9 @@ export function CreateCustomerModal({ open, onClose, refetch }: CreateCustomerMo
         </Grid>
       </DialogContent>
       <DialogActions>
+        <LoadingButton color="inherit" onClick={handleClose} disabled={loading} loading={loading}>
+          Cancel
+        </LoadingButton>
         <LoadingButton autoFocus onClick={handleSubmit} disabled={loading} loading={loading}>
           Save
         </LoadingButton>

@@ -1,11 +1,11 @@
 import './Auth.css';
 
 import { useCallback, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { toast } from 'react-toastify';
 import { useAuth } from '../../contexts/AuthContext';
-import { Grid, TextField } from '@mui/material';
+import { Button, Grid, TextField } from '@mui/material';
 import { parseAxiosError } from '../../utils/errors';
 import { LoadingButton } from '@mui/lab';
 
@@ -65,12 +65,8 @@ export function SignInScreen() {
           tabIndex={3}
           fullWidth
         />
-        <Link to="/forgot-password">
-          <div className="Auth-link-left" tabIndex={5}>
-            Forgot your password? Reset it.
-          </div>
-        </Link>
       </Grid>
+
       <Grid item xs={12}>
         <LoadingButton
           variant="contained"
@@ -85,10 +81,15 @@ export function SignInScreen() {
           Login
         </LoadingButton>
       </Grid>
-      <Grid item xs={12}>
-        <Link to="/sign-up" tabIndex={6}>
-          <div className="Auth-link-centered">Need an account? Sign up.</div>
-        </Link>
+      <Grid item xs={6}>
+        <Button variant="text" onClick={() => navigate('/forgot-password')} fullWidth>
+          Forgot your password? Reset it.
+        </Button>
+      </Grid>
+      <Grid item xs={6}>
+        <Button variant="text" onClick={() => navigate('/sign-up')} fullWidth>
+          Need an account? Sign up.
+        </Button>
       </Grid>
     </Grid>
   );

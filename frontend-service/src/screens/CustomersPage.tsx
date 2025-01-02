@@ -21,6 +21,8 @@ import { AppBar, Box, Button, Grid, TextField, Toolbar, Typography } from '@mui/
 import { AddLocationAlt, LocationOn, PersonAdd } from '@mui/icons-material';
 import { ViewCustomerAddressesModal } from './ViewCustomerAddressesModal';
 import { CreateCustomerAddressesModal } from './CreateCustomerAddressModal';
+import { Customer } from '@unconventional-jackson/avoca-external-api';
+import { EditCustomerModal } from './EditCustomerModal';
 
 type ViewCustomerAddressesActionProps = GridActionsCellItemProps & {
   id: string;
@@ -219,13 +221,20 @@ export function CustomersPage() {
   /**
    * MUI
    */
+  const [isEditCustomerModalOpen, setIsEditCustomerModalOpen] = useState(false);
+  const [customerId, setCustomerId] = useState<string | null>(null);
+  const handleClosedEditCustomerModal = useCallback(() => {
+    setIsEditCustomerModalOpen(false);
+    setCustomerId(null);
+  }, []);
   const handleRowClick = useCallback(
     (params: GridRowParams) => {
-      navigate(`/app/customers/${params.row.id}`);
+      const row = params.row as Customer;
+      setCustomerId(row.id ?? null);
+      setIsEditCustomerModalOpen(true);
     },
     [navigate]
   );
-
   /**
    * Manage the state of the Create Customer Modal
    */
@@ -289,6 +298,14 @@ export function CustomersPage() {
         onClose={handleCloseCreateCustomerModal}
         refetch={refetch}
       />
+      {customerId && (
+        <EditCustomerModal
+          open={isEditCustomerModalOpen}
+          onClose={handleClosedEditCustomerModal}
+          customerId={customerId}
+          refetch={refetch}
+        />
+      )}
     </PageLayout>
   );
 }

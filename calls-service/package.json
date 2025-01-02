@@ -10,9 +10,9 @@
     "lint:check:tsc": "tsc --noEmit",
     "lint:fix:eslint": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "lint:fix:prettier": "prettier --write . --no-error-on-unmatched-pattern",
-    "start:local": "ENV=local CLIENT=avoca SERVICE=avoca-calls-service ts-node-dev src/index.ts",
-    "start:dev": "ENV=dev CLIENT=avoca SERVICE=avoca-calls-service node .",
-    "start:prod": "ENV=prod CLIENT=avoca SERVICE=avoca-calls-service node .",
+    "start:local": "LOGGING_CONSOLE_ENABLED=true ENV=local CLIENT=avoca SERVICE=avoca-calls-service ts-node-dev src/index.ts",
+    "start:dev": "LOGGING_CONSOLE_ENABLED=true ENV=dev CLIENT=avoca SERVICE=avoca-calls-service node .",
+    "start:prod": "LOGGING_CONSOLE_ENABLED=true ENV=prod CLIENT=avoca SERVICE=avoca-calls-service node .",
     "test:unit": "jest --detectOpenHandles --verbose",
     "test:unit:coverage": "jest --detectOpenHandles --verbose --coverage",
     "test:unit:watch": "jest --detectOpenHandles --verbose --watch"
@@ -21,8 +21,8 @@
   "dependencies": {
     "@aws-sdk/client-secrets-manager": "^3.696.0",
     "@faker-js/faker": "^9.2.0",
-    "@unconventional-code/observability-sdk": "^0.0.32",
-    "@unconventional-jackson/avoca-internal-api": "^0.0.19",
+    "@unconventional-code/observability-sdk": "^0.0.33",
+    "@unconventional-jackson/avoca-internal-api": "^0.0.21",
     "axios": "^1.6.2",
     "jsonwebtoken": "^9.0.2",
     "ws": "^8.18.0"

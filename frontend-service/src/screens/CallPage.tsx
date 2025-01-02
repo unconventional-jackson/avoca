@@ -1,15 +1,17 @@
 import { Box, Container, Divider, Grid, IconButton, Tooltip, Typography } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { usePhoneCalls } from '../contexts/PhoneCallsContext';
-import { useCallback, useMemo, useState } from 'react';
+import { Fragment, useCallback, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useInternalSdk } from '../api/sdk';
 import { toast } from 'react-toastify';
-import { CopyAll, Create, Refresh, Search } from '@mui/icons-material';
+import { CopyAll, Create, Info, NavigateNext, Refresh, Search } from '@mui/icons-material';
 import { SearchCustomerModal } from './CustomerSearchModal';
 import { CreateJobModal } from './CreateJobModal';
 import { parseAxiosError } from '../utils/errors';
 import { Customer } from '@unconventional-jackson/avoca-external-api';
+import { EditCustomerModal } from './EditCustomerModal';
+import { EditJobModal } from './EditJobModal';
 
 export function CallPage() {
   const { phone_call_id } = useParams();
@@ -37,8 +39,8 @@ export function CallPage() {
 
   const call = useMemo(
     () => ({
-      ...phoneCalls.find((call) => call.phone_call_id === phone_call_id),
       ...getCallQuery.data,
+      ...phoneCalls.find((call) => call.phone_call_id === phone_call_id),
     }),
     [phoneCalls, phone_call_id]
   );
@@ -99,6 +101,18 @@ export function CallPage() {
     }
     return null;
   }, [call.customer_id, call.customer]);
+
+  /**
+   * Open the customer modal
+   */
+  const [isEditCustomerModalOpen, setIsEditCustomerModalOpen] = useState(false);
+  const handleOpenEditCustomerModal = useCallback(() => {
+    setIsEditCustomerModalOpen(true);
+  }, []);
+  const handleCloseEditCustomerModal = useCallback(() => {
+    setIsEditCustomerModalOpen(false);
+  }, []);
+
   /**
    * Copy the customer ID to the clipboard - useful for searching in the CRM or support w/ engineering
    */
@@ -116,6 +130,17 @@ export function CallPage() {
         console.error(error);
       });
   }, [call.customer_id]);
+
+  /**
+   * Open the job modal
+   */
+  const [isEditJobModalOpen, setIsEditJobModalOpen] = useState(false);
+  const handleOpenEditJobModal = useCallback(() => {
+    setIsEditJobModalOpen(true);
+  }, []);
+  const handleCloseEditJobModal = useCallback(() => {
+    setIsEditJobModalOpen(false);
+  }, []);
 
   /**
    * Copy the job ID to the clipboard - useful for searching in the CRM or support w/ engineering
@@ -200,9 +225,17 @@ export function CallPage() {
             <Box display="flex" justifyContent="space-between">
               <Typography variant="h6">{customerDetails ?? 'Unassigned'}</Typography>
               {call.customer_id ? (
-                <IconButton onClick={handleCopyCustomerIdToClipboard} disabled={!call.customer_id}>
-                  <CopyAll />
-                </IconButton>
+                <Box>
+                  <IconButton onClick={handleOpenEditCustomerModal} disabled={!call.customer_id}>
+                    <Info />
+                  </IconButton>
+                  <IconButton
+                    onClick={handleCopyCustomerIdToClipboard}
+                    disabled={!call.customer_id}
+                  >
+                    <CopyAll />
+                  </IconButton>
+                </Box>
               ) : (
                 <Tooltip title="Search for a customer to assign to this call">
                   <IconButton onClick={handleOpenCustomerSearchModal} disabled={!!call.customer_id}>
@@ -217,9 +250,14 @@ export function CallPage() {
             <Box display="flex" justifyContent="space-between">
               <Typography variant="h6">{call?.job_id ? call.job_id : 'Unassigned'}</Typography>
               {call.job_id ? (
-                <IconButton onClick={handleCopyJobIdToClipboard} disabled={!call.job_id}>
-                  <CopyAll />
-                </IconButton>
+                <Box>
+                  <IconButton onClick={handleOpenEditJobModal}>
+                    <NavigateNext />
+                  </IconButton>
+                  <IconButton onClick={handleCopyJobIdToClipboard} disabled={!call.job_id}>
+                    <CopyAll />
+                  </IconButton>
+                </Box>
               ) : (
                 <Tooltip
                   title={
@@ -310,12 +348,28 @@ export function CallPage() {
         refetch={getCallQuery.refetch}
       />
       {call.customer_id && (
-        <CreateJobModal
-          open={isJobCreationModalOpen}
-          onClose={handleCloseJobCreationModal}
+        <Fragment>
+          <CreateJobModal
+            open={isJobCreationModalOpen}
+            onClose={handleCloseJobCreationModal}
+            customerId={call.customer_id}
+            refetch={getCallQuery.refetch}
+            phoneCallId={phone_call_id}
+          />
+          <EditCustomerModal
+            open={isEditCustomerModalOpen}
+            onClose={handleCloseEditCustomerModal}
+            customerId={call.customer_id}
+            refetch={getCallQuery.refetch}
+          />
+        </Fragment>
+      )}
+      {call.customer_id && call.job_id && (
+        <EditJobModal
+          open={isEditJobModalOpen}
+          onClose={handleCloseEditJobModal}
+          jobId={call.job_id}
           customerId={call.customer_id}
-          refetch={getCallQuery.refetch}
-          phoneCallId={phone_call_id}
         />
       )}
     </Box>

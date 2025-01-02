@@ -1,11 +1,11 @@
 import './Auth.css';
 import { useCallback, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'react-toastify';
 import { parseAxiosError } from '../../utils/errors';
-import { Grid, TextField } from '@mui/material';
+import { Button, Grid, TextField, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
 export function ForgotPasswordScreen() {
@@ -36,7 +36,9 @@ export function ForgotPasswordScreen() {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        <h4 className="Auth-subtitle">Forgot your password?</h4>
+        <Typography variant="body2">
+          Forgot your password? Enter your email address below to request a password reset.
+        </Typography>
       </Grid>
       <Grid item xs={12}>
         <TextField
@@ -62,9 +64,9 @@ export function ForgotPasswordScreen() {
       </Grid>
 
       <Grid item xs={12}>
-        <Link to="/password-reset">
-          <div className="Auth-link-centered">Already have a password reset code?</div>
-        </Link>
+        <Button variant="text" onClick={() => navigate('/password-reset')} fullWidth>
+          Already have a password reset code?
+        </Button>
       </Grid>
     </Grid>
   );

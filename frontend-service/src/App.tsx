@@ -50,23 +50,21 @@ export function App() {
                 <Routes>
                   <Route path="/" element={<Root />} />
 
-                  <Route>
-                    <Route
-                      element={
-                        <AuthContainer>
-                          <Outlet />
-                        </AuthContainer>
-                      }
-                    >
-                      <Route path="sign-in" element={<SignInScreen />} />
-                      <Route path="sign-up" element={<SignUpScreen />} />
-                      <Route path="verify-email" element={<VerifyEmailScreen />} />
-                      <Route path="totp-setup" element={<TotpSetupScreen />} />
-                      <Route path="totp-verify" element={<TotpVerifyScreen />} />
-                      <Route path="forgot-password" element={<ForgotPasswordScreen />} />
-                      <Route path="password-reset" element={<ResetPasswordScreen />} />
-                      <Route path="change-password" element={<ChangePasswordScreen />} />
-                    </Route>
+                  <Route
+                    element={
+                      <AuthContainer>
+                        <Outlet />
+                      </AuthContainer>
+                    }
+                  >
+                    <Route path="sign-in" element={<SignInScreen />} />
+                    <Route path="sign-up" element={<SignUpScreen />} />
+                    <Route path="verify-email" element={<VerifyEmailScreen />} />
+                    <Route path="totp-setup" element={<TotpSetupScreen />} />
+                    <Route path="totp-verify" element={<TotpVerifyScreen />} />
+                    <Route path="forgot-password" element={<ForgotPasswordScreen />} />
+                    <Route path="password-reset" element={<ResetPasswordScreen />} />
+                    <Route path="change-password" element={<ChangePasswordScreen />} />
                   </Route>
                   <Route path="app" element={<RestrictedNavigation />}>
                     <Route path="calls">

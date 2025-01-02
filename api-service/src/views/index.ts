@@ -15,6 +15,7 @@ import { getPhoneCallView } from './getPhoneCall';
 import { getPhoneCallsView } from './getPhoneCalls';
 import { updateCustomerView } from './updateCustomer';
 import { updatePhoneCallView } from './updatePhoneCall';
+import { getJobView } from './getJob';
 
 export const routes = Router();
 
@@ -38,10 +39,11 @@ routes.post('/customers/:customer_id/addresses', expressAsyncHandler(createCusto
 routes.put('/customers/:customer_id', expressAsyncHandler(updateCustomerView));
 routes.delete('/customers/:customer_id', expressAsyncHandler(createCustomerView));
 
-routes.post('/phone-calls', expressAsyncHandler(createPhoneCallView));
-routes.get('/phone-calls', expressAsyncHandler(getPhoneCallsView));
 routes.get('/phone-calls/:phone_call_id', expressAsyncHandler(getPhoneCallView));
 routes.put('/phone-calls/:phone_call_id', expressAsyncHandler(updatePhoneCallView));
+routes.post('/phone-calls', expressAsyncHandler(createPhoneCallView));
+routes.get('/phone-calls', expressAsyncHandler(getPhoneCallsView));
 
+routes.get('/jobs/:job_id', expressAsyncHandler(getJobView));
 routes.post('/jobs', expressAsyncHandler(createJobView));
 routes.get('/jobs', expressAsyncHandler(getJobsView));

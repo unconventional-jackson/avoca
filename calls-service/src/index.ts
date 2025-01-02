@@ -232,6 +232,7 @@ export async function onPhoneCallAccepted(
 // Function to handle a call's lifecycle
 const handleCall = async () => {
   try {
+    log.info('Preparing to emit new call');
     const phoneNumber = faker.phone.number();
     const tokens = generateTokens();
     log.info('Prepared call', {
@@ -286,6 +287,7 @@ const handleCall = async () => {
       await new Promise((r) => setTimeout(r, getRandomDelay()));
     }
 
+    // test
     // Notify external API of call end
     const endDateTime = new Date().toISOString();
     await callsSdk.updatePhoneCall(phoneCallId, {
@@ -334,6 +336,11 @@ async function main() {
         return;
       }
 
+      if (_message.event === WebsocketMessageType.PhoneCallInitiatedExternally) {
+        void handleCall();
+        return;
+      }
+
       if (_message.event === WebsocketMessageType.PhoneCallAccepted) {
         const message = _message as WebsocketPhoneCallAcceptedPayload;
         void onPhoneCallAccepted(message.phone_call_id, message.employee_id, ws);
@@ -357,13 +364,5 @@ async function main() {
       log.error(error);
     });
   });
-
-  setInterval(() => {
-    log.info('Preparing to emit new call');
-    setTimeout(() => {
-      log.info('Emitting new call');
-      handleCall().catch((error) => log.error(error));
-    }, getRandomDelay());
-  }, 5000); // Random interval between calls
 }
 main().catch((error) => log.error(error));

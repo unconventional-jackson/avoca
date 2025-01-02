@@ -186,6 +186,7 @@ export function CreateJobModal({
     authUser?.employee_id,
     customerId,
     handleClose,
+    arrivalWindow,
     invoiceNumber,
     jobsSdk,
     leadSource,
@@ -194,6 +195,7 @@ export function CreateJobModal({
     scheduledEnd,
     scheduledStart,
     phoneCallId,
+    tags,
     selectedAddressId,
   ]);
 

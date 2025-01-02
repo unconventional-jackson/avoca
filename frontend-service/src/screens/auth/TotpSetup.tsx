@@ -5,6 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { QRCode } from '../../components/QRCode/QRCode';
 import { Grid, TextField, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+import { parseAxiosError } from '../../utils/errors';
 
 export function TotpSetupScreen() {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ export function TotpSetupScreen() {
         }
         setOtpauthUrl(response.otpauth_url);
       } catch (error) {
-        toast.error('Failed to fetch TOTP setup');
+        toast.error(`Failed to fetch TOTP setup: ${parseAxiosError(error)}`);
         console.error(error);
       } finally {
         setLoading(false);
@@ -51,7 +52,7 @@ export function TotpSetupScreen() {
         toast.success('TOTP verified successfully');
         navigate(`/app`);
       } catch (error) {
-        toast.error('Failed to verify TOTP');
+        toast.error(`Failed to verify TOTP: ${parseAxiosError(error)}`);
         console.error(error);
       } finally {
         setLoading(false);

@@ -51,7 +51,7 @@ export async function totpSetupView(
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const otpauth_url = speakeasy.otpauthURL({
       secret: auth_totp_secret,
-      label: TOTP_DOMAIN,
+      label: email,
       issuer: TOTP_DOMAIN,
     });
 

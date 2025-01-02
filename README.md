@@ -4,7 +4,7 @@ This repository contains all the services and applications necessary for the Avo
 
 ## Application Overview
 
-To access the application, navigate to [Avoca Take Home](https://avocatakehome.com). You can sign up with any email address you like and will be prompted to verify your email and enroll in 2FA. Verification codes will be sent from `hello@avocatakehome.com`. Once you have verified your email and enrolled in 2FA, you can log in and view the calls that are being streamed to you.
+To access the application, navigate to [Avoca Take Home](https://app.dev.avocatakehome.com). You can sign up with any email address you like and will be prompted to verify your email and enroll in 2FA. Verification codes will be sent from `hello@avocatakehome.com`. Once you have verified your email and enrolled in 2FA, you can log in and view the calls that are being streamed to you.
 
 You will notice calls streaming on the left hand side. The behavior is a little finnicky. However, it should meet the intent of showcasing customer support managing incoming calls. Grey calls have ended already, red calls are ongoing but have not been assigned to a rep, and click on a call to assign it to yourself, turning it green. When viewing a call, you can see the transcript streaming in real-time.
 
@@ -72,6 +72,9 @@ I haven't taken the time yet to figure out how to set up GitHub Actions for cros
 
 **I can't deploy everything in one run!**
 AWS makes it so you can _almost_ deploy everything in one run; however, there are some gotches. Some prework was necessary to manually purchase a domain, set up Hosted Zones, add NS records to map the subdomains to the TLD, and set up ACM certificates with DNS validation. Additionally, the Postgres database needs to be manually configured with both the user roles and the networking configuration in `pg_hba.conf` to allow traffic within the VPC. There are flags (e.g. `STEP_01_VPC`) in the deploy scripts to easily toggle which steps you want to run.
+
+**Some stuff is missing in the deployment!**
+In addition the AWS parts mentioned above, you need to have a local copy of the EC2 key pairs (`.pem` format), and SSH config profiles defined for each of the instances with Bastion ProxyJump and Port Forwarding set up. This is necessary for the deploy scripts to work correctly.
 
 **Where are all the tests?**
 I have some built out for authentication from prior work. In the interest of time, I didn't feel it useful to write additional tests for this project, since the business logic is very lightweight and intended to mirror what might effectively be a third-party API that we can treat as a black box. Yes, more tests would be better. No, I did not have time.

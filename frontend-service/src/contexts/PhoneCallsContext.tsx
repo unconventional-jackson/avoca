@@ -16,6 +16,7 @@ import {
   WebsocketPhoneCallAssignedPayload,
   WebsocketPhoneCallEndedPayload,
   WebsocketPhoneCallStartedPayload,
+  WebsocketPhoneCallInitiatedExternallyPayload,
   WebsocketPhoneCallTokenPayload,
   WebsocketPhoneCallTranscriptPayload,
 } from '@unconventional-jackson/avoca-internal-api';
@@ -26,6 +27,7 @@ type WebsocketMessagePayload =
   | WebsocketPhoneCallAssignedPayload
   | WebsocketPhoneCallEndedPayload
   | WebsocketPhoneCallStartedPayload
+  | WebsocketPhoneCallInitiatedExternallyPayload
   | WebsocketPhoneCallTokenPayload
   | WebsocketPhoneCallTranscriptPayload;
 
@@ -33,6 +35,7 @@ type AugmentedPhoneCall = PhoneCall & { elapsed?: number };
 interface PhoneCallsContextProps {
   phoneCalls: AugmentedPhoneCall[];
   sendPhoneCallAccepted: (phoneCallId: string) => void;
+  sendPhoneCallInitiatedExternally: () => void;
   connectionStatus: string;
 }
 
@@ -40,6 +43,7 @@ interface PhoneCallsContextProps {
 export const PhoneCallsContext = createContext<PhoneCallsContextProps>({
   phoneCalls: [],
   sendPhoneCallAccepted: () => {},
+  sendPhoneCallInitiatedExternally: () => {},
   connectionStatus: 'disconnected',
 });
 
@@ -161,6 +165,18 @@ export const PhoneCallsProvider = ({ url, children }: PhoneCallsProviderProps) =
     [authUser?.employee_id]
   );
 
+  const sendPhoneCallInitiatedExternally = useCallback(() => {
+    if (wsRef.current?.readyState === WebSocket.OPEN && authUser?.employee_id) {
+      const payload: WebsocketPhoneCallInitiatedExternallyPayload = {
+        event: WebsocketMessageType.PhoneCallInitiatedExternally,
+      };
+
+      wsRef.current?.send(JSON.stringify(payload));
+    } else {
+      console.error('PhoneCalls is not open. Unable to send message.');
+    }
+  }, [authUser?.employee_id]);
+
   const onPhoneCallStarted = useCallback((payload: WebsocketPhoneCallStartedPayload) => {
     setPhoneCalls((prevCalls) => {
       if (!prevCalls.find((call) => call.phone_call_id === payload.phone_call_id)) {
@@ -200,7 +216,10 @@ export const PhoneCallsProvider = ({ url, children }: PhoneCallsProviderProps) =
       }
       return prevCalls.map((call) =>
         call.phone_call_id === payload.phone_call_id
-          ? { ...call, transcript: `${call.transcript} ${payload.token}` }
+          ? {
+              ...call,
+              transcript: call.transcript ? `${call.transcript} ${payload.token}` : payload.token,
+            }
           : call
       );
     });
@@ -304,7 +323,14 @@ export const PhoneCallsProvider = ({ url, children }: PhoneCallsProviderProps) =
   }, []);
 
   return (
-    <PhoneCallsContext.Provider value={{ phoneCalls, sendPhoneCallAccepted, connectionStatus }}>
+    <PhoneCallsContext.Provider
+      value={{
+        phoneCalls,
+        sendPhoneCallAccepted,
+        sendPhoneCallInitiatedExternally,
+        connectionStatus,
+      }}
+    >
       {children}
     </PhoneCallsContext.Provider>
   );
