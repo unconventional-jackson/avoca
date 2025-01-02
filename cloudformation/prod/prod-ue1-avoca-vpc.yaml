@@ -1,0 +1,405 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+Description: >
+  Creates VPC with 2x Availability Zones, 2x Public subnets, 2x Private subnets, IGW and EC2 NAT instance.
+
+Parameters:
+  ProdUe1AvocaVpcCidrParam:
+    Type: String
+    Description: VPC CIDR. For more info, see http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Subnets.html#VPC_Sizing
+    AllowedPattern: "^(10|172|192)\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\/(16|17|18|19|20|21|22|23|24|25|26|27|28)$"
+    ConstraintDescription: must be valid IPv4 CIDR block (/16 to /28) from the private address ranges defined in RFC 1918.
+    Default: 10.100.10.0/24
+  # Public Subnets
+  ProdUe1AvocaPublicAZASubnetBlock:
+    Type: String
+    Description: Subnet CIDR for first Availability Zone
+    AllowedPattern: "^(10|172|192)\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\/(16|17|18|19|20|21|22|23|24|25|26|27|28)$"
+    ConstraintDescription: must be valid IPv4 CIDR block (/16 to /28) from the private address ranges defined in RFC 1918.
+    Default: 10.100.10.0/26
+  ProdUe1AvocaPublicAZBSubnetBlock:
+    Type: String
+    Description: Subnet CIDR for second Availability Zone
+    AllowedPattern: "^(10|172|192)\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\/(16|17|18|19|20|21|22|23|24|25|26|27|28)$"
+    ConstraintDescription: must be valid IPv4 CIDR block (/16 to /28) from the private address ranges defined in RFC 1918.
+    Default: 10.100.10.64/26
+  # Private Subnets
+  ProdUe1AvocaPrivateAZASubnetBlock:
+    Type: String
+    Description: Subnet CIDR for first Availability Zone (e.g. us-west-2a, us-east-1b)
+    AllowedPattern: "^(10|172|192)\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\/(16|17|18|19|20|21|22|23|24|25|26|27|28)$"
+    ConstraintDescription: must be valid IPv4 CIDR block (/16 to /28) from the private address ranges defined in RFC 1918.
+    Default: 10.100.10.128/26
+  ProdUe1AvocaPrivateAZBSubnetBlock:
+    Type: String
+    Description: Subnet CIDR for second Availability Zone (e.g. us-west-2b, us-east-1c)
+    AllowedPattern: "^(10|172|192)\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\/(16|17|18|19|20|21|22|23|24|25|26|27|28)$"
+    ConstraintDescription: must be valid IPv4 CIDR block (/16 to /28) from the private address ranges defined in RFC 1918.
+    Default: 10.100.10.192/26
+  AmazonLinux2AmiID:
+    Type: String
+    Default: ami-0ff8a91507f77f867
+    Description: Amazon Linux 2 AMI ID (Default is us-east-2 AMI ID)
+  Debian12AmiID:
+    Type: String
+    Default: ami-058bd2d568351da34
+    Description: Debian 12 AMI ID (Default is us-east-2 AMI ID)
+
+Outputs:
+  ProdUe1AvocaVpcId:
+    Description: VPC ID
+    Value: !Ref ProdUe1AvocaVpc
+    Export:
+      Name: ProdUe1AvocaVpcId
+
+  ProdUe1AvocaPublicAZASubnetId:
+    Description: Availability Zone A public subnet ID
+    Value: !Ref ProdUe1AvocaPublicAZASubnet
+    Export:
+      Name: ProdUe1AvocaPublicAZASubnetId
+
+  ProdUe1AvocaPublicAZBSubnetId:
+    Description: Availability Zone B public subnet ID
+    Value: !Ref ProdUe1AvocaPublicAZBSubnet
+    Export:
+      Name: ProdUe1AvocaPublicAZBSubnetId
+
+  ProdUe1AvocaPrivateAZASubnetId:
+    Description: Availability Zone A private subnet ID
+    Value: !Ref ProdUe1AvocaPrivateAZASubnet
+    Export:
+      Name: ProdUe1AvocaPrivateAZASubnetId
+
+  ProdUe1AvocaPrivateAZBSubnetId:
+    Description: Availability Zone B private subnet ID
+    Value: !Ref ProdUe1AvocaPrivateAZBSubnet
+    Export:
+      Name: ProdUe1AvocaPrivateAZBSubnetId
+
+  ProdUe1AvocaNATPublicIp:
+    Description: NAT Public IP
+    Value: !GetAtt ProdUe1AvocaNATInstance.PublicIp
+    Export:
+      Name: ProdUe1AvocaNATPublicIp
+
+  ProdUe1AvocaBastionPublicIp:
+    Description: Bastion Public IP
+    Value: !GetAtt ProdUe1AvocaBastionInstance.PublicIp
+    Export:
+      Name: ProdUe1AvocaBastionPublicIp
+
+  ProdUe1AvocaBastionPrivateIp:
+    Description: Bastion Private IP
+    Value: !GetAtt ProdUe1AvocaBastionInstance.PrivateIp
+    Export:
+      Name: ProdUe1AvocaBastionPrivateIp
+
+  ProdUe1AvocaBastionSecurityGroup:
+    Description: Bastion Security Group ID
+    Value: !Ref ProdUe1AvocaBastionSecurityGroup
+    Export:
+      Name: ProdUe1AvocaBastionSecurityGroup
+
+  ProdUe1AvocaNATSecurityGroup:
+    Description: NAT Security Group ID
+    Value: !Ref ProdUe1AvocaNATSecurityGroup
+    Export:
+      Name: ProdUe1AvocaNATSecurityGroup
+
+Resources:
+  ProdUe1AvocaVpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref ProdUe1AvocaVpcCidrParam
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+
+  ProdUe1AvocaInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: ProdUe1AvocaInternetGateway
+
+  ProdUe1AvocaVPCGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref ProdUe1AvocaInternetGateway
+      VpcId: !Ref ProdUe1AvocaVpc
+
+  # Public Subnets - Route Table
+  ProdUe1AvocaPublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref ProdUe1AvocaVpc
+
+  ProdUe1AvocaPublicSubnetsRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref ProdUe1AvocaPublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref ProdUe1AvocaInternetGateway
+    DependsOn: ProdUe1AvocaVPCGatewayAttachment
+
+  # Public Subnets
+  # First Availability Zone
+  ProdUe1AvocaPublicAZASubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref ProdUe1AvocaVpc
+      CidrBlock: !Ref ProdUe1AvocaPublicAZASubnetBlock
+      AvailabilityZone: !Select [0, !GetAZs ""]
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub
+            - prod-ue1-avoca-subnet-public-${AZ}
+            - { AZ: !Select [0, !GetAZs ""] }
+        - Key: Type
+          Value: public
+  ProdUe1AvocaPublicAZASubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref ProdUe1AvocaPublicAZASubnet
+      RouteTableId: !Ref ProdUe1AvocaPublicRouteTable
+
+  # Second Availability Zone
+  ProdUe1AvocaPublicAZBSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref ProdUe1AvocaVpc
+      CidrBlock: !Ref ProdUe1AvocaPublicAZBSubnetBlock
+      AvailabilityZone: !Select [1, !GetAZs ""]
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub
+            - prod-ue1-avoca-subnet-public-${AZ}
+            - { AZ: !Select [1, !GetAZs ""] }
+        - Key: Type
+          Value: public
+  ProdUe1AvocaPublicAZBSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref ProdUe1AvocaPublicAZBSubnet
+      RouteTableId: !Ref ProdUe1AvocaPublicRouteTable
+
+  # Private Subnets
+  # First Availability Zone
+  ProdUe1AvocaPrivateAZASubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref ProdUe1AvocaVpc
+      CidrBlock: !Ref ProdUe1AvocaPrivateAZASubnetBlock
+      AvailabilityZone: !Select [0, !GetAZs ""]
+      Tags:
+        - Key: Name
+          Value: !Sub
+            - prod-ue1-avoca-subnet-private-${AZ}
+            - { AZ: !Select [0, !GetAZs ""] }
+        - Key: Type
+          Value: private
+  ProdUe1AvocaPrivateAZARouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref ProdUe1AvocaVpc
+      Tags:
+        - Key: Name
+          Value: !Sub
+            - prod-ue1-avoca-rtb-private-${AZ}
+            - { AZ: !Select [0, !GetAZs ""] }
+        - Key: Type
+          Value: private
+  ProdUe1AvocaPrivateAZARoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref ProdUe1AvocaPrivateAZARouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      InstanceId: !Ref ProdUe1AvocaNATInstance
+  ProdUe1AvocaPrivateAZARouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref ProdUe1AvocaPrivateAZASubnet
+      RouteTableId: !Ref ProdUe1AvocaPrivateAZARouteTable
+
+  # # Second Availability Zone
+  ProdUe1AvocaPrivateAZBSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref ProdUe1AvocaVpc
+      CidrBlock: !Ref ProdUe1AvocaPrivateAZBSubnetBlock
+      AvailabilityZone: !Select [1, !GetAZs ""]
+      Tags:
+        - Key: Name
+          Value: !Sub
+            - prod-ue1-avoca-subnet-private-${AZ}
+            - { AZ: !Select [1, !GetAZs ""] }
+        - Key: Type
+          Value: private
+  ProdUe1AvocaPrivateAZBRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref ProdUe1AvocaVpc
+      Tags:
+        - Key: Name
+          Value: !Sub
+            - prod-ue1-avoca-rtb-private-${AZ}
+            - { AZ: !Select [1, !GetAZs ""] }
+        - Key: Type
+          Value: private
+  ProdUe1AvocaPrivateAZBRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref ProdUe1AvocaPrivateAZBRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      InstanceId: !Ref ProdUe1AvocaNATInstance
+  ProdUe1AvocaPrivateAZBRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref ProdUe1AvocaPrivateAZBSubnet
+      RouteTableId: !Ref ProdUe1AvocaPrivateAZBRouteTable
+
+  # Security Group NAT. Ingress from the VPC IPs only.
+  ProdUe1AvocaNATSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: ProdUe1AvocaNATSecurityGroup
+      GroupDescription: Enable internal NAT access
+      VpcId: !Ref ProdUe1AvocaVpc
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: "0"
+          ToPort: "65535"
+          CidrIp: !GetAtt ProdUe1AvocaVpc.CidrBlock
+        - IpProtocol: udp
+          FromPort: "0"
+          ToPort: "65535"
+          CidrIp: !GetAtt ProdUe1AvocaVpc.CidrBlock
+        - IpProtocol: icmp
+          FromPort: "-1"
+          ToPort: "-1"
+          CidrIp: !GetAtt ProdUe1AvocaVpc.CidrBlock
+      SecurityGroupEgress:
+        - IpProtocol: "-1"
+          CidrIp: 0.0.0.0/0
+
+  # Bastion Security Group for remote access. Add rules to Ingress.
+  ProdUe1AvocaBastionSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: ProdUe1AvocaBastionSecurityGroup
+      GroupDescription: Bastion Whitelist for remote user access (e.g. SSH)
+      VpcId: !Ref ProdUe1AvocaVpc
+      SecurityGroupIngress:
+        # Jackson Graves
+        - IpProtocol: tcp
+          FromPort: "22"
+          ToPort: "22"
+          CidrIp: 173.235.72.187/32
+          Description: Jackson Graves
+        - IpProtocol: icmp
+          FromPort: "-1"
+          ToPort: "-1"
+          CidrIp: 173.235.72.187/32
+          Description: Jackson Graves
+
+      SecurityGroupEgress:
+        - IpProtocol: "-1"
+          CidrIp: 0.0.0.0/0
+
+  # Systems Manager IAM Role and Profile
+  ProdUe1AvocaEC2SSMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ["ec2.amazonaws.com"]
+            Action: sts:AssumeRole
+      Path: "/"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+        - arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
+
+  ProdUe1AvocaNATInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: "/"
+      Roles:
+        - !Ref ProdUe1AvocaEC2SSMRole
+
+  ProdUe1AvocaBastionInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: "/"
+      Roles:
+        - !Ref ProdUe1AvocaEC2SSMRole
+
+  # EC2 NAT Instance
+  ProdUe1AvocaNATInstance:
+    Type: AWS::EC2::Instance
+    DependsOn: ProdUe1AvocaPublicRouteTable
+    Properties:
+      ImageId: !Ref AmazonLinux2AmiID
+      InstanceType: t3.nano
+      IamInstanceProfile: !Ref ProdUe1AvocaNATInstanceProfile
+      NetworkInterfaces:
+        - DeviceIndex: "0"
+          SubnetId: !Ref ProdUe1AvocaPublicAZASubnet
+          AssociatePublicIpAddress: true
+          GroupSet: [!Ref ProdUe1AvocaNATSecurityGroup]
+      SourceDestCheck: false
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          yum -y update
+          yum install -y aws-cfn-bootstrap
+          # install SSM Agent
+          yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+          systemctl enable amazon-ssm-agent
+          systemctl start amazon-ssm-agent
+          # configure iptables forwarding for NAT
+          echo 1 > /proc/sys/net/ipv4/ip_forward
+          echo 0 > /proc/sys/net/ipv4/conf/eth0/send_redirects
+          /sbin/iptables -t nat -A POSTROUTING -o eth0 -s 0.0.0.0/0 -j MASQUERADE
+          /sbin/iptables-save > /etc/sysconfig/iptables
+          mkdir -p /etc/sysctl.d/
+          cat << NatConfFileMarker > /etc/sysctl.d/nat.conf
+          net.ipv4.ip_forward = 1
+          net.ipv4.conf.eth0.send_redirects = 0
+          NatConfFileMarker
+          /opt/aws/bin/cfn-signal -e 0 --resource NATInstance --stack prod-ue1-avoca --region ${AWS::Region}
+
+  # EC2 Bastion Instance
+  ProdUe1AvocaBastionInstance:
+    Type: AWS::EC2::Instance
+    DependsOn: ProdUe1AvocaPublicRouteTable
+    Properties:
+      ImageId: !Ref Debian12AmiID
+      InstanceType: t3a.nano
+      IamInstanceProfile: !Ref ProdUe1AvocaBastionInstanceProfile
+      KeyName: prod-ue1-avoca-key-pair
+      SubnetId: !Ref ProdUe1AvocaPublicAZASubnet
+      AvailabilityZone: us-east-1a
+      SecurityGroupIds:
+        - !Ref ProdUe1AvocaNATSecurityGroup
+        - !Ref ProdUe1AvocaBastionSecurityGroup
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          apt update
+          DEBIAN_FRONTEND=noninteractive apt-get -y dist-upgrade
+          # install SSM Agent
+          cd /tmp
+          wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
+          dpkg -i /tmp/amazon-ssm-agent.deb
+          systemctl enable amazon-ssm-agent
+          systemctl start amazon-ssm-agent
+          # install awscli
+          #apt -y install awscli
+          # reboot
+          shutdown -r now
+
+# EOF
